@@ -1,18 +1,6 @@
 {
- "state": "Le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le nouveau `TilePool` contigu, ainsi que les tests unitaires sans régression. Aucun changement fonctionnel a été introduit par ce commit ; seules les règles de gestion des PRs ont été enrichies. Les blocages existants (shaders trop gros, CI lente, optimisation SSA) restent en suspens, et la prochaine étape probable reste l’amélioration des performances du per‑lane form et la résolution des refus structurels, tout en bénéficiant désormais d’un nettoyage automatisé des PRs inactives.",
+ "state": "Après l’intégration, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le crash AMD lié aux pipelines compute MSAA est résolu, comme le montre le nouveau test de régression qui passe. Les limitations restantes – shaders trop volumineux, lenteur de la CI et optimisation du per‑lane form – demeurent, et la prochaine étape probable reste l’amélioration des performances du per‑lane form et la résolution des refus structurels, tout en continuant le nettoyage automatisé des PR inactives.",
  "entries": [
-  {
-   "sha": "927adcc0200c1a5c7814e71adfcbfdcb4ec2b5e0",
-   "date": "2026-11-23",
-   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
-   "summary": "Le nouveau commit ajoute un mécanisme de repli : lorsqu’un pipeline D3D12.X échoue avec E_OUTOFMEMORY sur les fenêtres de mémoire du heap (cas observé sur les drivers NVIDIA 616.92), le même pipeline est reconstruit en « switch form » (sans heap windows) et réessayé. Cette logique s’insère dans la suite de correctifs récents sur les accès mémoire et les fallbacks de création de pipelines, en complétant le support des heap windows tout en contournant le blocage spécifique aux gros programmes. Désormais les titres qui étaient bloqués par le driver peuvent s’exécuter, mais le fallback reste limité aux pipelines où le driver renvoie E_OUTOFMEMORY et ne couvre pas d’autres types d’échecs."
-  },
-  {
-   "sha": "deb4b92b4a0ec8436a73c0683a9a0bd54f38985d",
-   "date": "2026-11-24",
-   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
-   "summary": "Le commit ajuste la taille maximale d’une vue UAV brute de fenêtre de mémoire à 4 GiB − 32 octets, corrigeant ainsi un plantage du runtime D3D12 de Windows 11 23H2 qui supprimait le dispositif lorsque la vue dépassait ce seuil. Cette modification s’insère dans la série de correctifs autour des « memory windows » (heap windows) introduits récemment, notamment le fallback « switch form » et l’option XCL_HEAP_WINDOWS. Désormais les titres activant les heap windows ne perdent plus le device au démarrage, mais les limitations précédentes (maillage, textures avancées, validation de couverture GPU) restent inchangées."
-  },
   {
    "sha": "9e3831e1f570d3646e53ab753b19ec07eb8f1485",
    "date": "2026-11-24",
@@ -240,6 +228,18 @@
    "date": "2026-11-24",
    "title": "Direct DXIL: geometry mode, MSAA loads and directed f32 rounding",
    "summary": ""
+  },
+  {
+   "sha": "425b86920b43d26a670cc0090787fc946976bce3",
+   "date": "2026-11-24",
+   "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
+   "summary": "Le commit modifie le backend DXIL pour émettre les appels `dx.op.textureLoad` avant `dx.op.getDimensions` dans les blocs basiques contenant des textures MSAA dynamiquement indexées, évitant ainsi le plantage du compilateur AMD (`amdxc64.dll`). Cette correction s’inscrit dans la suite des améliorations du support MSAA introduites récemment (geometry mode, MSAA loads) et résout un blocage qui empêchait la création de pipelines compute sur certaines cartes AMD. Désormais les shaders MSAA dynamiques peuvent être compilés sans crash, mais les autres limitations (shaders trop gros, optimisation SSA) restent inchangées."
+  },
+  {
+   "sha": "20cf13022f764208384c610c2ae6a3f4eed201a2",
+   "date": "2026-11-24",
+   "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
+   "summary": "Le commit réordonne les appels DXIL en émettant d’abord `dx.op.textureLoad` puis `dx.op.getDimensions` pour les textures MSAA dynamiquement indexées, éliminant le plantage du compilateur AMD (`amdxc64.dll`) lors de la création de pipelines compute. Cette correction suit le précédent correctif #425b869 qui visait déjà les crashes liés aux textures MSAA, et vient clôturer le blocage qui empêchait l’exécution de shaders compute contenant des `Texture2DMS`/`Texture2DMSArray`. Désormais les shaders MSAA passent la compilation et l’exécution sur les GPU AMD, mais les autres problèmes (taille des shaders, lenteur CI, optimisation SSA) restent en suspens."
   }
  ]
 }

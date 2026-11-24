@@ -4,6 +4,7 @@ avec un résumé en français généré par Gemini. Stdlib uniquement."""
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -15,7 +16,10 @@ GH_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
 NTFY_SERVER = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
+# Modèles de secours si le principal est indisponible (noms à vérifier de temps en temps)
+GEMINI_FALLBACKS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
+RETRY_WAITS = [5, 15, 30]  # secondes entre les essais sur 503/429
 DRY_RUN = os.environ.get("DRY_RUN", "") == "1"
 MAX_COMMITS_PER_RUN = 10
 MAX_DIFF_CHARS = 12000
@@ -91,20 +95,32 @@ def summarize(detail, pr, files, diff):
     text += f"FICHIERS MODIFIÉS: {len(files)}\nDIFF:\n{diff}"
     if not GEMINI_KEY:
         return None
-    try:
-        out = http_json(
-            f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
-            method="POST",
-            headers={"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY},
-            body={
-                "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
-                "contents": [{"parts": [{"text": text}]}],
-            },
-        )
-        return out["candidates"][0]["content"]["parts"][0]["text"].strip()
-    except Exception as e:  # noqa: BLE001 - on retombe sur le message brut
-        print(f"Résumé Gemini impossible : {e}")
-        return None
+    body = {
+        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+        "contents": [{"parts": [{"text": text}]}],
+    }
+    headers = {"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY}
+    models = [GEMINI_MODEL] + [m for m in GEMINI_FALLBACKS if m != GEMINI_MODEL]
+    for model in models:
+        for attempt, wait in enumerate(RETRY_WAITS + [None]):
+            try:
+                out = http_json(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+                    method="POST", headers=headers, body=body,
+                )
+                return out["candidates"][0]["content"]["parts"][0]["text"].strip()
+            except urllib.error.HTTPError as e:
+                print(f"Gemini {model} : HTTP {e.code} (essai {attempt + 1})")
+                # 503/429/500 = surcharge temporaire : on réessaie ; le reste (404, 400, 403) : modèle suivant.
+                if e.code in (429, 500, 503) and wait is not None:
+                    time.sleep(wait)
+                    continue
+                break
+            except Exception as e:  # noqa: BLE001
+                print(f"Gemini {model} : {e}")
+                break
+    print("Résumé Gemini impossible avec tous les modèles.")
+    return None
 
 
 def notify(title, message, click):

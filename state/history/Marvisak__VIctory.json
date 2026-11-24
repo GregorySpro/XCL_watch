@@ -186,6 +186,24 @@
    "date": "2026-11-24",
    "title": "translate: progress counts finished shaders, not ones handed out",
    "summary": "Le commit ajuste le calcul du progrès affiché par le traducteur : il ne compte plus simplement les jobs distribués, mais soustrait les workers encore actifs pour ne retenir que les shaders réellement terminés. Cette modification poursuit le chantier d’amélioration de la visibilité du pipeline, corrigeant un affichage trompeur introduit précédemment. Elle ne change pas le comportement du moteur de shaders ni le support du waterfall, mais permet de suivre plus fidèlement l’avancement des traductions."
+  },
+  {
+   "sha": "e0034c2a9cd98fd20f0f0c1a344925c4d95a5bdb",
+   "date": "2026-11-24",
+   "title": "Shaders: register-relative moves reach only what their index can",
+   "summary": ""
+  },
+  {
+   "sha": "13bbd6fec406f18ac56ea13bb34bae7fa1a5c606",
+   "date": "2026-11-24",
+   "title": "GPU: one host texture per texture memory, and writable twins for depth textures",
+   "summary": ""
+  },
+  {
+   "sha": "224e7869f031c9b2cd88f399859646e77f36ea4f",
+   "date": "2026-11-24",
+   "title": "GPU tests: the frame pacing test tolerates a busy host",
+   "summary": ""
   }
  ]
 }

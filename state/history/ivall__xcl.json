@@ -2,12 +2,6 @@
  "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et les tests unitaires sans régression. Le nouveau `TilePool` contigu par heap améliore nettement les performances de mise à jour des tuiles VRAM, éliminant les stalls précédents. Les autres blocages (shaders trop gros, CI, optimisation SSA) restent en suspens, et la prochaine étape probable sera de s’attaquer à ces refus structurels tout en continuant à affiner les performances du per‑lane form.",
  "entries": [
   {
-   "sha": "b7aa9f3bd212088e0d927439284dc5ed325ce3c7",
-   "date": "2026-11-24",
-   "title": "D3D12.X: fall back to an in-memory shader cache session (#1108)",
-   "summary": "Le nouveau commit ajoute un fallback en mémoire pour les sessions de cache de shaders D3D12 lorsqu’une création via le runtime PC échoue. Cette implémentation s’insère dans la série de correctifs récents autour du fallback et du diagnostic (ex. flux de pipeline, signatures racine, allocation), en évitant les plantages immédiats des titres qui dépendaient du cache shader. Désormais les titres comme le build retail RAGE peuvent continuer à s’exécuter même si le runtime ne supporte pas `CreateShaderCacheSession`; le reste du pipeline reste inchangé et les limitations précédentes (maillage, textures avancées, validation GPU) subsistent."
-  },
-  {
    "sha": "fe7d70bc3fd1ba667ca970eb329182a15f488dd5",
    "date": "2026-11-23",
    "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
@@ -239,6 +233,12 @@
    "sha": "c4d37bec1bb4286eb373aea963404a23f13401fa",
    "date": "2026-11-24",
    "title": "D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages",
+   "summary": ""
+  },
+  {
+   "sha": "1d027e5c76c9a86a7ee2ca1cc677edf0be95d331",
+   "date": "2026-11-24",
+   "title": "CI: mark PRs idle for 3 days stale and close them after a week",
    "summary": ""
   }
  ]

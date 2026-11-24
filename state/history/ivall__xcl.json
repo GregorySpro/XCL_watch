@@ -2,30 +2,6 @@
  "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et les tests unitaires sans régression. Le nouveau `TilePool` contigu par heap améliore nettement les performances de mise à jour des tuiles VRAM, éliminant les stalls précédents. Les autres blocages (shaders trop gros, CI, optimisation SSA) restent en suspens, et la prochaine étape probable sera de s’attaquer à ces refus structurels tout en continuant à affiner les performances du per‑lane form.",
  "entries": [
   {
-   "sha": "345661bc9cca82b742582a33366d7e1bf4794dad",
-   "date": "2026-11-24",
-   "title": "D3D12.X: depth+UAV buffers on the PC fallback paths start as depth writes",
-   "summary": "Le nouveau commit introduit la fonction `pc_initial_state` qui ajuste l’état initial des ressources depth + UAV sur les chemins de repli PC, en remplaçant le bit `UNORDERED_ACCESS` par `DEPTH_WRITE` lorsque le tampon possède le flag `ALLOW_UNORDERED_ACCESS`. Cette modification s’insère dans la série de correctifs récents sur D3D12.X (alignement, flux de pipeline, limites de root signature) et résout le blocage où la création d’un tel tampon était refusée (E_INVALIDARG) ou rétrogradée en état `COMMON`. Désormais les textures depth + UAV peuvent être créées et placées correctement, même si les tests GPU restent limités aux cartes AMD récentes."
-  },
-  {
-   "sha": "b9789a166bd38974e1ce6522bd77359634bde624",
-   "date": "2026-11-24",
-   "title": "D3D12.X: CreatePlacedResource converts the clear value of a console format",
-   "summary": "Le commit ajoute la conversion du clear value dans CreatePlacedResource lorsqu’on crée une ressource console, en appelant pc_clear avant les différents chemins d’allocation. Cette modification poursuit les correctifs récents autour de la gestion des formats et des clear values (similaire aux changements de CreateCommittedResource et CreatePlacedResourceX). Elle permet désormais de créer correctement des ressources depth + UAV en console format avec un clear value, évitant l’erreur E_INVALIDARG, mais les tests restent limités aux GPU AMD et aux scénarios de clear value explicite."
-  },
-  {
-   "sha": "fc0462b4f442f390e7b9b637c168271b7720935f",
-   "date": "2026-11-24",
-   "title": "D3D12.X: default SRVs of multisampled depth buffers are Texture2DMS views",
-   "summary": "Le commit corrige la création de vues SRV par défaut pour les tampons de profondeur multisamples en les faisant apparaître comme Texture2DMS (ou Texture2DMSArray) au lieu de Texture2D/Texture2DArray. Cette modification s’inscrit dans la série de correctifs récents autour de la gestion des formats console et des clear values, en complétant le support des ressources depth déjà partiellement ajouté. Désormais les vues héritées respectent le nombre d’échantillons et la taille du tableau, ce qui rend les ressources depth multisamples valides pour les shaders. Le problème de vues incorrectes sur les buffers depth multisamples est résolu, mais les limitations majeures (maillage, textures avancées, couverture GPU Intel/NVIDIA) restent inchangées."
-  },
-  {
-   "sha": "c85ce8d12d13a6b174cf37d53631c29e2bec7745",
-   "date": "2026-11-24",
-   "title": "D3D12.X: a title's Map of a resource the PC cannot map does not reach the PC's Map",
-   "summary": "Le commit corrige la fonction `res_map` afin que les appels `Map` d’un titre ne soient pas redirigés vers le `Map` du PC lorsqu’une ressource ne peut pas être mappée (heap DEFAULT, heap custom sans pages CPU, ou ressource réservée). Cette modification s’inscrit dans la série de correctifs récents sur la gestion des ressources D3D12.X, en particulier après les ajustements de création de vues et d’allocation. Désormais les titres utilisent directement l’adresse du titre pour ces ressources, évitant les erreurs 822/824 du debug layer, mais les ressources réellement mappables continuent d’utiliser le chemin PC."
-  },
-  {
    "sha": "b7aa9f3bd212088e0d927439284dc5ed325ce3c7",
    "date": "2026-11-24",
    "title": "D3D12.X: fall back to an in-memory shader cache session (#1108)",
@@ -240,6 +216,30 @@
    "date": "2026-11-24",
    "title": "D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages",
    "summary": "Le commit réorganise la gestion des tuiles VRAM en conservant les allocations contiguës au sein d’un même heap, ce qui supprime les blocages liés aux appels multi‑heap `UpdateTileMappings` et aux signaux par texture. Cette amélioration poursuit le chantier d’optimisation du backend D3D12X, en suivant les précédents travaux sur le per‑lane DXIL et la réduction du IR. Désormais les mappings de tuiles sont beaucoup plus rapides (≈22× au soumission, ≈14× au rendu), mais les limitations de shaders volumineux et les optimisations SSA restent inchangées."
+  },
+  {
+   "sha": "266b845e4b2a193ea7ce1b86698ead08dc4a10c0",
+   "date": "2026-11-24",
+   "title": "Direct DXIL: image_get_lod accepts static samplers",
+   "summary": ""
+  },
+  {
+   "sha": "177cd407e0114bd087622ae0c358fb3ba7e97484",
+   "date": "2026-11-24",
+   "title": "D3D12.X: promote R9G9B9E5_SHAREDEXP render/UAV targets to R11G11B10_FLOAT",
+   "summary": ""
+  },
+  {
+   "sha": "4e3515eed124b9f4779f5ef4e2b54adf97da936a",
+   "date": "2026-11-24",
+   "title": "D3D12.X: an ExecuteIndirect reads the arguments written before it",
+   "summary": ""
+  },
+  {
+   "sha": "c4d37bec1bb4286eb373aea963404a23f13401fa",
+   "date": "2026-11-24",
+   "title": "D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages",
+   "summary": ""
   }
  ]
 }

@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le moteur de shaders reconnaît désormais les chargements de type waterfall et les traite comme des accès par lane, ce qui permet de valider davantage de programmes (108 passent ces boucles, 249 restent à traiter). Le reste du pipeline graphique demeure incomplet : les shaders restent majoritairement non traduits, le rendu du monde est toujours noir et les fonctionnalités HDR, depth‑bounds, etc. restent manquantes. La prochaine étape probable sera d’étendre le support du waterfall aux requêtes de taille par lane et d’intégrer ces informations dans le backend pour réduire les blocages restants.
+Après ce changement, le traducteur indique désormais le nombre exact de shaders traduits, en excluant ceux encore en cours d’exécution. Le reste du pipeline reste inchangé : le support du waterfall est actif, 108 shaders passent les boucles, 249 restent bloqués, le rendu du monde est toujours noir et les fonctionnalités HDR et depth‑bounds manquent. La prochaine étape probable reste l’extension du support du waterfall aux requêtes de taille par lane et l’intégration de ces informations dans le backend.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-24** `819f622` translate: progress counts finished shaders, not ones handed out
+  Le commit ajuste le calcul du progrès affiché par le traducteur : il ne compte plus simplement les jobs distribués, mais soustrait les workers encore actifs pour ne retenir que les shaders réellement terminés. Cette modification poursuit le chantier d’amélioration de la visibilité du pipeline, corrigeant un affichage trompeur introduit précédemment. Elle ne change pas le comportement du moteur de shaders ni le support du waterfall, mais permet de suivre plus fidèlement l’avancement des traductions.
 - **2026-11-24** `ffe310e` Shaders: the console's waterfall loop over a first-lane table offset
   Le commit ajoute la prise en charge du « waterfall » où chaque lane charge son propre descriptif à partir du décalage de la première lane, en marquant ces charges comme `per_lane` dans le générateur d’heap. Il enrichit la structure `Waterfall` avec une liste `loads` et intègre la détection de ces charges dans le suivi des shaders. Cette évolution poursuit les correctifs récents sur les boucles de vertex et les comparaisons, en débloquant partiellement la traduction des boucles de chargement non uniformes, mais le rendu du monde reste encore cassé.
 - **2026-11-24** `ca48fbe` Merge pull request #566 from r4tedx/shader/per-lane-phi

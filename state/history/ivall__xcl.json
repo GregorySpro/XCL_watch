@@ -1,18 +1,6 @@
 {
- "state": "Après ce changement, le projet conserve ses deux backends DXIL (standard et optimisé), le dump `.dxil` et le logging SSA, ainsi que le support des fenêtres mémoire via le heap de descripteurs. Le nouveau pool de décompression parallélise les lectures de fichiers zlib sans impacter les autres parties du pipeline, et les tests unitaires montrent aucune régression. Les limitations connues (géométrie, maillage, textures avancées, validation GPU) restent inchangées, et il reste à intégrer la CI et à poursuivre l’optimisation SSA sur les accès mémoire, tout en surveillant d’éventuels bugs liés aux fenêtres heap et à la nouvelle parallélisation DirectStorage.",
+ "state": "Le projet conserve ses deux backends DXIL, le dump `.dxil`, le logging SSA, le support des fenêtres mémoire via le heap de descripteurs, le pool DirectStorage parallélisé et les tests unitaires sans régression. Le nouveau fallback `pc` élimine les explosions d’IR pour les shaders très volumineux, améliorant la stabilité du recompiler. Les limitations connues restent les mêmes ; il reste à finaliser l’intégration CI complète et à optimiser l’accès mémoire SSA, tout en surveillant d’éventuels bugs liés à la parallélisation DirectStorage.",
  "entries": [
-  {
-   "sha": "2008399729a5e04f8cc4801e29382fe8e4cb3812",
-   "date": "2026-11-24",
-   "title": "Scripts: pr_check refuses Code Llama, Codestral, QwQ and the like",
-   "summary": "Le commit renforce le script de validation des pull‑requests en élargissant la regex `BANNED_MODELS` afin de détecter les variantes de modèles IA « small/open‑weight » (CodeLlama, TinyLlama, QwQ, les suffixes *stral, Phi 4, etc.). Cette modification poursuit la série de correctifs du côté tooling, qui vise à garantir le respect du CONTRIBUTING.md, sans toucher au code de compatibilité Xbox. Elle permet désormais de bloquer automatiquement les PR contenant ces modèles, alors qu’auparavant ils passaient le contrôle. Aucun impact direct n’est observé sur le pipeline de compilation, le scratch buffer ou le cache compute."
-  },
-  {
-   "sha": "797dda15ea722a41672b11bdae4fe0516e236138",
-   "date": "2026-11-24",
-   "title": "Scripts: pr_check refuses smoke blocks without a title, time or frames",
-   "summary": "Le commit renforce le script de validation des PR en refusant les blocs de smoke qui n’ont pas de champ « title », « seconds » ou « frames shown », ou dont les champs numériques sont invalides. Cette modification s’insère dans la série de durcissements du pr_check (bannissement des modèles IA, vérifications de formats) et corrige un contournement qui permettait à des blocs incomplets de passer les tests de régression. Désormais les PR contenant de tels blocs seront rejetées, mais les autres vérifications (crash/device‑removal, peak commit) restent inchangées."
-  },
   {
    "sha": "769c7c2b93c01e38d452c9386038a5850ab216f7",
    "date": "2026-11-24",
@@ -240,6 +228,18 @@
    "date": "2026-11-24",
    "title": "dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory",
    "summary": ""
+  },
+  {
+   "sha": "ea683a007da7f0319bbaf680a37717a582445ac3",
+   "date": "2026-11-24",
+   "title": "Scripts: smoke blocks name the game folder by a hash, not its name",
+   "summary": "Le nouveau commit modifie le script de test `smoke.ps1` afin que la ligne `title:` contienne un hash SHA‑256 de 8 caractères du nom du dossier du jeu, ou une étiquette fournie via `-Title`, masquant ainsi les noms réels des copies de jeux dans les blocs PR. Cette évolution poursuit le chantier d’amélioration des outils de CI en protégeant la confidentialité des utilisateurs, sans toucher au code du moteur ou aux backends. Désormais les blocs `xcl-smoke` sont anonymes, mais cela n’affecte pas les fonctionnalités de compilation ou d’exécution du projet. Aucun impact direct sur les limitations techniques (géométrie, textures, etc.) n’est introduit."
+  },
+  {
+   "sha": "e9e94ce665d16bb0e2d2e4cb6b37e149f0d27721",
+   "date": "2026-11-24",
+   "title": "Recompiler: oversized structured code falls back to pc blocks (#1307)",
+   "summary": "Le commit introduit une limite `STRUCTURED_BYTES_PER_CODE_BYTE` (128) ; lorsqu’un shader structuré dépasse ce ratio, le traducteur refait la traduction en mode `pc` (bloc dispatcher). Cette modification vient résoudre le problème de shaders gigantesques (ex. 148 Mo) qui explosaient le IR et la compilation, poursuivant la série d’optimisations du recompiler. Désormais les programmes excessivement gros sont automatiquement re‑routés vers la forme `pc`, ce qui réduit fortement leur taille en HLSL et évite les surcoûts de compilation, tout en conservant le comportement précédent pour les shaders plus modestes."
   }
  ]
 }

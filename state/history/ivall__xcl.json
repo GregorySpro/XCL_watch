@@ -1,5 +1,5 @@
 {
- "state": "Après ce changement, le VFS empêche la suppression de répertoires non vides tant que des enfants visibles existent, tout en conservant le comportement de whiteout pour les entrées déjà masquées. Les tests existants ont été mis à jour pour couvrir ces nouveaux cas et passent, renforçant la fiabilité du système de fichiers. Le reste du projet reste inchangé : le backend D3D12.X continue de se stabiliser, les shaders et la mémoire fonctionnent, mais les pipelines de maillage et certains formats d’image restent des points bloquants. La prochaine étape probable sera de valider ces nouvelles règles sur Windows (les tests Windows sont encore en attente) et de poursuivre les correctifs liés aux textures tuilées et aux formats GFX10.",
+ "state": "Après ce changement, le système de scratch buffer fonctionne correctement : chaque nouvelle liste démarre sans tampon hérité, et les tampons en cours d’utilisation restent en mémoire jusqu’à ce que les fences signalent la fin de leur emploi. Le pipeline de compilation asynchrone « wanted » continue de lancer jusqu’à six jobs parallèles et le cache disque des pipelines compute reste actif. Les copies intra‑fenêtre sont toujours routées via le scratch buffer avec le budget global de 64 MiB, mais sans risque de réutilisation prématurée. Les priorités restantes (pipelines de maillage, formats GFX10, validation Windows, textures tuilées) restent à traiter, et la prochaine étape probable reste l’extension de la structuration aux shaders de pixel.",
  "entries": [
   {
    "sha": "38ea451dc69d11119bd27c334292c3093e3c0030",
@@ -180,6 +180,54 @@
    "date": "2026-11-24",
    "title": "VFS: reject removal of non-empty virtual directories",
    "summary": "Le commit ajoute une vérification que le répertoire original est vide avant d’autoriser sa suppression dans le VFS, en filtrant les entrées masquées (whiteouts). Cette logique complète les précédents travaux sur la gestion des suppressions d’overlay en empêchant la perte de données visibles, prolongeant ainsi le chantier de robustesse du système de fichiers. Désormais, la couche refuse de supprimer des dossiers contenant des fichiers ou sous‑dossiers non masqués, ce qui corrige le bug #997 mais ne touche pas aux autres limitations (pipelines de maillage, formats d’image)."
+  },
+  {
+   "sha": "21bc548d98bbab37d8b44a97d4a9e893c41c558d",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a copy within one memory window reads through a scratch buffer (#958)",
+   "summary": "Le commit introduit un tampon de secours (scratch) pour les copies `CopyMemoryToMemoryX` dont la source et la destination se trouvent dans la même fenêtre de mémoire unifiée. Au lieu d’essayer de copier directement – ce qui violait les exigences d’état D3D12 et déclenchait l’erreur 538 du debug layer – les octets sont d’abord copiés dans ce tampon temporaire, puis vers la destination. Cette amélioration s’inscrit dans la série de correctifs récents sur la gestion des ressources D3D12 (allocateurs, états de format, etc.) et élimine le blocage du debug‑layer sur les copies intra‑fenêtre, tout en conservant le chemin de copie direct lorsqu’aucun scratch n’est disponible."
+  },
+  {
+   "sha": "392dc0c393b0cc669e5c9f15b29e96dae89c7967",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a copy within one memory window reads through a scratch buffer (#958)",
+   "summary": "Le commit introduit une limitation de 64 MiB pour les tampons de secours (scratch) utilisés lors des copies intra‑fenêtre, en conservant un tampon par liste d’enregistrement et en le libérant seulement après la complétion des fences. Cette évolution poursuit la série de correctifs autour du mécanisme de scratch initiée par le PR #958, en ajoutant une gestion de budget et de journalisation. Désormais les copies qui partagent la même fenêtre de mémoire passent par le scratch sans dépasser le budget, ce qui élimine l’erreur 538 du debug layer tout en conservant le chemin direct comme secours. Il reste à vérifier l’impact de ce budget sur les scénarios de copies très volumineuses et sur les builds Windows, qui n’ont pas encore été testés."
+  },
+  {
+   "sha": "6cef69f5a03e7fbb0fa0be82bad22cf4700c8f78",
+   "date": "2026-11-24",
+   "title": "Shaders: save offline compute pipelines to the runtime driver cache",
+   "summary": "Le nouveau commit ajoute la mise en cache disque des blobs de pipelines compute générés par le driver. Il s’inscrit dans la série de correctifs visant à stabiliser le backend D3D12.X en réduisant les recompilations inutiles, après les améliorations du scratch buffer et du VFS. Désormais les pipelines compute peuvent être réutilisés entre deux exécutions XCL, ce qui élimine le besoin de recompilation à chaque lancement, mais les problèmes de formats d’image et de maillage restent inchangés."
+  },
+  {
+   "sha": "25c6f7e0412692461e2ae36b546e85f31965e947",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a big pipeline build the title waits for does not wait for its turn",
+   "summary": "Le commit introduit un mécanisme « demand » qui détecte lorsqu’un thread du jeu attend la construction d’un pipeline compute volumineux et force le worker en arrière‑plan à poursuivre immédiatement, en augmentant sa priorité si nécessaire. Cette évolution poursuit la série de correctifs autour du cache disque et du scratch buffer en résolvant le blocage où le titre pouvait rester bloqué pendant que le worker attendait de la mémoire commit. Désormais les builds de gros pipelines ne sont plus mis en attente indéfiniment, ce qui évite les hangs du watchdog; les tests qui échouaient sans ce changement passent maintenant."
+  },
+  {
+   "sha": "9a272d4510e73e4c86747bf0c216a2f174f88b40",
+   "date": "2026-11-24",
+   "title": "Recompiler: a DXC compile the title waits for does not queue for memory",
+   "summary": "Le commit ajoute la notion de « wanted » aux jobs de compilation DXC et modifie la fonction d’attente mémoire pour lancer immédiatement les compilations dont le titre attend le résultat, jusqu’à six en parallèle. Cette évolution poursuit la série de correctifs autour du mécanisme « demand » introduit précédemment, en réduisant les files d’attente lorsque la mémoire disponible est faible. Elle permet ainsi de diminuer les temps d’attente pendant le chargement de niveaux, même si le watchdog d’arrêt du titre continue de se déclencher. Le reste du pipeline reste inchangé."
+  },
+  {
+   "sha": "b8b1f491ea5e075a82293f6ebefd8eceffc74de7",
+   "date": "2026-11-24",
+   "title": "Recompiler: jumps to outer loop heads and into loops are structured",
+   "summary": "Le nouveau commit ajoute un test exhaustif qui génère aléatoirement des programmes contenant des sauts complexes (jumps vers les têtes de boucles externes, continues, breaks, sauts dans des boucles) et vérifie que la traduction « structured » produit le même état que le dispatcher de blocs. Cela complète la série de correctifs « demand » en s’assurant que les structures de contrôle compliquées sont correctement reconnues comme structurées, éliminant ainsi le besoin du dispatcher lent. Le résultat montre que la plupart des programmes (≥ 100/120) sont désormais traités comme structurés, ce qui réduit fortement le temps de compilation du driver pour ces cas. Aucun nouveau blocage n’est introduit, mais la validation reste limitée aux shaders de calcul ; les problèmes de pipelines de maillage et de formats GFX10 restent inchangés."
+  },
+  {
+   "sha": "010e1ecbad53eea8a3dc0939ab71d4b8078f73d5",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a copy within one memory window reads through a scratch buffer (#958)",
+   "summary": "Le commit réactive le chemin de copie via un tampon scratch lorsque la source et la destination partagent la même fenêtre de mémoire unifiée, évitant l’erreur de debug‑layer 538. Cette correction poursuit la série de correctifs autour du bug #958 déjà amorcée par les précédents commits sur le scratch buffer. Désormais les copies intra‑fenêtre sont sûres et logguées, mais les autres blocages (pipelines de maillage, formats GFX10, validation Windows) restent inchangés."
+  },
+  {
+   "sha": "930e8b49c1c2ec683d22c724a398b39111cd0e56",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a new command list takes no copy scratch of an earlier one",
+   "summary": "Le commit empêche qu’une nouvelle liste de commandes réutilise le tampon scratch de copie d’une liste précédente dont la libération n’a pas été détectée, en libérant ce tampon dès la création de la nouvelle liste et en le conservant seulement jusqu’à la fin des fences. Cela poursuit les correctifs autour du bug #993 et du mécanisme de scratch buffer introduits précédemment. Désormais les listes ne partagent plus de scratch unsafe, ce qui évite les corruptions GPU ; les autres problèmes (maillage, formats GFX10, etc.) restent inchangés."
   }
  ]
 }

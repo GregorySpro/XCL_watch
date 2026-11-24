@@ -204,6 +204,24 @@
    "date": "2026-11-24",
    "title": "GPU tests: the frame pacing test tolerates a busy host",
    "summary": ""
+  },
+  {
+   "sha": "86a5ed6bace9c789396494438f6ca75ba9084146",
+   "date": "2026-11-24",
+   "title": "GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored",
+   "summary": ""
+  },
+  {
+   "sha": "6d021fe3df542e5b5c59940a23703735e90ca603",
+   "date": "2026-11-24",
+   "title": "GPU: world frame cost",
+   "summary": ""
+  },
+  {
+   "sha": "bacb06afab3dde45f262343bcb9a92868b146bec",
+   "date": "2026-11-24",
+   "title": "GPU: a heap slot holds its view's own copy",
+   "summary": ""
   }
  ]
 }

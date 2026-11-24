@@ -6,6 +6,9 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-24** `bacb06a` GPU: a heap slot holds its view's own copy
+- **2026-11-24** `6d021fe` GPU: world frame cost
+- **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored
 - **2026-11-24** `224e786` GPU tests: the frame pacing test tolerates a busy host
 - **2026-11-24** `13bbd6f` GPU: one host texture per texture memory, and writable twins for depth textures
 - **2026-11-24** `e0034c2` Shaders: register-relative moves reach only what their index can

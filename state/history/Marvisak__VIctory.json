@@ -222,6 +222,24 @@
    "date": "2026-11-24",
    "title": "GPU: a heap slot holds its view's own copy",
    "summary": ""
+  },
+  {
+   "sha": "9c58a1c35a384552bde9b4c9b169731f282a15a1",
+   "date": "2026-11-24",
+   "title": "Pipeline pre-build from the shader pack (translate --cache --pipelines); mesh pipelines load from th",
+   "summary": ""
+  },
+  {
+   "sha": "700057393f69031b9ad418d23797ae4ede1abea6",
+   "date": "2026-11-24",
+   "title": "Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames",
+   "summary": ""
+  },
+  {
+   "sha": "70564ae08c82d43df5fad97b08d34628b07b1d9d",
+   "date": "2026-11-24",
+   "title": "README: status of 2026-11-24",
+   "summary": ""
   }
  ]
 }

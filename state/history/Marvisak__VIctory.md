@@ -6,6 +6,9 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-24** `70564ae` README: status of 2026-11-24
+- **2026-11-24** `7000573` Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames
+- **2026-11-24** `9c58a1c` Pipeline pre-build from the shader pack (translate --cache --pipelines); mesh pipelines load from th
 - **2026-11-24** `bacb06a` GPU: a heap slot holds its view's own copy
 - **2026-11-24** `6d021fe` GPU: world frame cost
 - **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored

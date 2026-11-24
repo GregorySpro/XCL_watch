@@ -1,18 +1,6 @@
 {
- "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et les tests unitaires sans régression. Le nouveau `TilePool` contigu par heap améliore nettement les performances de mise à jour des tuiles VRAM, éliminant les stalls précédents. Les autres blocages (shaders trop gros, CI, optimisation SSA) restent en suspens, et la prochaine étape probable sera de s’attaquer à ces refus structurels tout en continuant à affiner les performances du per‑lane form.",
+ "state": "Le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le nouveau `TilePool` contigu, ainsi que les tests unitaires sans régression. Aucun changement fonctionnel a été introduit par ce commit ; seules les règles de gestion des PRs ont été enrichies. Les blocages existants (shaders trop gros, CI lente, optimisation SSA) restent en suspens, et la prochaine étape probable reste l’amélioration des performances du per‑lane form et la résolution des refus structurels, tout en bénéficiant désormais d’un nettoyage automatisé des PRs inactives.",
  "entries": [
-  {
-   "sha": "fe7d70bc3fd1ba667ca970eb329182a15f488dd5",
-   "date": "2026-11-23",
-   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
-   "summary": "Le commit introduit une option `XCL_HEAP_WINDOWS` qui fait que les fenêtres de mémoire sont accédées via des UAV bruts dans le heap de descripteurs partagé, éliminant le switch `mem, mem1…` généré à chaque accès shader. Cette évolution poursuit la série de correctifs sur les accès mémoire (suite des travaux sur les flux de pipeline et les signatures racine) en ciblant le goulet d’étranglement de compilation des gros titres. Désormais les shaders traduits utilisent une seule charge/stockage de descriptor heap par accès, ce qui devrait réduire le temps de compilation ; le fallback reste actif si les vues ne peuvent pas être créées, et les problèmes précédents (maillage, textures avancées, validation GPU) ne sont pas résolus."
-  },
-  {
-   "sha": "cad94a252dc722792f1b9d0695800cba1e61a436",
-   "date": "2026-11-23",
-   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
-   "summary": "Le commit modifie SetDescriptorHeaps pour que l’appel SetDescriptorHeaps(0, NULL) efface réellement la liste interne des heaps liés. Ainsi, ensure_view_heap peut à nouveau lier le heap partagé avant un draw ou dispatch, ce qui corrige le bug où les fenêtres mémoire étaient lues sans heap. Cette correction s’inscrit dans la série d’améliorations autour des fenêtres mémoire du heap (opt‑in XCL_HEAP_WINDOWS) et complète le dernier chantier de gestion des heaps. Désormais les shaders traduits peuvent accéder aux vues ResourceDescriptorHeap[0..3] sans plantage, mais les limitations précédentes (maillage, textures avancées, validation GPU) restent inchangées."
-  },
   {
    "sha": "927adcc0200c1a5c7814e71adfcbfdcb4ec2b5e0",
    "date": "2026-11-23",
@@ -239,6 +227,18 @@
    "sha": "1d027e5c76c9a86a7ee2ca1cc677edf0be95d331",
    "date": "2026-11-24",
    "title": "CI: mark PRs idle for 3 days stale and close them after a week",
+   "summary": ""
+  },
+  {
+   "sha": "e9ac9f08aeb226c1b195187011f09444785dbd3c",
+   "date": "2026-11-24",
+   "title": "Direct DXIL: geometry mode, MSAA loads and directed f32 rounding",
+   "summary": "Le nouveau commit ajoute un workflow GitHub Actions qui marque les pull‑requests inactives depuis trois jours comme « stale » puis les ferme après une semaine, sauf si elles portent les labels `goal:world-load` ou `keep-open`. Cette automatisation poursuit le chantier CI initié précédemment (voir le commit 1d027e5) et ne touche pas le code du recompiler ou les backends. Elle ne débloque aucune fonctionnalité du moteur, mais elle devrait réduire le bruit des PRs abandonnées et garder le dépôt plus propre."
+  },
+  {
+   "sha": "689f2db477c3c062cf162649781640ef8a977c18",
+   "date": "2026-11-24",
+   "title": "Direct DXIL: geometry mode, MSAA loads and directed f32 rounding",
    "summary": ""
   }
  ]

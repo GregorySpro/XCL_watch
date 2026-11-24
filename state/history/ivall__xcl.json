@@ -1,30 +1,6 @@
 {
- "state": "Après l’intégration, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le crash AMD lié aux pipelines compute MSAA est résolu, comme le montre le nouveau test de régression qui passe. Les limitations restantes – shaders trop volumineux, lenteur de la CI et optimisation du per‑lane form – demeurent, et la prochaine étape probable reste l’amélioration des performances du per‑lane form et la résolution des refus structurels, tout en continuant le nettoyage automatisé des PR inactives.",
+ "state": "Après l’intégration, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le crash AMD lié aux pipelines compute MSAA reste résolu et les nouveaux fast‑paths mémoire fonctionnent, comme le montre le test unitaire ajouté et les résultats de la smoke‑run sans régression. Les limitations précédentes (shaders trop gros, lenteur de la CI, optimisation du per‑lane form) demeurent, et la prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
  "entries": [
-  {
-   "sha": "9e3831e1f570d3646e53ab753b19ec07eb8f1485",
-   "date": "2026-11-24",
-   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
-   "summary": "Le commit active, via l’option XCL_HEAP_WINDOWS=1, le mode où les fenêtres de mémoire sont exposées comme des UAV brutes dans le heap de descripteurs partagé, éliminant le « switch » généré pour chaque accès lorsqu’il y a plusieurs fenêtres. Cette évolution poursuit la série de correctifs sur les accès mémoire (heap windows, switch‑form) en proposant une alternative plus rapide à la compilation des gros shaders, tout en restant désactivée par défaut à cause de deux rapports NVIDIA. Désormais les shaders peuvent accéder aux fenêtres en une seule charge de descriptor, mais le fallback reste en place si le heap partagé n’est pas disponible ou si le driver échoue."
-  },
-  {
-   "sha": "76e6c29e85c5f303764d6b57070d5f2c6ae6ed33",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le nouveau commit introduit le backend « direct DXIL » qui traduit les shaders RDNA2 directement en conteneurs DXIL signés, sans passer par HLSL ou DXC à l’exécution, et le rend activable via XCL_DIRECT_DXIL=1. Cette fonctionnalité s’insère dans la série de correctifs récents sur le pipeline D3D12.X et les fenêtres mémoire, en apportant une nouvelle voie de compilation plutôt qu’une simple amélioration de stabilité. Elle permet désormais de générer des DXIL natifs pour les compute, mesh et, avec =all, les vertex/pixel shaders, tout en conservant le fallback HLSL pour les cas non traduisibles. Les tests ajoutés montrent que les branches avant les exports fonctionnent correctement, mais la prise en charge complète des shaders reste conditionnée à l’activation du flag et aux limites actuelles du backend."
-  },
-  {
-   "sha": "424d315372d60948b79422b1976ef8d486632b49",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le nouveau commit enrichit la documentation du backend direct DXIL en détaillant la couverture après les correctifs récents. Il montre des statistiques de traduction nettement améliorées (98,5 % de succès vs 56,5 % auparavant) et explique les optimisations qui ont éliminé les plantages de bloc VS/PS, les phi inutiles et les coûts de post‑domination. Cette mise à jour s’inscrit dans la continuité du chantier de mise en place du backend DXIL (activable via XCL_DIRECT_DXIL) et confirme que les dernières réparations débloquent la plupart des shaders, ne restant plus que les trois programmes de géométrie. Elle indique aussi les prochains goulots restants (SSA sur accès mémoire guardés) sans introduire de nouvelle fonctionnalité."
-  },
-  {
-   "sha": "285158534ae1c8e01a8e6e1718edbf65eb9a7663",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": ""
-  },
   {
    "sha": "def2134c32f4e17fa834c4e7fcd39468e19388cc",
    "date": "2026-11-24",
@@ -240,6 +216,30 @@
    "date": "2026-11-24",
    "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
    "summary": "Le commit réordonne les appels DXIL en émettant d’abord `dx.op.textureLoad` puis `dx.op.getDimensions` pour les textures MSAA dynamiquement indexées, éliminant le plantage du compilateur AMD (`amdxc64.dll`) lors de la création de pipelines compute. Cette correction suit le précédent correctif #425b869 qui visait déjà les crashes liés aux textures MSAA, et vient clôturer le blocage qui empêchait l’exécution de shaders compute contenant des `Texture2DMS`/`Texture2DMSArray`. Désormais les shaders MSAA passent la compilation et l’exécution sur les GPU AMD, mais les autres problèmes (taille des shaders, lenteur CI, optimisation SSA) restent en suspens."
+  },
+  {
+   "sha": "a713101b521e59c0aae8d80cb1d90821e09ce8b4",
+   "date": "2026-11-24",
+   "title": "Memory: skip VirtualQuery on committed coherent UMA windows in cpu_writes and kernelx",
+   "summary": "Le nouveau commit ajoute un fast‑path qui évite les appels coûteux à VirtualQuery sur les fenêtres UMA cohérentes déjà engagées, en les détectant via `uma.in_committed_window`. Cette optimisation s’inscrit dans la suite des améliorations de la gestion mémoire et du pipeline CPU‑GPU, suivant les récents travaux sur les backends DXIL et la réduction des blocages liés aux mises à jour de tuiles. Désormais les écritures CPU (`write_now`, `write_u64_now`, `writable`) et les requêtes de trace de vertex‑buffer utilisent ce raccourci, ce qui réduit les latences de 75‑80 ms observées auparavant. Le reste des fonctionnalités reste inchangé ; les performances globales du per‑lane form et les limites de shaders volumineux ne sont pas affectées."
+  },
+  {
+   "sha": "f5136a640a69be3ce072e1ea8939e97d005b4cb1",
+   "date": "2026-11-24",
+   "title": "Fast-boot: opt-in Bink intro skip, frame interval override, device type and TTS mute env vars",
+   "summary": ""
+  },
+  {
+   "sha": "95ae58938c27d9c0913789a6425984cd9098cbac",
+   "date": "2026-11-24",
+   "title": "Recompiler: a float v_cmpx through #1426's lowering keeps lanes outside EXEC out",
+   "summary": ""
+  },
+  {
+   "sha": "62265d3bbde2255f849fb650cc29872df91a4cf0",
+   "date": "2026-11-24",
+   "title": "Per-lane: track the SCC of mixed mask and number operations",
+   "summary": ""
   }
  ]
 }

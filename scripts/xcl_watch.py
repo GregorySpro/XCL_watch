@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Surveille ivall/xcl : une notif push (ntfy) par commit sur main / PR fusionnée,
-avec un résumé en français généré par Gemini. Stdlib uniquement."""
+avec un résumé en français généré par Mistral, Groq ou Gemini (premier qui répond). Stdlib uniquement."""
 import json
 import os
 import sys
@@ -15,14 +15,25 @@ STATE_FILE = Path(os.environ.get("STATE_FILE", "state/last_sha.txt"))
 GH_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
 NTFY_SERVER = os.environ.get("NTFY_SERVER", "https://ntfy.sh")
-GEMINI_KEY = os.environ.get("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")
-# Modèles de secours si le principal est indisponible (noms à vérifier de temps en temps)
-GEMINI_FALLBACKS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"]
-RETRY_WAITS = [5, 15, 30]  # secondes entre les essais sur 503/429
+
+# Fournisseurs de résumé, essayés dans l'ordre. Seuls ceux dont la clé est définie sont utilisés.
+# Les modèles "-latest" de Mistral évitent d'avoir à suivre les renommages.
+PROVIDERS = [
+    {"name": "mistral", "kind": "openai", "key": os.environ.get("MISTRAL_API_KEY", ""),
+     "url": "https://api.mistral.ai/v1/chat/completions",
+     "model": os.environ.get("MISTRAL_MODEL", "mistral-small-latest")},
+    {"name": "groq", "kind": "openai", "key": os.environ.get("GROQ_API_KEY", ""),
+     "url": "https://api.groq.com/openai/v1/chat/completions",
+     "model": os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b"),
+     "extra": {"reasoning_effort": "low"}},
+    {"name": "gemini", "kind": "gemini", "key": os.environ.get("GEMINI_API_KEY", ""),
+     "model": os.environ.get("GEMINI_MODEL", "gemini-3.8-flash")},
+]
+RETRY_WAITS = [5, 15]  # secondes entre les essais sur 503/429 (par fournisseur)
+LLM_TIMEOUT = 45
 DRY_RUN = os.environ.get("DRY_RUN", "") == "1"
 MAX_COMMITS_PER_RUN = 10
-MAX_DIFF_CHARS = 12000
+MAX_DIFF_CHARS = 9000  # garde la requête sous les limites de tokens/minute des paliers gratuits
 
 SYSTEM_PROMPT = (
     "Tu résumes en français, pour un développeur curieux, un changement dans XCL "
@@ -37,10 +48,12 @@ SYSTEM_PROMPT = (
 )
 
 
-def http_json(url, method="GET", headers=None, body=None):
+def http_json(url, method="GET", headers=None, body=None, timeout=30):
     data = json.dumps(body).encode() if body is not None else None
-    req = urllib.request.Request(url, data=data, method=method, headers=headers or {})
-    with urllib.request.urlopen(req, timeout=30) as resp:
+    # User-Agent explicite : certains services (Groq, Cloudflare) refusent celui par défaut de urllib.
+    hdrs = {"User-Agent": "xcl-watch/1.0", **(headers or {})}
+    req = urllib.request.Request(url, data=data, method=method, headers=hdrs)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
         raw = resp.read()
         return json.loads(raw) if raw else None
 
@@ -87,39 +100,61 @@ def build_context(sha):
     return detail, pr, files, "".join(parts)
 
 
+def call_provider(prov, text):
+    """Appelle un fournisseur et renvoie le texte du résumé (lève une exception en cas d'échec)."""
+    if prov["kind"] == "gemini":
+        out = http_json(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{prov['model']}:generateContent",
+            method="POST", timeout=LLM_TIMEOUT,
+            headers={"Content-Type": "application/json", "x-goog-api-key": prov["key"]},
+            body={"systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
+                  "contents": [{"parts": [{"text": text}]}]},
+        )
+        return out["candidates"][0]["content"]["parts"][0]["text"].strip()
+    # API compatible OpenAI (Mistral, Groq)
+    body = {
+        "model": prov["model"],
+        "messages": [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": text}],
+        "temperature": 0.3,
+        "max_tokens": 1200,  # large : les modèles à raisonnement consomment des tokens avant de répondre
+        **prov.get("extra", {}),
+    }
+    out = http_json(prov["url"], method="POST", timeout=LLM_TIMEOUT,
+                    headers={"Content-Type": "application/json", "Authorization": f"Bearer {prov['key']}"},
+                    body=body)
+    return (out["choices"][0]["message"].get("content") or "").strip()
+
+
 def summarize(detail, pr, files, diff):
     msg = detail["commit"]["message"]
     text = f"MESSAGE DE COMMIT:\n{msg}\n\n"
     if pr:
         text += f"PR #{pr['number']}: {pr['title']}\n{(pr.get('body') or '')[:2000]}\n\n"
     text += f"FICHIERS MODIFIÉS: {len(files)}\nDIFF:\n{diff}"
-    if not GEMINI_KEY:
+    active = [p for p in PROVIDERS if p["key"]]
+    if not active:
+        print("Aucune clé de fournisseur IA définie : pas de résumé.")
         return None
-    body = {
-        "systemInstruction": {"parts": [{"text": SYSTEM_PROMPT}]},
-        "contents": [{"parts": [{"text": text}]}],
-    }
-    headers = {"Content-Type": "application/json", "x-goog-api-key": GEMINI_KEY}
-    models = [GEMINI_MODEL] + [m for m in GEMINI_FALLBACKS if m != GEMINI_MODEL]
-    for model in models:
+    for prov in active:
         for attempt, wait in enumerate(RETRY_WAITS + [None]):
             try:
-                out = http_json(
-                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
-                    method="POST", headers=headers, body=body,
-                )
-                return out["candidates"][0]["content"]["parts"][0]["text"].strip()
+                result = call_provider(prov, text)
+                if result:
+                    print(f"Résumé obtenu via {prov['name']} ({prov['model']}).")
+                    return result
+                print(f"{prov['name']} : réponse vide")
+                break
             except urllib.error.HTTPError as e:
-                print(f"Gemini {model} : HTTP {e.code} (essai {attempt + 1})")
-                # 503/429/500 = surcharge temporaire : on réessaie ; le reste (404, 400, 403) : modèle suivant.
-                if e.code in (429, 500, 503) and wait is not None:
+                print(f"{prov['name']} {prov['model']} : HTTP {e.code} (essai {attempt + 1})")
+                # Surcharge ou limite temporaire : on réessaie ; autre erreur (400/401/403/404) : fournisseur suivant.
+                if e.code in (429, 500, 502, 503, 504) and wait is not None:
                     time.sleep(wait)
                     continue
                 break
-            except Exception as e:  # noqa: BLE001
-                print(f"Gemini {model} : {e}")
+            except Exception as e:  # noqa: BLE001 (timeout, réseau, JSON inattendu)
+                print(f"{prov['name']} : {e}")
                 break
-    print("Résumé Gemini impossible avec tous les modèles.")
+    print("Résumé impossible avec tous les fournisseurs.")
     return None
 
 

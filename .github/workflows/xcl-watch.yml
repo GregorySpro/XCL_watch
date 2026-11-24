@@ -23,8 +23,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          # Au moins une de ces clés suffit. Ordre d'essai : Mistral, puis Groq, puis Gemini.
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-3.8-flash   # à changer si ce modèle est retiré
         run: python3 scripts/xcl_watch.py
 
       - name: Enregistrer l'état

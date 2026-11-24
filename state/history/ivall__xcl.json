@@ -1,30 +1,6 @@
 {
- "state": "Après l’intégration, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le crash AMD lié aux pipelines compute MSAA reste résolu et les nouveaux fast‑paths mémoire fonctionnent, comme le montre le test unitaire ajouté et les résultats de la smoke‑run sans régression. Les limitations précédentes (shaders trop gros, lenteur de la CI, optimisation du per‑lane form) demeurent, et la prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
+ "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le problème de CSE à travers `dx.op.discard` est résolu, les shaders pixel fonctionnent correctement même avec des discards intermédiaires, et les performances de rendu restent stables (les runs smoke montrent le même nombre de frames et aucun crash). Les limitations précédentes (shaders trop gros, lenteur de la CI, optimisation du per‑lane form) sont toujours présentes, et la prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
  "entries": [
-  {
-   "sha": "def2134c32f4e17fa834c4e7fcd39468e19388cc",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le commit ajoute une vérification précoce du tampon DXIL afin de rejeter tout conteneur dont la taille est inférieure à l’en‑tête de 32 octets. Cette protection vient s’ajouter aux précédents correctifs du backend direct DXIL, qui améliore déjà la couverture et les performances de traduction. Elle évite maintenant un plantage du validateur DXC 1.8 qui lisait au‑delà du buffer, renforçant la robustesse du pipeline. Le reste du backend reste inchangé : les shaders traduits continuent de passer ou de retomber sur le chemin HLSL selon la capacité du traducteur."
-  },
-  {
-   "sha": "d24db9f86ddb27efe115d084a06d59fb1e26c47c",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le commit supprime les tests de fuzzing du backend DXIL et nettoie la documentation en déplaçant les références vers le nouveau fichier spec. Il retire également deux modules de test (fuzz_tests) du code et ajuste légèrement un commentaire dans le module graphics. Cette modification poursuit la série de correctifs autour du backend direct DXIL en allégeant le PR pour rester sous la limite de 20 000 lignes, sans toucher à la logique de traduction ou aux performances. Le backend reste inchangé ; seules les suites de tests automatisés sont réduites, ce qui ne débloque pas de nouvelles fonctionnalités mais simplifie la validation du PR."
-  },
-  {
-   "sha": "6976bc4450c41e54a23f3808490fc3b827b863ea",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le commit passe la version du traducteur DXIL à 4 et ajoute une prise en charge du comptage de bits i64 en le découpant en deux opérations i32, corrigeant ainsi un bug d’exécution sur les drivers AMD RDNA4. Il introduit aussi une logique de découpage du CFG pour rendre les graphes de contrôle irréductibles du code console réductibles, évitant les plantages du validateur DXIL. Cette évolution s’inscrit dans la série d’améliorations du backend direct DXIL, après les récentes optimisations de fenêtres mémoire et la suppression des fuzz_tests, et débloque la traduction de shaders contenant des boucles à entrées multiples et des opérations Countbits.i64."
-  },
-  {
-   "sha": "ac4799fb5e64b6b2b56d62b7323a7cf3170d2ac9",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le commit ajoute une fonctionnalité de dump du DXIL généré par le backend direct, contrôlée par la variable d’environnement `XCL_DXIL_DUMP` ou les nouvelles options CLI `--hash`/`--dump` de la commande `xcl shaders`. Cela s’insère dans la série de travaux récents sur le backend DXIL (optimisations, vérifications, support i64) en offrant un moyen d’inspecter les conteneurs DXIL produits et de comparer avec le chemin HLSL. Désormais il est possible d’enregistrer les shaders traduits et leurs éventuelles erreurs, ce qui facilite le débogage ; le reste du pipeline reste inchangé et les limitations précédentes (géométrie, validation GPU, CI) subsistent."
-  },
   {
    "sha": "76c527b7dd7874f7786a70628e5640cf7592e9cd",
    "date": "2026-11-24",
@@ -239,6 +215,30 @@
    "sha": "62265d3bbde2255f849fb650cc29872df91a4cf0",
    "date": "2026-11-24",
    "title": "Per-lane: track the SCC of mixed mask and number operations",
+   "summary": ""
+  },
+  {
+   "sha": "36ac23d9dc876e4062b1e81546bd319c9cb697d6",
+   "date": "2026-11-24",
+   "title": "Recompiler: invalidate block-local DXIL CSE wave/quad cache across dx.op.discard",
+   "summary": "Le commit corrige le cache d’élimination de sous‑expression (CSE) locale du recompileur DXIL en le vidant lorsqu’un appel `dx.op.discard` est rencontré. Cette modification poursuit la série d’ajustements du backend DXIL (émission correcte des textureLoad, gestion des pipelines compute) en résolvant un bug où des appels `dx.op.wave*` ou `dx.op.quad*` après un discard réutilisaient des résultats invalides. Désormais les shaders pixel qui utilisent `dx.op.discard` conservent la bonne sémantique : les appels wave/quad après le discard ne sont plus fusionnés, ce qui évite des comportements erronés. Le reste du projet reste inchangé, aucune régression n’est observée."
+  },
+  {
+   "sha": "fc14fab56f7f54b649ed81ad00fe18a37e4ea122",
+   "date": "2026-11-24",
+   "title": "Recompiler: allow inline-constant and NULL mask operands in the per-lane form",
+   "summary": ""
+  },
+  {
+   "sha": "332122d217b06cb41e789174fc90ccf4a0d684fa",
+   "date": "2026-11-24",
+   "title": "Direct DXIL: avoid 2 - off underflow in s_setreg_b32 targeting HW_REG_MODE bit 3",
+   "summary": ""
+  },
+  {
+   "sha": "8e87fc7b62a87ea589ccb9ea6182f514016cf7db",
+   "date": "2026-11-24",
+   "title": "Direct DXIL: truncate s instead of returning native on special values in round_exact",
    "summary": ""
   }
  ]

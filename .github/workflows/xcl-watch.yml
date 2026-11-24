@@ -1,0 +1,38 @@
+name: xcl-watch
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"   # toutes les 15 min (GitHub peut retarder ou sauter un tir)
+  workflow_dispatch: {}        # lancement manuel pour tester
+
+permissions:
+  contents: write              # pour enregistrer le dernier commit vu
+
+concurrency:
+  group: xcl-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Surveiller ivall/xcl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # GEMINI_MODEL: gemini-2.5-flash   # à changer si ce modèle est retiré
+        run: python3 scripts/xcl_watch.py
+
+      - name: Enregistrer l'état
+        run: |
+          if [ -n "$(git status --porcelain state/)" ]; then
+            git config user.name "xcl-watch"
+            git config user.email "xcl-watch@users.noreply.github.com"
+            git add state/
+            git commit -m "state: dernier commit vu"
+            git push
+          fi

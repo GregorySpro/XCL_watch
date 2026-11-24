@@ -1,0 +1,39 @@
+# Historique : Marvisak/VIctory
+
+## État du projet
+
+Après ce changement, le moteur de shaders reconnaît désormais les chargements de type waterfall et les traite comme des accès par lane, ce qui permet de valider davantage de programmes (108 passent ces boucles, 249 restent à traiter). Le reste du pipeline graphique demeure incomplet : les shaders restent majoritairement non traduits, le rendu du monde est toujours noir et les fonctionnalités HDR, depth‑bounds, etc. restent manquantes. La prochaine étape probable sera d’étendre le support du waterfall aux requêtes de taille par lane et d’intégrer ces informations dans le backend pour réduire les blocages restants.
+
+## Journal (du plus récent au plus ancien)
+
+- **2026-11-24** `ffe310e` Shaders: the console's waterfall loop over a first-lane table offset
+  Le commit ajoute la prise en charge du « waterfall » où chaque lane charge son propre descriptif à partir du décalage de la première lane, en marquant ces charges comme `per_lane` dans le générateur d’heap. Il enrichit la structure `Waterfall` avec une liste `loads` et intègre la détection de ces charges dans le suivi des shaders. Cette évolution poursuit les correctifs récents sur les boucles de vertex et les comparaisons, en débloquant partiellement la traduction des boucles de chargement non uniformes, mais le rendu du monde reste encore cassé.
+- **2026-11-24** `ca48fbe` Merge pull request #566 from r4tedx/shader/per-lane-phi
+- **2026-11-24** `74a9d33` Shader tests: the waterfall tests take the GPU one at a time, with the VALU tests
+- **2026-11-24** `e09dbb6` Merge upstream main (8e79c80) into shader/per-lane-phi
+- **2026-11-24** `8e79c80` CI: clippy and tests on pull requests and main
+- **2026-11-24** `c7a5f49` Merge pull request #93 from TG0000/perf/bcpack-bucket-lookup
+- **2026-11-24** `2005e35` Merge pull request #88 from AndyLatimer/fix/title-size-overflows
+- **2026-11-24** `58fed37` Merge pull request #706 from Lyrnc/fix/cmp-lg-ordered
+- **2026-11-24** `a51bdfa` Merge pull request #696 from catminou4/devin/formats-doc-micro-link
+- **2026-11-24** `02f404e` Merge pull request #685 from catminou4/devin/constant-color-cfg-windows
+- **2026-11-24** `5cd7421` Merge pull request #681 from fuzeofficlal/fix/vertex-buffer-null-unbind
+- **2026-11-24** `8d23f07` Merge pull request #680 from EatCodeSleep2/fix/wine-staging-upload-128
+- **2026-11-24** `22700b9` Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links
+- **2026-11-24** `6db02ea` Merge pull request #671 from fuzeofficlal/fix/copyresource-cpu-texture-source
+- **2026-11-24** `16bd577` Merge pull request #666 from lameloball2813-ui/fix/load-probe-target-dir
+- **2026-11-24** `b4b4110` Merge pull request #654 from SantannaCarlos/fix/uav-describe
+- **2026-11-24** `cf0bb43` Merge pull request #637 from AlanQiang0418/codex/gfx10-packed-inline-constants
+- **2026-11-24** `6f0a10a` Merge pull request #634 from SAitken91/shader/image-sample-o
+- **2026-11-24** `9a92ccf` Merge pull request #612 from KoLolX3/fix/phi-liveness-transitive
+- **2026-11-24** `204bdcc` Merge pull request #611 from AdvaitPalve11/fix/config-show-data-dir
+- **2026-11-24** `a4d7b16` Merge pull request #565 from SAitken91/shader/conservative-depth-position
+- **2026-11-24** `fd92558` Merge pull request #520 from Quat3rnion/victory-xasync-payload
+- **2026-11-24** `dd54de2` Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros
+- **2026-11-24** `0ddbce8` Merge pull request #433 from r4tedx/tests/serialise-valu-gpu-tests
+- **2026-11-24** `ce42e77` Merge pull request #432 from Proudnoob4/fix/uninitialized-sgprs
+- **2026-11-24** `f0894c2` Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors
+- **2026-11-24** `9f18eb4` Merge pull request #423 from pedrofort/shader-perm-no-int64
+- **2026-11-24** `dd273df` Merge pull request #419 from itsRevela/fix/swallow-keyboard-menu
+- **2026-11-24** `3c86238` Merge pull request #418 from enzoduarte1/gpu/half-subnormal-output
+- **2026-11-24** `2e4e280` Merge pull request #384 from LouisRiverstone/shader-cvt16-saturate

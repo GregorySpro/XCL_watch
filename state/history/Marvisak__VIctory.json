@@ -1,0 +1,185 @@
+{
+ "state": "Après ce changement, le moteur de shaders reconnaît désormais les chargements de type waterfall et les traite comme des accès par lane, ce qui permet de valider davantage de programmes (108 passent ces boucles, 249 restent à traiter). Le reste du pipeline graphique demeure incomplet : les shaders restent majoritairement non traduits, le rendu du monde est toujours noir et les fonctionnalités HDR, depth‑bounds, etc. restent manquantes. La prochaine étape probable sera d’étendre le support du waterfall aux requêtes de taille par lane et d’intégrer ces informations dans le backend pour réduire les blocages restants.",
+ "entries": [
+  {
+   "sha": "2e4e280dc03098d8a4e847b57a37947e1b45db35",
+   "date": "2026-11-24",
+   "title": "Merge pull request #384 from LouisRiverstone/shader-cvt16-saturate",
+   "summary": ""
+  },
+  {
+   "sha": "3c8623821798c54ee93ecab62e1d72adba36ebf1",
+   "date": "2026-11-24",
+   "title": "Merge pull request #418 from enzoduarte1/gpu/half-subnormal-output",
+   "summary": ""
+  },
+  {
+   "sha": "dd273df1b8d788944dbd266311233f75a7f6e32a",
+   "date": "2026-11-24",
+   "title": "Merge pull request #419 from itsRevela/fix/swallow-keyboard-menu",
+   "summary": ""
+  },
+  {
+   "sha": "9f18eb45877e321a8569247b08cba3e25f00e923",
+   "date": "2026-11-24",
+   "title": "Merge pull request #423 from pedrofort/shader-perm-no-int64",
+   "summary": ""
+  },
+  {
+   "sha": "f0894c2b5c64a1e95d622c9d8723bab965f2d347",
+   "date": "2026-11-24",
+   "title": "Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors",
+   "summary": ""
+  },
+  {
+   "sha": "ce42e77634656b607812b325dd9ba464345fd8e5",
+   "date": "2026-11-24",
+   "title": "Merge pull request #432 from Proudnoob4/fix/uninitialized-sgprs",
+   "summary": ""
+  },
+  {
+   "sha": "0ddbce888e699285a6681017b21fd08d45ea953b",
+   "date": "2026-11-24",
+   "title": "Merge pull request #433 from r4tedx/tests/serialise-valu-gpu-tests",
+   "summary": ""
+  },
+  {
+   "sha": "dd54de2f711c2f816cfd6be9e0a54ba92582ef60",
+   "date": "2026-11-24",
+   "title": "Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros",
+   "summary": ""
+  },
+  {
+   "sha": "fd925582f1d977de0471ab2bf5fbe9e69a9edb1a",
+   "date": "2026-11-24",
+   "title": "Merge pull request #520 from Quat3rnion/victory-xasync-payload",
+   "summary": ""
+  },
+  {
+   "sha": "a4d7b16da01702eda849bcb0974b27c7df84a600",
+   "date": "2026-11-24",
+   "title": "Merge pull request #565 from SAitken91/shader/conservative-depth-position",
+   "summary": ""
+  },
+  {
+   "sha": "204bdcc1084c39538dc6f53dd45e847a30a8793f",
+   "date": "2026-11-24",
+   "title": "Merge pull request #611 from AdvaitPalve11/fix/config-show-data-dir",
+   "summary": ""
+  },
+  {
+   "sha": "9a92ccf4a618b4152b0f4f19cab7c5980466b671",
+   "date": "2026-11-24",
+   "title": "Merge pull request #612 from KoLolX3/fix/phi-liveness-transitive",
+   "summary": ""
+  },
+  {
+   "sha": "6f0a10a758b8b63be1e6cc3566b0eb18baa15cf0",
+   "date": "2026-11-24",
+   "title": "Merge pull request #634 from SAitken91/shader/image-sample-o",
+   "summary": ""
+  },
+  {
+   "sha": "cf0bb43868783b6a0fc3af803be09bf3a8259954",
+   "date": "2026-11-24",
+   "title": "Merge pull request #637 from AlanQiang0418/codex/gfx10-packed-inline-constants",
+   "summary": ""
+  },
+  {
+   "sha": "b4b41103718052e73c4ccd42e4584d0debecdda1",
+   "date": "2026-11-24",
+   "title": "Merge pull request #654 from SantannaCarlos/fix/uav-describe",
+   "summary": ""
+  },
+  {
+   "sha": "16bd5771a03c607cc2e7319ad84593d7518093a1",
+   "date": "2026-11-24",
+   "title": "Merge pull request #666 from lameloball2813-ui/fix/load-probe-target-dir",
+   "summary": ""
+  },
+  {
+   "sha": "6db02ea34e50c5c1479ca38c9fc4b518dc19dab1",
+   "date": "2026-11-24",
+   "title": "Merge pull request #671 from fuzeofficlal/fix/copyresource-cpu-texture-source",
+   "summary": ""
+  },
+  {
+   "sha": "22700b97717dab0df76bda66de20dddaadc26aef",
+   "date": "2026-11-24",
+   "title": "Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links",
+   "summary": ""
+  },
+  {
+   "sha": "8d23f0762fddbe2d80919ace3e7c78e0ac562170",
+   "date": "2026-11-24",
+   "title": "Merge pull request #680 from EatCodeSleep2/fix/wine-staging-upload-128",
+   "summary": ""
+  },
+  {
+   "sha": "5cd74217152324f473ad1eb78d3d3aa4c5727c64",
+   "date": "2026-11-24",
+   "title": "Merge pull request #681 from fuzeofficlal/fix/vertex-buffer-null-unbind",
+   "summary": ""
+  },
+  {
+   "sha": "02f404efeccbc165c7c7f24c110f31e18c9263f2",
+   "date": "2026-11-24",
+   "title": "Merge pull request #685 from catminou4/devin/constant-color-cfg-windows",
+   "summary": ""
+  },
+  {
+   "sha": "a51bdfa50024948447e66852810d3204995af224",
+   "date": "2026-11-24",
+   "title": "Merge pull request #696 from catminou4/devin/formats-doc-micro-link",
+   "summary": ""
+  },
+  {
+   "sha": "58fed3704f72c49f48a18c013b4910986168a9ef",
+   "date": "2026-11-24",
+   "title": "Merge pull request #706 from Lyrnc/fix/cmp-lg-ordered",
+   "summary": ""
+  },
+  {
+   "sha": "2005e35afd2e6ed5a40494625807a924c7ae38cc",
+   "date": "2026-11-24",
+   "title": "Merge pull request #88 from AndyLatimer/fix/title-size-overflows",
+   "summary": ""
+  },
+  {
+   "sha": "c7a5f4953fc81978a94e839fddd510361c7d075f",
+   "date": "2026-11-24",
+   "title": "Merge pull request #93 from TG0000/perf/bcpack-bucket-lookup",
+   "summary": ""
+  },
+  {
+   "sha": "8e79c80e4b71e252bcd271e0587aa662c4770008",
+   "date": "2026-11-24",
+   "title": "CI: clippy and tests on pull requests and main",
+   "summary": ""
+  },
+  {
+   "sha": "e09dbb6dae4a853750b1412a664fbc117b25ffce",
+   "date": "2026-11-24",
+   "title": "Merge upstream main (8e79c80) into shader/per-lane-phi",
+   "summary": ""
+  },
+  {
+   "sha": "74a9d3316de69b65eb64b2fa5c06089d8979ed6f",
+   "date": "2026-11-24",
+   "title": "Shader tests: the waterfall tests take the GPU one at a time, with the VALU tests",
+   "summary": ""
+  },
+  {
+   "sha": "ca48fbea88ea6e8db9d0a69a28db406c00951040",
+   "date": "2026-11-24",
+   "title": "Merge pull request #566 from r4tedx/shader/per-lane-phi",
+   "summary": ""
+  },
+  {
+   "sha": "ffe310eb2098e52169f4c44db5ffdabf43a72622",
+   "date": "2026-11-24",
+   "title": "Shaders: the console's waterfall loop over a first-lane table offset",
+   "summary": "Le commit ajoute la prise en charge du « waterfall » où chaque lane charge son propre descriptif à partir du décalage de la première lane, en marquant ces charges comme `per_lane` dans le générateur d’heap. Il enrichit la structure `Waterfall` avec une liste `loads` et intègre la détection de ces charges dans le suivi des shaders. Cette évolution poursuit les correctifs récents sur les boucles de vertex et les comparaisons, en débloquant partiellement la traduction des boucles de chargement non uniformes, mais le rendu du monde reste encore cassé."
+  }
+ ]
+}

@@ -1,0 +1,185 @@
+{
+ "state": "Après ce changement, le VFS empêche la suppression de répertoires non vides tant que des enfants visibles existent, tout en conservant le comportement de whiteout pour les entrées déjà masquées. Les tests existants ont été mis à jour pour couvrir ces nouveaux cas et passent, renforçant la fiabilité du système de fichiers. Le reste du projet reste inchangé : le backend D3D12.X continue de se stabiliser, les shaders et la mémoire fonctionnent, mais les pipelines de maillage et certains formats d’image restent des points bloquants. La prochaine étape probable sera de valider ces nouvelles règles sur Windows (les tests Windows sont encore en attente) et de poursuivre les correctifs liés aux textures tuilées et aux formats GFX10.",
+ "entries": [
+  {
+   "sha": "38ea451dc69d11119bd27c334292c3093e3c0030",
+   "date": "2026-11-24",
+   "title": "D3D12.X: ask for tiled support before making a GPU-owned texture reserved (#940)",
+   "summary": ""
+  },
+  {
+   "sha": "6922eaf66ce32ac0e83ede5c5d34db90b374ee5c",
+   "date": "2026-11-24",
+   "title": "Merge PR #923",
+   "summary": ""
+  },
+  {
+   "sha": "6bac4b4419886acc940d479dcf8815d0b1804435",
+   "date": "2026-11-24",
+   "title": "Merge PR #849",
+   "summary": ""
+  },
+  {
+   "sha": "236e1a30438e6ebf2901c1ba57dec300be4b92c3",
+   "date": "2026-11-24",
+   "title": "Merge PR #532",
+   "summary": ""
+  },
+  {
+   "sha": "3ca856662d6a91cd957401cb61882854b577e821",
+   "date": "2026-11-24",
+   "title": "Merge PR #556",
+   "summary": ""
+  },
+  {
+   "sha": "9aec53df7004bd9018ef3df67532f85d66ee261c",
+   "date": "2026-11-24",
+   "title": "Merge fix: a lazy page's move keeps map_pages' runs (#556 with #849)",
+   "summary": ""
+  },
+  {
+   "sha": "6522c2459d27749bdb2ebe86bd72e804daf6b512",
+   "date": "2026-11-24",
+   "title": "PR checks: two xcl-smoke blocks in one code fence are read as two",
+   "summary": ""
+  },
+  {
+   "sha": "87fae1fa9e1ff5da09445fb8de33d8cbf42033bb",
+   "date": "2026-11-24",
+   "title": "D3D12.X: GFX10 image format 134 (1_5_5_5) is B5G5R5A1, not 135 (#946)",
+   "summary": ""
+  },
+  {
+   "sha": "9e80056e2451026c08440d75d2a2fb880746a6f0",
+   "date": "2026-11-24",
+   "title": "Merge PR #891",
+   "summary": ""
+  },
+  {
+   "sha": "de1809cf937a192957fada5fc79fa3d04e795898",
+   "date": "2026-11-24",
+   "title": "Merge PR #693",
+   "summary": ""
+  },
+  {
+   "sha": "afe42268d2caabdac46cfa929e9d7024b936022f",
+   "date": "2026-11-24",
+   "title": "Merge PR #551",
+   "summary": ""
+  },
+  {
+   "sha": "02bfd1d6c0659a5102abde6d73babba8afd9fce9",
+   "date": "2026-11-24",
+   "title": "Memory: link xcl.exe without high-entropy ASLR so title memory stays under 2^40 (PR #631)",
+   "summary": ""
+  },
+  {
+   "sha": "ef48a1854c43b4f6c104bd968367a0324ad759ae",
+   "date": "2026-11-24",
+   "title": "PR checks: build inputs outside src need a regression run",
+   "summary": ""
+  },
+  {
+   "sha": "6efdabcdaac93ce5cc123a85e85deba5d49cb294",
+   "date": "2026-11-24",
+   "title": "Merge PR #988",
+   "summary": ""
+  },
+  {
+   "sha": "8cad5179954c77f55d91ab2902d17b1f71ce1fda",
+   "date": "2026-11-24",
+   "title": "DirectStorage: unpack BCPack BC1, BC3, BC4, BC5, BC6H and BC7 streams",
+   "summary": ""
+  },
+  {
+   "sha": "8add9a327f60dfe34fcd3a7ea16368c0ec5a7a22",
+   "date": "2026-11-24",
+   "title": "DirectStorage: BCPack provenance, README row, one Request::check again",
+   "summary": ""
+  },
+  {
+   "sha": "10915eb96938d1bbdb111a60058a396f0942ee02",
+   "date": "2026-11-24",
+   "title": "Tests: BCPack lanes against independent synthetic fixtures, models against the patent",
+   "summary": ""
+  },
+  {
+   "sha": "e74dda2d4b5c28a81cfa971d14bc417a6be966aa",
+   "date": "2026-11-24",
+   "title": "Merge PR #995",
+   "summary": ""
+  },
+  {
+   "sha": "67a3735177f42cf8e5c886e67a974da7f87541b3",
+   "date": "2026-11-24",
+   "title": "Merge PR #905",
+   "summary": ""
+  },
+  {
+   "sha": "f52ec360d1297d8a23ff99da876f032df37d4e5c",
+   "date": "2026-11-24",
+   "title": "D3D12.X: keep reusable allocators after a failed Reset",
+   "summary": ""
+  },
+  {
+   "sha": "b55c4787f7a1c73b13ca35e64e78b01a6dc566a3",
+   "date": "2026-11-24",
+   "title": "D3D12.X: stop released lists holding allocator recordings",
+   "summary": ""
+  },
+  {
+   "sha": "01d4c7783dfd9603d823f2fc5f895e224633812e",
+   "date": "2026-11-24",
+   "title": "D3D12.X: move allocator recordings only after successful Reset",
+   "summary": ""
+  },
+  {
+   "sha": "9a19d7e43623366fff7e75d1888ec53e81386218",
+   "date": "2026-11-24",
+   "title": "PR checks: reject untouched PR template placeholders (#965)",
+   "summary": ""
+  },
+  {
+   "sha": "384f7f7f8c79fa4d4dee59336d650a4021af4c7e",
+   "date": "2026-11-24",
+   "title": "Merge PRs #1009, #1012, #1023 (allocator pool: failed Resets, released lists)",
+   "summary": ""
+  },
+  {
+   "sha": "a610eb545a1fcc42ef9bfc872be338d68439d7de",
+   "date": "2026-11-24",
+   "title": "Merge PR #990",
+   "summary": ""
+  },
+  {
+   "sha": "dc6a283f688d6ee72a7426dbfe80b6676aff504f",
+   "date": "2026-11-24",
+   "title": "Merge PR #1037",
+   "summary": ""
+  },
+  {
+   "sha": "6828e07db39154acd7e1524cce673dbfdd98b0e8",
+   "date": "2026-11-24",
+   "title": "Merge PR #951",
+   "summary": ""
+  },
+  {
+   "sha": "24d8b929162cc8cf2c9980c880b8e600d0bf6eaa",
+   "date": "2026-11-24",
+   "title": "D3D12.X: a format without tiled support is not reservable, whatever the MSAA query says",
+   "summary": ""
+  },
+  {
+   "sha": "d78597d2d494f2627096f299c608fa2da34d8ac8",
+   "date": "2026-11-24",
+   "title": "Tests: truncate_existing_validation_errors reads the last error before under_wine()",
+   "summary": ""
+  },
+  {
+   "sha": "47efa2ecea0a12934719ae69b81930cf02a4b1c3",
+   "date": "2026-11-24",
+   "title": "VFS: reject removal of non-empty virtual directories",
+   "summary": "Le commit ajoute une vérification que le répertoire original est vide avant d’autoriser sa suppression dans le VFS, en filtrant les entrées masquées (whiteouts). Cette logique complète les précédents travaux sur la gestion des suppressions d’overlay en empêchant la perte de données visibles, prolongeant ainsi le chantier de robustesse du système de fichiers. Désormais, la couche refuse de supprimer des dossiers contenant des fichiers ou sous‑dossiers non masqués, ce qui corrige le bug #997 mais ne touche pas aux autres limitations (pipelines de maillage, formats d’image)."
+  }
+ ]
+}

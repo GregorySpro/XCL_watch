@@ -1,60 +1,6 @@
 {
- "state": "Après l’intégration, le pipeline D3D12.X continue de créer les SRV par défaut, d’identifier les ressources réservées et de filtrer les appels Map, le fallback du cache shader évite toujours les plantages, et les fenêtres mémoire sont créées sur le heap partagé quand XCL_HEAP_WINDOWS=1 et que le dispositif le supporte. Le problème de heap non ré‑lié après SetDescriptorHeaps(0, NULL) reste résolu, le plafonnement à 4 GiB‑32 B empêche le crash du runtime Windows 11 23H2, et le fallback « switch form » reste disponible pour les titres où le heap partagé échoue (ex. certains drivers NVIDIA). Les limitations majeures (maillage, textures avancées, validation de couverture GPU) persistent, et la prochaine étape (intégration du script d’exports PE dans la CI et prise en charge des gros blocs restants) demeure inchangée.",
+ "state": "Le projet conserve ses deux backends DXIL fonctionnels, le second optimisé, ainsi que le mécanisme de dump des fichiers `.dxil`. Le logging des écritures et le `seal_region_join` continuent d’accélérer la construction SSA. Les limitations connues (géométrie, maillage, textures avancées, validation GPU) persistent. La suppression du doc n’affecte pas le fonctionnement ; la prochaine étape reste l’intégration CI et l’optimisation du SSA sur les accès mémoire.",
  "entries": [
-  {
-   "sha": "f52ec360d1297d8a23ff99da876f032df37d4e5c",
-   "date": "2026-11-24",
-   "title": "D3D12.X: keep reusable allocators after a failed Reset",
-   "summary": ""
-  },
-  {
-   "sha": "b55c4787f7a1c73b13ca35e64e78b01a6dc566a3",
-   "date": "2026-11-24",
-   "title": "D3D12.X: stop released lists holding allocator recordings",
-   "summary": ""
-  },
-  {
-   "sha": "01d4c7783dfd9603d823f2fc5f895e224633812e",
-   "date": "2026-11-24",
-   "title": "D3D12.X: move allocator recordings only after successful Reset",
-   "summary": ""
-  },
-  {
-   "sha": "9a19d7e43623366fff7e75d1888ec53e81386218",
-   "date": "2026-11-24",
-   "title": "PR checks: reject untouched PR template placeholders (#965)",
-   "summary": ""
-  },
-  {
-   "sha": "384f7f7f8c79fa4d4dee59336d650a4021af4c7e",
-   "date": "2026-11-24",
-   "title": "Merge PRs #1009, #1012, #1023 (allocator pool: failed Resets, released lists)",
-   "summary": ""
-  },
-  {
-   "sha": "a610eb545a1fcc42ef9bfc872be338d68439d7de",
-   "date": "2026-11-24",
-   "title": "Merge PR #990",
-   "summary": ""
-  },
-  {
-   "sha": "dc6a283f688d6ee72a7426dbfe80b6676aff504f",
-   "date": "2026-11-24",
-   "title": "Merge PR #1037",
-   "summary": ""
-  },
-  {
-   "sha": "6828e07db39154acd7e1524cce673dbfdd98b0e8",
-   "date": "2026-11-24",
-   "title": "Merge PR #951",
-   "summary": ""
-  },
-  {
-   "sha": "24d8b929162cc8cf2c9980c880b8e600d0bf6eaa",
-   "date": "2026-11-24",
-   "title": "D3D12.X: a format without tiled support is not reservable, whatever the MSAA query says",
-   "summary": ""
-  },
   {
    "sha": "d78597d2d494f2627096f299c608fa2da34d8ac8",
    "date": "2026-11-24",
@@ -240,6 +186,60 @@
    "date": "2026-11-24",
    "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
    "summary": "Le commit active, via l’option XCL_HEAP_WINDOWS=1, le mode où les fenêtres de mémoire sont exposées comme des UAV brutes dans le heap de descripteurs partagé, éliminant le « switch » généré pour chaque accès lorsqu’il y a plusieurs fenêtres. Cette évolution poursuit la série de correctifs sur les accès mémoire (heap windows, switch‑form) en proposant une alternative plus rapide à la compilation des gros shaders, tout en restant désactivée par défaut à cause de deux rapports NVIDIA. Désormais les shaders peuvent accéder aux fenêtres en une seule charge de descriptor, mais le fallback reste en place si le heap partagé n’est pas disponible ou si le driver échoue."
+  },
+  {
+   "sha": "76e6c29e85c5f303764d6b57070d5f2c6ae6ed33",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le nouveau commit introduit le backend « direct DXIL » qui traduit les shaders RDNA2 directement en conteneurs DXIL signés, sans passer par HLSL ou DXC à l’exécution, et le rend activable via XCL_DIRECT_DXIL=1. Cette fonctionnalité s’insère dans la série de correctifs récents sur le pipeline D3D12.X et les fenêtres mémoire, en apportant une nouvelle voie de compilation plutôt qu’une simple amélioration de stabilité. Elle permet désormais de générer des DXIL natifs pour les compute, mesh et, avec =all, les vertex/pixel shaders, tout en conservant le fallback HLSL pour les cas non traduisibles. Les tests ajoutés montrent que les branches avant les exports fonctionnent correctement, mais la prise en charge complète des shaders reste conditionnée à l’activation du flag et aux limites actuelles du backend."
+  },
+  {
+   "sha": "424d315372d60948b79422b1976ef8d486632b49",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le nouveau commit enrichit la documentation du backend direct DXIL en détaillant la couverture après les correctifs récents. Il montre des statistiques de traduction nettement améliorées (98,5 % de succès vs 56,5 % auparavant) et explique les optimisations qui ont éliminé les plantages de bloc VS/PS, les phi inutiles et les coûts de post‑domination. Cette mise à jour s’inscrit dans la continuité du chantier de mise en place du backend DXIL (activable via XCL_DIRECT_DXIL) et confirme que les dernières réparations débloquent la plupart des shaders, ne restant plus que les trois programmes de géométrie. Elle indique aussi les prochains goulots restants (SSA sur accès mémoire guardés) sans introduire de nouvelle fonctionnalité."
+  },
+  {
+   "sha": "285158534ae1c8e01a8e6e1718edbf65eb9a7663",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": ""
+  },
+  {
+   "sha": "def2134c32f4e17fa834c4e7fcd39468e19388cc",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le commit ajoute une vérification précoce du tampon DXIL afin de rejeter tout conteneur dont la taille est inférieure à l’en‑tête de 32 octets. Cette protection vient s’ajouter aux précédents correctifs du backend direct DXIL, qui améliore déjà la couverture et les performances de traduction. Elle évite maintenant un plantage du validateur DXC 1.8 qui lisait au‑delà du buffer, renforçant la robustesse du pipeline. Le reste du backend reste inchangé : les shaders traduits continuent de passer ou de retomber sur le chemin HLSL selon la capacité du traducteur."
+  },
+  {
+   "sha": "d24db9f86ddb27efe115d084a06d59fb1e26c47c",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le commit supprime les tests de fuzzing du backend DXIL et nettoie la documentation en déplaçant les références vers le nouveau fichier spec. Il retire également deux modules de test (fuzz_tests) du code et ajuste légèrement un commentaire dans le module graphics. Cette modification poursuit la série de correctifs autour du backend direct DXIL en allégeant le PR pour rester sous la limite de 20 000 lignes, sans toucher à la logique de traduction ou aux performances. Le backend reste inchangé ; seules les suites de tests automatisés sont réduites, ce qui ne débloque pas de nouvelles fonctionnalités mais simplifie la validation du PR."
+  },
+  {
+   "sha": "6976bc4450c41e54a23f3808490fc3b827b863ea",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le commit passe la version du traducteur DXIL à 4 et ajoute une prise en charge du comptage de bits i64 en le découpant en deux opérations i32, corrigeant ainsi un bug d’exécution sur les drivers AMD RDNA4. Il introduit aussi une logique de découpage du CFG pour rendre les graphes de contrôle irréductibles du code console réductibles, évitant les plantages du validateur DXIL. Cette évolution s’inscrit dans la série d’améliorations du backend direct DXIL, après les récentes optimisations de fenêtres mémoire et la suppression des fuzz_tests, et débloque la traduction de shaders contenant des boucles à entrées multiples et des opérations Countbits.i64."
+  },
+  {
+   "sha": "ac4799fb5e64b6b2b56d62b7323a7cf3170d2ac9",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le commit ajoute une fonctionnalité de dump du DXIL généré par le backend direct, contrôlée par la variable d’environnement `XCL_DXIL_DUMP` ou les nouvelles options CLI `--hash`/`--dump` de la commande `xcl shaders`. Cela s’insère dans la série de travaux récents sur le backend DXIL (optimisations, vérifications, support i64) en offrant un moyen d’inspecter les conteneurs DXIL produits et de comparer avec le chemin HLSL. Désormais il est possible d’enregistrer les shaders traduits et leurs éventuelles erreurs, ce qui facilite le débogage ; le reste du pipeline reste inchangé et les limitations précédentes (géométrie, validation GPU, CI) subsistent."
+  },
+  {
+   "sha": "76c527b7dd7874f7786a70628e5640cf7592e9cd",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le commit améliore la gestion des régions protégées en ne fusionnant aux jointures que les registres réellement écrits dans le corps du guard. Cette optimisation s’inscrit dans la série d’ajustements du backend DXIL (optimisations SSA, comptage i64, découpage du CFG) et réduit fortement le nombre de traversées de blocs lors de la lecture. Désormais les programmes longs gagnent jusqu’à 3 × en temps de compilation, tout en conservant la même couverture de traduction. Aucun nouveau problème apparent n’est introduit, mais l’impact exact sur les cas restants (géométrie, textures avancées) reste à vérifier."
+  },
+  {
+   "sha": "81d2ad5a9d06f6d11211f0c2524d5db9c3362bcf",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": "Le nouveau commit supprime le fichier de documentation `direct-dxil-coverage.md`, qui détaillait les options de couverture du backend direct DXIL. Cette suppression ne modifie aucun code du traducteur ; elle ne fait que retirer une description désormais redondante, remplacée par la mention dans le fichier `2026-11-24-direct-dxil.md`. Ainsi, les fonctionnalités de couverture restent accessibles via la ligne de commande, mais la référence documentaire est plus concise. Aucun nouveau comportement n’est introduit et aucune régression n’est attendue."
   }
  ]
 }

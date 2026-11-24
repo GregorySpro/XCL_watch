@@ -2,18 +2,6 @@
  "state": "Après ce changement, le projet conserve ses deux backends DXIL (standard et optimisé), le dump `.dxil` et le logging SSA, ainsi que le support des fenêtres mémoire via le heap de descripteurs. Le nouveau pool de décompression parallélise les lectures de fichiers zlib sans impacter les autres parties du pipeline, et les tests unitaires montrent aucune régression. Les limitations connues (géométrie, maillage, textures avancées, validation GPU) restent inchangées, et il reste à intégrer la CI et à poursuivre l’optimisation SSA sur les accès mémoire, tout en surveillant d’éventuels bugs liés aux fenêtres heap et à la nouvelle parallélisation DirectStorage.",
  "entries": [
   {
-   "sha": "010e1ecbad53eea8a3dc0939ab71d4b8078f73d5",
-   "date": "2026-11-24",
-   "title": "D3D12.X: a copy within one memory window reads through a scratch buffer (#958)",
-   "summary": "Le commit réactive le chemin de copie via un tampon scratch lorsque la source et la destination partagent la même fenêtre de mémoire unifiée, évitant l’erreur de debug‑layer 538. Cette correction poursuit la série de correctifs autour du bug #958 déjà amorcée par les précédents commits sur le scratch buffer. Désormais les copies intra‑fenêtre sont sûres et logguées, mais les autres blocages (pipelines de maillage, formats GFX10, validation Windows) restent inchangés."
-  },
-  {
-   "sha": "930e8b49c1c2ec683d22c724a398b39111cd0e56",
-   "date": "2026-11-24",
-   "title": "D3D12.X: a new command list takes no copy scratch of an earlier one",
-   "summary": "Le commit empêche qu’une nouvelle liste de commandes réutilise le tampon scratch de copie d’une liste précédente dont la libération n’a pas été détectée, en libérant ce tampon dès la création de la nouvelle liste et en le conservant seulement jusqu’à la fin des fences. Cela poursuit les correctifs autour du bug #993 et du mécanisme de scratch buffer introduits précédemment. Désormais les listes ne partagent plus de scratch unsafe, ce qui évite les corruptions GPU ; les autres problèmes (maillage, formats GFX10, etc.) restent inchangés."
-  },
-  {
    "sha": "2008399729a5e04f8cc4801e29382fe8e4cb3812",
    "date": "2026-11-24",
    "title": "Scripts: pr_check refuses Code Llama, Codestral, QwQ and the like",
@@ -240,6 +228,18 @@
    "date": "2026-11-24",
    "title": "DirectStorage: decode eligible file requests in parallel",
    "summary": "Le commit ajoute une option `XCL_DSTORAGE_PARALLEL_DECOMPRESS=1` qui active un pool de travailleurs (quatre par défaut) et un budget de 32 MiB pour décompresser en parallèle les requêtes DirectStorage zlib à destination virtuelle. Cette fonctionnalité s’inscrit dans la série d’améliorations récentes du backend Direct DXIL, mais cible maintenant le sous‑système DirectStorage plutôt que le traducteur shader. Elle permet désormais de gagner jusqu’à 2 × le débit de décompression pour les petits flux compressés, tout en conservant l’ordre de retrait des requêtes; les performances sur de gros flux restent proches de l’ancien comportement."
+  },
+  {
+   "sha": "0b64aa04c6b3caa8c0bd2a4e5ab38741b2d12195",
+   "date": "2026-11-24",
+   "title": "dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory",
+   "summary": ""
+  },
+  {
+   "sha": "4178e888c0b5be50a2887eda45cdb832763b68a4",
+   "date": "2026-11-24",
+   "title": "dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory",
+   "summary": ""
   }
  ]
 }

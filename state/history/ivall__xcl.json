@@ -1,36 +1,6 @@
 {
- "state": "Après ce changement, le pipeline D3D12.X crée toujours correctement les SRV par défaut pour les tampons de profondeur multisamples et les ressources réservées sont correctement identifiées, tandis que les appels `Map` restent filtrés comme avant. Le fallback en mémoire du cache shader empêche les plantages liés à `CreateShaderCacheSession` et les tests unitaires passent (le test dédié au fallback réussit). Les blocages antérieurs (maillage, textures avancées, validation de couverture GPU) restent en place, et la prochaine étape probable (intégration du script d’exports PE dans la CI et prise en charge des gros blocs restants) n’est pas affectée par ce commit.",
+ "state": "Après l’intégration, le pipeline D3D12.X continue de créer les SRV par défaut, d’identifier les ressources réservées et de filtrer les appels Map, le fallback du cache shader évite toujours les plantages, et les fenêtres mémoire sont créées sur le heap partagé quand XCL_HEAP_WINDOWS=1 et que le dispositif le supporte. Le problème de heap non ré‑lié après SetDescriptorHeaps(0, NULL) reste résolu, le plafonnement à 4 GiB‑32 B empêche le crash du runtime Windows 11 23H2, et le fallback « switch form » reste disponible pour les titres où le heap partagé échoue (ex. certains drivers NVIDIA). Les limitations majeures (maillage, textures avancées, validation de couverture GPU) persistent, et la prochaine étape (intégration du script d’exports PE dans la CI et prise en charge des gros blocs restants) demeure inchangée.",
  "entries": [
-  {
-   "sha": "8cad5179954c77f55d91ab2902d17b1f71ce1fda",
-   "date": "2026-11-24",
-   "title": "DirectStorage: unpack BCPack BC1, BC3, BC4, BC5, BC6H and BC7 streams",
-   "summary": ""
-  },
-  {
-   "sha": "8add9a327f60dfe34fcd3a7ea16368c0ec5a7a22",
-   "date": "2026-11-24",
-   "title": "DirectStorage: BCPack provenance, README row, one Request::check again",
-   "summary": ""
-  },
-  {
-   "sha": "10915eb96938d1bbdb111a60058a396f0942ee02",
-   "date": "2026-11-24",
-   "title": "Tests: BCPack lanes against independent synthetic fixtures, models against the patent",
-   "summary": ""
-  },
-  {
-   "sha": "e74dda2d4b5c28a81cfa971d14bc417a6be966aa",
-   "date": "2026-11-24",
-   "title": "Merge PR #995",
-   "summary": ""
-  },
-  {
-   "sha": "67a3735177f42cf8e5c886e67a974da7f87541b3",
-   "date": "2026-11-24",
-   "title": "Merge PR #905",
-   "summary": ""
-  },
   {
    "sha": "f52ec360d1297d8a23ff99da876f032df37d4e5c",
    "date": "2026-11-24",
@@ -240,6 +210,36 @@
    "date": "2026-11-24",
    "title": "D3D12.X: fall back to an in-memory shader cache session (#1108)",
    "summary": "Le nouveau commit ajoute un fallback en mémoire pour les sessions de cache de shaders D3D12 lorsqu’une création via le runtime PC échoue. Cette implémentation s’insère dans la série de correctifs récents autour du fallback et du diagnostic (ex. flux de pipeline, signatures racine, allocation), en évitant les plantages immédiats des titres qui dépendaient du cache shader. Désormais les titres comme le build retail RAGE peuvent continuer à s’exécuter même si le runtime ne supporte pas `CreateShaderCacheSession`; le reste du pipeline reste inchangé et les limitations précédentes (maillage, textures avancées, validation GPU) subsistent."
+  },
+  {
+   "sha": "fe7d70bc3fd1ba667ca970eb329182a15f488dd5",
+   "date": "2026-11-23",
+   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
+   "summary": "Le commit introduit une option `XCL_HEAP_WINDOWS` qui fait que les fenêtres de mémoire sont accédées via des UAV bruts dans le heap de descripteurs partagé, éliminant le switch `mem, mem1…` généré à chaque accès shader. Cette évolution poursuit la série de correctifs sur les accès mémoire (suite des travaux sur les flux de pipeline et les signatures racine) en ciblant le goulet d’étranglement de compilation des gros titres. Désormais les shaders traduits utilisent une seule charge/stockage de descriptor heap par accès, ce qui devrait réduire le temps de compilation ; le fallback reste actif si les vues ne peuvent pas être créées, et les problèmes précédents (maillage, textures avancées, validation GPU) ne sont pas résolus."
+  },
+  {
+   "sha": "cad94a252dc722792f1b9d0695800cba1e61a436",
+   "date": "2026-11-23",
+   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
+   "summary": "Le commit modifie SetDescriptorHeaps pour que l’appel SetDescriptorHeaps(0, NULL) efface réellement la liste interne des heaps liés. Ainsi, ensure_view_heap peut à nouveau lier le heap partagé avant un draw ou dispatch, ce qui corrige le bug où les fenêtres mémoire étaient lues sans heap. Cette correction s’inscrit dans la série d’améliorations autour des fenêtres mémoire du heap (opt‑in XCL_HEAP_WINDOWS) et complète le dernier chantier de gestion des heaps. Désormais les shaders traduits peuvent accéder aux vues ResourceDescriptorHeap[0..3] sans plantage, mais les limitations précédentes (maillage, textures avancées, validation GPU) restent inchangées."
+  },
+  {
+   "sha": "927adcc0200c1a5c7814e71adfcbfdcb4ec2b5e0",
+   "date": "2026-11-23",
+   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
+   "summary": "Le nouveau commit ajoute un mécanisme de repli : lorsqu’un pipeline D3D12.X échoue avec E_OUTOFMEMORY sur les fenêtres de mémoire du heap (cas observé sur les drivers NVIDIA 616.92), le même pipeline est reconstruit en « switch form » (sans heap windows) et réessayé. Cette logique s’insère dans la suite de correctifs récents sur les accès mémoire et les fallbacks de création de pipelines, en complétant le support des heap windows tout en contournant le blocage spécifique aux gros programmes. Désormais les titres qui étaient bloqués par le driver peuvent s’exécuter, mais le fallback reste limité aux pipelines où le driver renvoie E_OUTOFMEMORY et ne couvre pas d’autres types d’échecs."
+  },
+  {
+   "sha": "deb4b92b4a0ec8436a73c0683a9a0bd54f38985d",
+   "date": "2026-11-24",
+   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
+   "summary": "Le commit ajuste la taille maximale d’une vue UAV brute de fenêtre de mémoire à 4 GiB − 32 octets, corrigeant ainsi un plantage du runtime D3D12 de Windows 11 23H2 qui supprimait le dispositif lorsque la vue dépassait ce seuil. Cette modification s’insère dans la série de correctifs autour des « memory windows » (heap windows) introduits récemment, notamment le fallback « switch form » et l’option XCL_HEAP_WINDOWS. Désormais les titres activant les heap windows ne perdent plus le device au démarrage, mais les limitations précédentes (maillage, textures avancées, validation de couverture GPU) restent inchangées."
+  },
+  {
+   "sha": "9e3831e1f570d3646e53ab753b19ec07eb8f1485",
+   "date": "2026-11-24",
+   "title": "Recompiler: memory windows from the descriptor heap (no per-access switch)",
+   "summary": "Le commit active, via l’option XCL_HEAP_WINDOWS=1, le mode où les fenêtres de mémoire sont exposées comme des UAV brutes dans le heap de descripteurs partagé, éliminant le « switch » généré pour chaque accès lorsqu’il y a plusieurs fenêtres. Cette évolution poursuit la série de correctifs sur les accès mémoire (heap windows, switch‑form) en proposant une alternative plus rapide à la compilation des gros shaders, tout en restant désactivée par défaut à cause de deux rapports NVIDIA. Désormais les shaders peuvent accéder aux fenêtres en une seule charge de descriptor, mais le fallback reste en place si le heap partagé n’est pas disponible ou si le driver échoue."
   }
  ]
 }

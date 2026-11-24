@@ -6,6 +6,7 @@ Le projet conserve ses deux backends DXIL fonctionnels, le second optimisé, ain
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-24** `c160d86` gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL
 - **2026-11-24** `81d2ad5` gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL
   Le nouveau commit supprime le fichier de documentation `direct-dxil-coverage.md`, qui détaillait les options de couverture du backend direct DXIL. Cette suppression ne modifie aucun code du traducteur ; elle ne fait que retirer une description désormais redondante, remplacée par la mention dans le fichier `2026-11-24-direct-dxil.md`. Ainsi, les fonctionnalités de couverture restent accessibles via la ligne de commande, mais la référence documentaire est plus concise. Aucun nouveau comportement n’est introduit et aucune régression n’est attendue.
 - **2026-11-24** `76c527b` gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL
@@ -83,4 +84,3 @@ Le projet conserve ses deux backends DXIL fonctionnels, le second optimisé, ain
   Le commit introduit un tampon de secours (scratch) pour les copies `CopyMemoryToMemoryX` dont la source et la destination se trouvent dans la même fenêtre de mémoire unifiée. Au lieu d’essayer de copier directement – ce qui violait les exigences d’état D3D12 et déclenchait l’erreur 538 du debug layer – les octets sont d’abord copiés dans ce tampon temporaire, puis vers la destination. Cette amélioration s’inscrit dans la série de correctifs récents sur la gestion des ressources D3D12 (allocateurs, états de format, etc.) et élimine le blocage du debug‑layer sur les copies intra‑fenêtre, tout en conservant le chemin de copie direct lorsqu’aucun scratch n’est disponible.
 - **2026-11-24** `47efa2e` VFS: reject removal of non-empty virtual directories
   Le commit ajoute une vérification que le répertoire original est vide avant d’autoriser sa suppression dans le VFS, en filtrant les entrées masquées (whiteouts). Cette logique complète les précédents travaux sur la gestion des suppressions d’overlay en empêchant la perte de données visibles, prolongeant ainsi le chantier de robustesse du système de fichiers. Désormais, la couche refuse de supprimer des dossiers contenant des fichiers ou sous‑dossiers non masqués, ce qui corrige le bug #997 mais ne touche pas aux autres limitations (pipelines de maillage, formats d’image).
-- **2026-11-24** `d78597d` Tests: truncate_existing_validation_errors reads the last error before under_wine()

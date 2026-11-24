@@ -2,12 +2,6 @@
  "state": "Le projet conserve ses deux backends DXIL fonctionnels, le second optimisé, ainsi que le mécanisme de dump des fichiers `.dxil`. Le logging des écritures et le `seal_region_join` continuent d’accélérer la construction SSA. Les limitations connues (géométrie, maillage, textures avancées, validation GPU) persistent. La suppression du doc n’affecte pas le fonctionnement ; la prochaine étape reste l’intégration CI et l’optimisation du SSA sur les accès mémoire.",
  "entries": [
   {
-   "sha": "d78597d2d494f2627096f299c608fa2da34d8ac8",
-   "date": "2026-11-24",
-   "title": "Tests: truncate_existing_validation_errors reads the last error before under_wine()",
-   "summary": ""
-  },
-  {
    "sha": "47efa2ecea0a12934719ae69b81930cf02a4b1c3",
    "date": "2026-11-24",
    "title": "VFS: reject removal of non-empty virtual directories",
@@ -240,6 +234,12 @@
    "date": "2026-11-24",
    "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
    "summary": "Le nouveau commit supprime le fichier de documentation `direct-dxil-coverage.md`, qui détaillait les options de couverture du backend direct DXIL. Cette suppression ne modifie aucun code du traducteur ; elle ne fait que retirer une description désormais redondante, remplacée par la mention dans le fichier `2026-11-24-direct-dxil.md`. Ainsi, les fonctionnalités de couverture restent accessibles via la ligne de commande, mais la référence documentaire est plus concise. Aucun nouveau comportement n’est introduit et aucune régression n’est attendue."
+  },
+  {
+   "sha": "c160d86ef2efe3a07e4dfb473e4fa72eafb413c0",
+   "date": "2026-11-24",
+   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
+   "summary": ""
   }
  ]
 }

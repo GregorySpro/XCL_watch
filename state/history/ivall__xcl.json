@@ -1,30 +1,6 @@
 {
- "state": "Après ce changement, le système de scratch buffer fonctionne correctement : chaque nouvelle liste démarre sans tampon hérité, et les tampons en cours d’utilisation restent en mémoire jusqu’à ce que les fences signalent la fin de leur emploi. Le pipeline de compilation asynchrone « wanted » continue de lancer jusqu’à six jobs parallèles et le cache disque des pipelines compute reste actif. Les copies intra‑fenêtre sont toujours routées via le scratch buffer avec le budget global de 64 MiB, mais sans risque de réutilisation prématurée. Les priorités restantes (pipelines de maillage, formats GFX10, validation Windows, textures tuilées) restent à traiter, et la prochaine étape probable reste l’extension de la structuration aux shaders de pixel.",
+ "state": "Après l’ajout de ces tests, le projet continue de fonctionner sur les points déjà stabilisés (scratch buffer, pipeline « wanted », cache disque des pipelines compute, VFS) et les scripts d’analyse restent corrects. La couverture de tests s’est élargie aux flux de shaders, mais aucune nouvelle fonctionnalité runtime n’a été introduite, donc les blocs majeurs (maillage, formats GFX10, textures tuilées, shaders de pixel) restent en suspens. La prochaine étape probable est d’intégrer le script d’exports PE dans la CI et de valider son comportement sur des exports réels de jeux.",
  "entries": [
-  {
-   "sha": "38ea451dc69d11119bd27c334292c3093e3c0030",
-   "date": "2026-11-24",
-   "title": "D3D12.X: ask for tiled support before making a GPU-owned texture reserved (#940)",
-   "summary": ""
-  },
-  {
-   "sha": "6922eaf66ce32ac0e83ede5c5d34db90b374ee5c",
-   "date": "2026-11-24",
-   "title": "Merge PR #923",
-   "summary": ""
-  },
-  {
-   "sha": "6bac4b4419886acc940d479dcf8815d0b1804435",
-   "date": "2026-11-24",
-   "title": "Merge PR #849",
-   "summary": ""
-  },
-  {
-   "sha": "236e1a30438e6ebf2901c1ba57dec300be4b92c3",
-   "date": "2026-11-24",
-   "title": "Merge PR #532",
-   "summary": ""
-  },
   {
    "sha": "3ca856662d6a91cd957401cb61882854b577e821",
    "date": "2026-11-24",
@@ -228,6 +204,42 @@
    "date": "2026-11-24",
    "title": "D3D12.X: a new command list takes no copy scratch of an earlier one",
    "summary": "Le commit empêche qu’une nouvelle liste de commandes réutilise le tampon scratch de copie d’une liste précédente dont la libération n’a pas été détectée, en libérant ce tampon dès la création de la nouvelle liste et en le conservant seulement jusqu’à la fin des fences. Cela poursuit les correctifs autour du bug #993 et du mécanisme de scratch buffer introduits précédemment. Désormais les listes ne partagent plus de scratch unsafe, ce qui évite les corruptions GPU ; les autres problèmes (maillage, formats GFX10, etc.) restent inchangés."
+  },
+  {
+   "sha": "2008399729a5e04f8cc4801e29382fe8e4cb3812",
+   "date": "2026-11-24",
+   "title": "Scripts: pr_check refuses Code Llama, Codestral, QwQ and the like",
+   "summary": "Le commit renforce le script de validation des pull‑requests en élargissant la regex `BANNED_MODELS` afin de détecter les variantes de modèles IA « small/open‑weight » (CodeLlama, TinyLlama, QwQ, les suffixes *stral, Phi 4, etc.). Cette modification poursuit la série de correctifs du côté tooling, qui vise à garantir le respect du CONTRIBUTING.md, sans toucher au code de compatibilité Xbox. Elle permet désormais de bloquer automatiquement les PR contenant ces modèles, alors qu’auparavant ils passaient le contrôle. Aucun impact direct n’est observé sur le pipeline de compilation, le scratch buffer ou le cache compute."
+  },
+  {
+   "sha": "797dda15ea722a41672b11bdae4fe0516e236138",
+   "date": "2026-11-24",
+   "title": "Scripts: pr_check refuses smoke blocks without a title, time or frames",
+   "summary": "Le commit renforce le script de validation des PR en refusant les blocs de smoke qui n’ont pas de champ « title », « seconds » ou « frames shown », ou dont les champs numériques sont invalides. Cette modification s’insère dans la série de durcissements du pr_check (bannissement des modèles IA, vérifications de formats) et corrige un contournement qui permettait à des blocs incomplets de passer les tests de régression. Désormais les PR contenant de tels blocs seront rejetées, mais les autres vérifications (crash/device‑removal, peak commit) restent inchangées."
+  },
+  {
+   "sha": "769c7c2b93c01e38d452c9386038a5850ab216f7",
+   "date": "2026-11-24",
+   "title": "Scripts: accept unprefixed command-writer branch addresses",
+   "summary": "Le commit ajuste le parseur du script `record_writers.py` pour accepter les adresses de branche écrites sans le préfixe `0x`. Cette modification s’insère dans la série de durcissements du script `pr_check` et des outils d’analyse, en suivant les précédents ajouts de validation (blocage des modèles IA, vérification des blocs de smoke). Désormais le scanner reconnait les deux notations hexadécimales, ce qui évite les faux négatifs lors de l’extraction des writers ; les autres parties du projet restent inchangées."
+  },
+  {
+   "sha": "a97e66cd709c41608bafe1daf2d60b17c6c05a98",
+   "date": "2026-11-24",
+   "title": "Scripts: retain every name for a PE export ordinal",
+   "summary": "Le commit corrige le script `scripts/re/pe_exports.py` qui ne conservait plus qu’un seul nom par ordinal ; il stocke maintenant toutes les alias et les affiche séparément. Cette amélioration s’insère dans la série de durcissements des scripts d’analyse (comme l’acceptation d’adresses sans préfixe) et résout un bug de perte d’information. Le nouveau test synthétique montre que les deux variantes PE (PE32 et PE32+) affichent correctement tous les noms et les forwarders. Aucun impact direct sur le reste du moteur n’est introduit, mais il reste à vérifier ce comportement sur de vraies DLL de jeux."
+  },
+  {
+   "sha": "1d4549e944011e6a57bc5cc70f0c6b7e8fc9f80f",
+   "date": "2026-11-24",
+   "title": "Scripts: print the right register class for root descriptors",
+   "summary": "Le commit corrige l’affichage des préfixes de registre pour les descripteurs racine dans le script `scripts/re/bvhb_shaders.py` : les CBV et SRV sont maintenant précédés de « b » et « t » au lieu de « t » et d’un espace. Cette modification poursuit la série de durcissements des scripts d’analyse, après la correction des alias d’exports PE. Elle permet aux tests unitaires de valider correctement les deux versions de signature racine, mais n’affecte pas le runtime ni les fonctionnalités de compilation ou de pipeline."
+  },
+  {
+   "sha": "037aecd57e8a2ae55154d5e0dfb7119e75430f5b",
+   "date": "2026-11-24",
+   "title": "Tests: cover xcl shaders across files, folders, and RPF9 packs",
+   "summary": "Le nouveau commit ajoute une batterie de tests end‑to‑end pour la commande CLI `xcl shaders`, couvrant les conteneurs synthétiques, les dossiers mixtes et les paquets RPF9. Cela poursuit la série de durcissements des scripts et de la CI en introduisant une validation fonctionnelle du pipeline de traduction de shaders, sans modifier le code d’exécution. Désormais les scénarios de conversion de shaders sont vérifiés automatiquement, mais cela ne débloque pas encore les parties réelles du jeu ni les priorités majeures."
   }
  ]
 }

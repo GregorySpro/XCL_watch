@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Surveiller ivall/xcl
+      - name: Surveiller les dépôts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
@@ -30,6 +30,7 @@ jobs:
         run: python3 scripts/xcl_watch.py
 
       - name: Enregistrer l'état
+        if: always()   # même si un dépôt a échoué, on garde la progression des autres
         run: |
           if [ -n "$(git status --porcelain state/)" ]; then
             git config user.name "xcl-watch"

@@ -2,12 +2,6 @@
  "state": "Le projet conserve ses deux backends DXIL (standard et optimisé) ainsi que le dump `.dxil` et le logging SSA. Le nouveau support des fenêtres heap élargit la couverture du backend direct, mais les limitations connues (géométrie, maillage, textures avancées, validation GPU) restent inchangées. La prochaine étape logique reste l’intégration CI et l’optimisation supplémentaire du SSA sur les accès mémoire, tout en surveillant les éventuels bugs liés aux nouvelles fenêtres heap.",
  "entries": [
   {
-   "sha": "25c6f7e0412692461e2ae36b546e85f31965e947",
-   "date": "2026-11-24",
-   "title": "D3D12.X: a big pipeline build the title waits for does not wait for its turn",
-   "summary": "Le commit introduit un mécanisme « demand » qui détecte lorsqu’un thread du jeu attend la construction d’un pipeline compute volumineux et force le worker en arrière‑plan à poursuivre immédiatement, en augmentant sa priorité si nécessaire. Cette évolution poursuit la série de correctifs autour du cache disque et du scratch buffer en résolvant le blocage où le titre pouvait rester bloqué pendant que le worker attendait de la mémoire commit. Désormais les builds de gros pipelines ne sont plus mis en attente indéfiniment, ce qui évite les hangs du watchdog; les tests qui échouaient sans ce changement passent maintenant."
-  },
-  {
    "sha": "9a272d4510e73e4c86747bf0c216a2f174f88b40",
    "date": "2026-11-24",
    "title": "Recompiler: a DXC compile the title waits for does not queue for memory",
@@ -239,6 +233,12 @@
    "sha": "6c89285b8b529bde59cd17a26b911c39912fb677",
    "date": "2026-11-24",
    "title": "D3D12.X: an ExecuteIndirect dispatch of an untranslated compute pipeline is skipped, as Dispatch is",
+   "summary": ""
+  },
+  {
+   "sha": "85e38262ff94aecd75d6f83fa8156a8b7697bd13",
+   "date": "2026-11-24",
+   "title": "Shaders: speed up translated pipeline compiles and add PSO measurements",
    "summary": ""
   }
  ]

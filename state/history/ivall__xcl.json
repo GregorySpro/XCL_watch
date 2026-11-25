@@ -1,54 +1,6 @@
 {
- "state": "Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les libérations sont correctement fusionnées, les requêtes de 8 slots ne sont plus bloquées par des fragments, et le tracing XCL montre les bons indices de samplers. Les tests de fuzz et la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` restent inchangés et continuent d’attendre résolution. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests, maintenant que le sous‑système de samplers ne constitue plus un goulet d’étranglement.",
+ "state": "Après ce changement, le projet possède un nouveau test qui confirme la conformité du hook `CheckFeatureSupport` avec le driver D3D12 natif sur AMD RX 7600 et sur le rendu logiciel WARP, sans échec signalé. Les parties déjà stables – partage de tiles VRAM pour les cubemaps, heap GLOBAL_SAMPLER, recompilation des shaders – continuent de fonctionner. Les zones bloquantes restent les fuzz‑tests sur XCL_TEXTURE_LEVEL_PAGES et l’implémentation de DispatchMesh. La prochaine étape probable sera d’étendre ces vérifications à d’autres GPU (NVIDIA, Intel) et d’avancer sur les fonctionnalités manquantes identifiées par les fuzz‑tests.",
  "entries": [
-  {
-   "sha": "65fc114a140d9043f8e3d70ffb863f7987816d8f",
-   "date": "2026-11-25",
-   "title": "D3D12.X: composite multi-plane PresentX overlays",
-   "summary": ""
-  },
-  {
-   "sha": "55d64c277be137cb6b47d7528dc6a88082bf573e",
-   "date": "2026-11-25",
-   "title": "D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors",
-   "summary": ""
-  },
-  {
-   "sha": "af066dd1f849c3d97e585e6ace6fc91ed94a3d48",
-   "date": "2026-11-25",
-   "title": "Recompiler: direct compact form stores a branch's target in the entry",
-   "summary": ""
-  },
-  {
-   "sha": "50a9fdef81cb796b8756a31defb0648301d002ce",
-   "date": "2026-11-25",
-   "title": "Recompiler: a bridged mask write in the split form meets no barrier",
-   "summary": ""
-  },
-  {
-   "sha": "68a284a596bd558b6bd9db6eedda6d6aa178c360",
-   "date": "2026-11-25",
-   "title": "D3D12.X: a runtime-made resource inside a device creation call is not adopted",
-   "summary": "Le commit ajoute un garde thread‑local `IN_CREATOR` qui détecte quand l’appel `creator!` provient d’une création de ressource interne du runtime (le tampon d’auto‑breadcrumb DRED généré par D3D12Core lors de `CreateCommandList`). Dans ce cas la création est déléguée directement au runtime, évitant l’adoption erronée du resource et le crash nul‑pointer. Cette correction poursuit le chantier de stabilité de la couche avec le debug layer DRED, résolvant le blocage #2298. Désormais les tests sous le debug layer avec `XCL_DRED=1` passent, mais les slots `DispatchMesh` et les fuzz‑tests restent non résolus."
-  },
-  {
-   "sha": "73e3aba648c9d985b044f1af1c8e5c4dfe634cf8",
-   "date": "2026-11-25",
-   "title": "Shaders: xcl disasm prints DPP controls, masks and source modifiers",
-   "summary": "Le nouveau commit enrichit le désassembleur `xcl disasm` en affichant les contrôles DPP, leurs masques et les modificateurs de source, qui étaient auparavant omis. Cette amélioration poursuit le chantier de visibilité du shader en complétant le support déjà ajouté pour les variantes SDWA. Désormais les lignes DPP sont imprimées avec toutes les informations de contrôle (quad_perm, row_shl, row_mask, bank_mask, etc.) et les signes/abs des sources, ce qui facilite la comparaison avec LLVM et le débogage. Le reste du projet reste inchangé : les DLL multi‑`*` sont toujours gérées, le garde `IN_CREATOR` empêche toujours les crashes DRED, et les slots `DispatchMesh` restent absents."
-  },
-  {
-   "sha": "e89f5ca5c54de25e78bcf248306221e0a246c576",
-   "date": "2026-11-25",
-   "title": "dxil: support 64-bit typed image_atomic_* via SM 6.6 heap atomics",
-   "summary": "Le commit ajoute la prise en charge des instructions atomiques d’image 64 bits (`image_atomic_*`) via les heap atomics SM 6.6, en introduisant du code de bas niveau pour détecter ces cas, générer les opérations DXIL appropriées et gérer les variantes (add, sub, cmpswap, fcmpswap, etc.). Cette évolution poursuit le chantier de complétude du recompiler, qui avait déjà ajouté le support DPP et les masques, en débloquant maintenant les shaders qui utilisent des atomiques 64 bits. Désormais les tests unitaires valident ces nouvelles variantes, mais les parties dépendantes (ex. DispatchMesh) restent inchangées."
-  },
-  {
-   "sha": "88d7a98cc2cd7345d58e72fdeeebdda186beab14",
-   "date": "2026-11-25",
-   "title": "Shaders: list offline precompile options in CLI help",
-   "summary": ""
-  },
   {
    "sha": "f54019e7d9430daf840f92c9f6e35b461ca9dc95",
    "date": "2026-11-25",
@@ -239,6 +191,54 @@
    "sha": "2898511af1c038a2ef809719e9b6f89e5675c422",
    "date": "2026-11-25",
    "title": "Recompiler: eliminate local array and branches in pixel-shader PRELUDE::rla()",
+   "summary": ""
+  },
+  {
+   "sha": "3111b5f57f3c36eadfd221c7715a8e26b9320cc2",
+   "date": "2026-11-25",
+   "title": "Tests: check cubemap tile reuse independently of idle page reclamation",
+   "summary": "Le nouveau commit ajoute un helper de test qui capture l’état des tiles VRAM d’une ressource et renforce les assertions du test cubemap pour vérifier que le second cube réutilise exactement les mêmes tiles que le premier, même en présence de libération d’autres textures. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la gestion du heap et du paging (quarantine des tiles, ExecuteIndirect, lecture des layouts de shaders, optimisations du recompiler). Elle montre que le sous‑système de réutilisation de tiles fonctionne désormais de façon déterministe, mais ne touche pas les problèmes restants de fuzz‑tests ou de consommation liée à XCL_TEXTURE_LEVEL_PAGES."
+  },
+  {
+   "sha": "7958d6be44117f596ebd5cdaf17305d1917abd98",
+   "date": "2026-11-25",
+   "title": "Tests: a panicking title-texture test no longer poisons the others",
+   "summary": ""
+  },
+  {
+   "sha": "9ba6804fedcb476ae79f0d3a7330feb017cbfda0",
+   "date": "2026-11-25",
+   "title": "Tests: skip the WARP frame-dump test where WARP is unavailable",
+   "summary": ""
+  },
+  {
+   "sha": "04f409195993777995f489227dfce41d7862076d",
+   "date": "2026-11-25",
+   "title": "Tests: skip the raw heap-window view test on a device without SM 6.6",
+   "summary": ""
+  },
+  {
+   "sha": "6521351780bc922648a3d17f66a3e3e1a031b10d",
+   "date": "2026-11-25",
+   "title": "Tests: cover Wait64 recording and satisfied batch submission",
+   "summary": ""
+  },
+  {
+   "sha": "661373ace03797c4bf7838841e2cbd2de5819232",
+   "date": "2026-11-25",
+   "title": "Tests: compare CheckFeatureSupport hook against host D3D12 driver",
+   "summary": "Le nouveau commit introduit un test d’intégration autonome qui compare le hook `CheckFeatureSupport` d’XCL avec l’implémentation native du driver D3D12 de la machine hôte. Il s’inscrit dans la série de tests récents visant à valider le comportement des API graphiques sans dépendre de jeux ou de fichiers console, poursuivant ainsi le chantier de fiabilisation des abstractions D3D12. Désormais on peut vérifier que les requêtes de support de fonctionnalités retournent exactement les mêmes résultats que le driver hôte, y compris la gestion des structures surdimensionnées et des formats spécifiques console, ce qui était auparavant non testé. Le reste du projet reste inchangé : les améliorations du heap GLOBAL_SAMPLER et les autres tests continuent de fonctionner, mais les fuzz‑tests et la prise en charge de DispatchMesh restent non résolus."
+  },
+  {
+   "sha": "8b38c1d46f5fe99cc71c0bd1e890aa2c9a8f9109",
+   "date": "2026-11-25",
+   "title": "Tests: verify CreateHeap console fallback and IID retry against host driver",
+   "summary": ""
+  },
+  {
+   "sha": "266402110339d793d7e0f4a73e91bccdf9fb712b",
+   "date": "2026-11-25",
+   "title": "Tests: compare GetResourceAllocationInfo and GetCustomHeapProperties against host D3D12 driver",
    "summary": ""
   }
  ]

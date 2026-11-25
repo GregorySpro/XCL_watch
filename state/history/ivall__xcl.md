@@ -2,10 +2,15 @@
 
 ## État du projet
 
-Après ce correctif, la couche XCL charge correctement les DLL correspondant à des motifs contenant plusieurs `*`, ce qui élimine les avertissements silencieux liés aux alias de configuration. Les shaders pixel avec boucles `v_readfirstlane` fonctionnent toujours sur les GPU RDNA2, les gains de performance sur les pipelines compute restent en place, et les diagnostics DRED sont actifs. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz.
+Après ce changement, la couche XCL continue de charger correctement les DLL avec des motifs contenant plusieurs `*`, les boucles de pixel `v_readfirstlane` fonctionnent sur les GPU RDNA2, et les diagnostics DRED sont actifs. La nouvelle logique de `place_pages` alloue les pages de texture niveau par niveau uniquement lorsqu’elles contiennent des données, ce qui réduit l’usage VRAM dans les scénarios de streaming, sans impacter les chemins existants (textures non‑tilées, ressources multi‑samples, etc.). Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests échouent toujours ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en évaluant l’impact réel de `XCL_TEXTURE_LEVEL_PAGES` sur la consommation mémoire et les performances.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `65fc114` D3D12.X: composite multi-plane PresentX overlays
+- **2026-11-25** `9f02f9d` kernelx: XMemMapPhysicalPagesScatter with no page array unmaps
+- **2026-11-25** `30ba7a2` D3D12.X: XCL_TEXTURE_LEVEL_PAGES=1 gives a sampled texture's levels their pages with their texels
+  Le commit introduit la variable d’environnement `XCL_TEXTURE_LEVEL_PAGES=1` qui différencie l’allocation des pages vidéo des niveaux d’une texture échantillonnée : les pages ne sont réservées que lorsqu’un niveau reçoit réellement des texels, au lieu d’être allouées toutes d’un coup lors du placement initial. Cette évolution poursuit le chantier d’optimisation de la gestion de la mémoire vidéo amorcé par les correctifs de configuration et de scratch, en ciblant le problème de sur‑allocation des textures streamées. Désormais les titres qui streament leurs textures utilisent beaucoup moins de pages VRAM inutilisées, mais la prise en charge reste désactivée par défaut et les effets sur les performances ou la stabilité restent à confirmer.
+- **2026-11-25** `ce6a880` DirectStorage: read a physical-page list again when its request runs
 - **2026-11-25** `3f4495a` Recompiler: emit globallycoherent on compute memory windows only when needed
 - **2026-11-25** `e9f129d` XCL_NETWORK=0: GetAddrInfoExW answers local names like getaddrinfo does
 - **2026-11-25** `764d9ed` Config: device_type in xcl.toml names the Series S in every spelling
@@ -54,9 +59,3 @@ Après ce correctif, la couche XCL charge correctement les DLL correspondant à 
 - **2026-11-25** `707b84c` Tests: isolate e2e temp directories, report skips on stderr, and check exit status
 - **2026-11-25** `5195b14` XGameRuntime: snapshot blob enumeration across submitted updates
 - **2026-11-25** `b56a7d3` D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs
-- **2026-11-25** `93d8f0f` D3D12.X: enforce hard concurrency cap on wanted >= 256 KB huge PSO compiles
-- **2026-11-25** `0f68883` Textures: cache GFX10 tiling Layout offset tables
-- **2026-11-25** `3dc3a42` dxil: emulate explicit-LOD gather4_l(_o) and support UNORM=1 non-cube sampling
-  Le nouveau commit ajoute l’émulation des instructions `image_gather4_l` (et variantes) avec LOD explicite ainsi que la prise en charge du mode `UNORM=1` pour les textures non‑cube dans le traducteur Direct DXIL. Cette fonctionnalité s’inscrit dans la suite des correctifs de fiabilité du backend DXIL (résolution d’info d’image, profondeur 0, etc.) et complète le chantier d’émulation d’opérations d’image avancées. Désormais le compilateur peut générer des chargements de mip‑levels multiples et normaliser les coordonnées non‑cube, ce qui était impossible auparavant. Les tests unitaires associés passent, mais les fuzz‑tests DXIL restent en échec, donc le problème global n’est pas totalement résolu.
-- **2026-11-25** `59d6ded` Recompiler: image_get_resinfo gives depth 0 for 1D, 2D and 2D MSAA
-  Le nouveau commit corrige `image_get_resinfo` pour renvoyer une profondeur 0 sur les dimensions 1D, 2D et 2D MSAA, conformément aux mesures hardware RDNA2. Cette modification poursuit le chantier de fiabilité du backend Direct DXIL entamé précédemment (correction des résolutions d’info d’image pour les tableaux 1D) et élimine un autre blocage de tests GPU. Désormais les tests qui vérifiaient une profondeur 1 passent, mais les fuzz‑tests et l’analyse du format d’encodage restent à traiter.

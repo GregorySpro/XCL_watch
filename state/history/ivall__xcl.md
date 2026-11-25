@@ -2,10 +2,15 @@
 
 ## État du projet
 
-Après ce changement, tous les tests unitaires et e2e s’exécutent sans échec : 1243 passés, 0 échoués, 46 ignorés. Le backend Direct DXIL continue de supporter les gathers à LOD explicite et le sampling UNORM=1, les fuzz‑tests restent bloquants et l’impact du nesting sur les temps de compilation n’est toujours pas mesuré. La prochaine étape probable reste l’analyse des échecs de fuzz et l’évaluation du nesting, tandis que la suite de tests est maintenant fiable pour les futures contributions.
+Après ce changement, le recompiler produit des requêtes d’information d’image conformes aux spécifications D3D12 sur toutes les architectures (AMD RDNA2/4, NVIDIA). Les tests unitaires et e2e continuent de passer (1243 réussis, 0 échoués, 46 ignorés). Les fuzz‑tests restent bloquants et l’impact du nesting sur les temps de compilation n’est pas encore mesuré. La prochaine étape probable reste l’analyse des échecs de fuzz et l’évaluation du nesting, maintenant que le comportement des requêtes d’image hors limites est stabilisé.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `1a0bbe3` kernelx: Sleep does not count PC calls that keep the title's threads
+- **2026-11-25** `f45409c` D3D12.X: re-fingerprint unwatched streamed textures at spaced frame milestones
+- **2026-11-25** `ea088a5` Recompiler: image_get_resinfo past the last level gives 0 sizes on AMD too
+  Le commit corrige la gestion des requêtes d’informations d’image lorsqu’on interroge un niveau de mip‑map au‑delà du dernier disponible. Au lieu de renvoyer les dimensions du niveau le plus proche (comportement observé sur certains drivers AMD RDNA4), le code compare maintenant le niveau demandé avec le nombre total de niveaux et renvoie des tailles nulles, comme le font les drivers NVIDIA et l’API D3D12. Cette modification poursuit la série de correctifs autour du recompiler et du traitement des images, éliminant ainsi un échec récurrent sur les GPUs AMD. Désormais les shaders qui utilisent GetDimensions ou image_get_resinfo recevront des valeurs cohérentes (0,0,0) pour les niveaux hors limites, ce qui devrait réduire les divergences de comportement entre les cartes.
+- **2026-11-25** `16d6793` DXIL: lower window_at address carry in 32-bit without i64
 - **2026-11-25** `426a5a7` Tests: two expectations that no longer match the code
 - **2026-11-25** `0d13b07` Tests: two expectations that no longer match the code
   Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting).
@@ -62,9 +67,3 @@ Après ce changement, tous les tests unitaires et e2e s’exécutent sans échec
   Le commit corrige le format du lien Discord dans le README en retirant un crochet superflu et en affichant correctement le texte cliquable. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans impacter le code ni les fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les contributeurs. Aucun changement fonctionnel n’est introduit, le projet reste dans la même dynamique de stabilisation.
 - **2026-11-25** `c390263` Fix Discord link formatting in README.md
   Le commit corrige le formatage du lien Discord dans le README en ajustant la syntaxe markdown du badge. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans toucher au code ni aux fonctionnalités existantes. Elle rend l’accès au serveur Discord plus fiable, mais n’apporte aucun changement fonctionnel au projet. Aucun nouveau blocage n’est introduit et les capacités précédentes restent inchangées.
-- **2026-11-25** `2f27167` Fix Discord link formatting in README.md
-  Le commit corrige le format du lien Discord dans le README en encapsulant correctement l’URL dans un lien markdown. Cette modification poursuit le ménage de la documentation amorcé précédemment, sans toucher au code ni aux fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les lecteurs. Aucun nouvel obstacle n’est introduit, mais cela n’apporte pas de changement fonctionnel au projet.
-- **2026-11-25** `330a365` Fix Discord link and update display text
-  Le commit corrige simplement le lien et le texte du badge Discord dans le README, remplaçant l’URL erronée par la bonne. Cette modification s’inscrit dans la phase de ménage du projet, où l’on affine la documentation après avoir stabilisé les tests et les backends. Elle ne change aucune fonctionnalité du code, mais rend désormais le point de contact communautaire fiable pour les contributeurs.
-- **2026-11-25** `cbc296a` D3D12.X: a huge compute program the driver refuses is logged with its verdict
-- **2026-11-25** `56ec08d` Tests: verify D3D12.X resource, heap start, fence, and queue sync parity

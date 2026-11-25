@@ -2,10 +2,17 @@
 
 ## État du projet
 
-Après ce changement, le backend Direct DXIL supporte correctement les gathers à LOD explicite et le sampling `UNORM=1` pour les textures 2D et 2D Array non‑cube, avec les vérifications de limites d’heap conservées. Les tests GPU précédents (GetDimensions, image_get_resinfo) continuent de réussir, et les nouveaux tests de gather4_lod sont verts. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation reste à analyser. La prochaine étape probable reste l’investigation de ces échecs de fuzz et l’évaluation de l’influence du nesting.
+Après l’intégration, le backend Direct DXIL conserve ses capacités : gathers à LOD explicite et sampling UNORM=1 fonctionnent, les tests GPU existants restent verts et les nouveaux gather4_lod passent. Les tests e2e passent tous (1154 réussis, 0 échecs) et les fuites d’event/COM ainsi que le double signal de fence sont éliminés. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation n’a pas encore été évalué. La prochaine étape probable reste l’analyse des échecs de fuzz et la mesure de l’influence du nesting.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `c9a5d58` D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots
+- **2026-11-25** `5478c4a` e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle
+  Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests.
+- **2026-11-25** `1c17aa5` Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)
+- **2026-11-25** `74f96b3` kernelx: skip coherent UMA fallback for physical pages on sparse layouts
+- **2026-11-25** `707b84c` Tests: isolate e2e temp directories, report skips on stderr, and check exit status
+- **2026-11-25** `5195b14` XGameRuntime: snapshot blob enumeration across submitted updates
 - **2026-11-25** `b56a7d3` D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs
 - **2026-11-25** `93d8f0f` D3D12.X: enforce hard concurrency cap on wanted >= 256 KB huge PSO compiles
 - **2026-11-25** `0f68883` Textures: cache GFX10 tiling Layout offset tables
@@ -61,9 +68,3 @@ Après ce changement, le backend Direct DXIL supporte correctement les gathers
 - **2026-11-25** `982c641` Tests: add disasm integration coverage for --all flag, bounds checks and missing files
 - **2026-11-25** `8ff5c31` Shaders: -O0 compiles leave out DXC's debug no-ops
 - **2026-11-25** `2aa2d1a` Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts
-- **2026-11-25** `3f81044` Recompiler: translate v_div_fixup_f16 in both backends
-- **2026-11-25** `c2dcef3` Recompiler: round direct-DXIL f16 converts and products to nearest-even
-- **2026-11-25** `025c786` D3D12.X: the GPU wait watchdog starts after its wake pair is set
-- **2026-11-25** `c00f3fc` Direct DXIL: honour D16 packing in image_get_resinfo
-- **2026-11-25** `fb32c87` UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap
-- **2026-11-25** `6c9f947` Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode

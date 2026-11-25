@@ -1,42 +1,6 @@
 {
- "state": "Après ce changement, le backend Direct DXIL supporte correctement les gathers à LOD explicite et le sampling `UNORM=1` pour les textures 2D et 2D Array non‑cube, avec les vérifications de limites d’heap conservées. Les tests GPU précédents (GetDimensions, image_get_resinfo) continuent de réussir, et les nouveaux tests de gather4_lod sont verts. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation reste à analyser. La prochaine étape probable reste l’investigation de ces échecs de fuzz et l’évaluation de l’influence du nesting.",
+ "state": "Après l’intégration, le backend Direct DXIL conserve ses capacités : gathers à LOD explicite et sampling UNORM=1 fonctionnent, les tests GPU existants restent verts et les nouveaux gather4_lod passent. Les tests e2e passent tous (1154 réussis, 0 échecs) et les fuites d’event/COM ainsi que le double signal de fence sont éliminés. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation n’a pas encore été évalué. La prochaine étape probable reste l’analyse des échecs de fuzz et la mesure de l’influence du nesting.",
  "entries": [
-  {
-   "sha": "6c9f9473e5cbe38cf0d01ec890eced284a9bb711",
-   "date": "2026-11-25",
-   "title": "Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode",
-   "summary": ""
-  },
-  {
-   "sha": "fb32c87a148df85763b91afda0229792af19e16b",
-   "date": "2026-11-25",
-   "title": "UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap",
-   "summary": ""
-  },
-  {
-   "sha": "c00f3fcfce59bb4dfd3a1f96bbc84c60e765b538",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: honour D16 packing in image_get_resinfo",
-   "summary": ""
-  },
-  {
-   "sha": "025c7861c7acabaa2d9f8f005de478ed4470cba4",
-   "date": "2026-11-25",
-   "title": "D3D12.X: the GPU wait watchdog starts after its wake pair is set",
-   "summary": ""
-  },
-  {
-   "sha": "c2dcef3fc8b60d6a9608893fb0a72267220d0b4b",
-   "date": "2026-11-25",
-   "title": "Recompiler: round direct-DXIL f16 converts and products to nearest-even",
-   "summary": ""
-  },
-  {
-   "sha": "3f810440f73c8ae5c506d3a1a0f6c81adc926726",
-   "date": "2026-11-25",
-   "title": "Recompiler: translate v_div_fixup_f16 in both backends",
-   "summary": ""
-  },
   {
    "sha": "2aa2d1a54396885bb5bfce8edef4285cf24803c2",
    "date": "2026-11-25",
@@ -239,6 +203,42 @@
    "sha": "b56a7d3f14d4db0173d93b8cad8d35909b36171d",
    "date": "2026-11-25",
    "title": "D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs",
+   "summary": ""
+  },
+  {
+   "sha": "5195b1442a53cd2c19b3a7eea5f60d611e750ddb",
+   "date": "2026-11-25",
+   "title": "XGameRuntime: snapshot blob enumeration across submitted updates",
+   "summary": ""
+  },
+  {
+   "sha": "707b84c7df012bff2b6f30cd5d7149b5d407fce4",
+   "date": "2026-11-25",
+   "title": "Tests: isolate e2e temp directories, report skips on stderr, and check exit status",
+   "summary": ""
+  },
+  {
+   "sha": "74f96b395fc8977c0c6af959e5aebbd9a4f3addc",
+   "date": "2026-11-25",
+   "title": "kernelx: skip coherent UMA fallback for physical pages on sparse layouts",
+   "summary": ""
+  },
+  {
+   "sha": "1c17aa55087febb4c92ffe2c8ba47550b12a26a8",
+   "date": "2026-11-25",
+   "title": "Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)",
+   "summary": ""
+  },
+  {
+   "sha": "5478c4a7c1ae5adba127c8d27018d7fdbf3a8725",
+   "date": "2026-11-25",
+   "title": "e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle",
+   "summary": "Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests."
+  },
+  {
+   "sha": "c9a5d58fae060224f5658df08a008b41cbd68de4",
+   "date": "2026-11-25",
+   "title": "D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots",
    "summary": ""
   }
  ]

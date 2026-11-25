@@ -6,6 +6,8 @@ Après ce changement, la couche XCL continue de charger correctement les DLL ave
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `50a9fde` Recompiler: a bridged mask write in the split form meets no barrier
+- **2026-11-25** `af066dd` Recompiler: direct compact form stores a branch's target in the entry
 - **2026-11-25** `55d64c2` D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors
 - **2026-11-25** `65fc114` D3D12.X: composite multi-plane PresentX overlays
 - **2026-11-25** `9f02f9d` kernelx: XMemMapPhysicalPagesScatter with no page array unmaps
@@ -57,5 +59,3 @@ Après ce changement, la couche XCL continue de charger correctement les DLL ave
   Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests.
 - **2026-11-25** `1c17aa5` Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)
 - **2026-11-25** `74f96b3` kernelx: skip coherent UMA fallback for physical pages on sparse layouts
-- **2026-11-25** `707b84c` Tests: isolate e2e temp directories, report skips on stderr, and check exit status
-- **2026-11-25** `5195b14` XGameRuntime: snapshot blob enumeration across submitted updates

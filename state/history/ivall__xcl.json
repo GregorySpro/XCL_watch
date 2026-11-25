@@ -2,18 +2,6 @@
  "state": "Après ce changement, la couche XCL continue de charger correctement les DLL avec des motifs contenant plusieurs `*`, les boucles de pixel `v_readfirstlane` fonctionnent sur les GPU RDNA2, et les diagnostics DRED sont actifs. La nouvelle logique de `place_pages` alloue les pages de texture niveau par niveau uniquement lorsqu’elles contiennent des données, ce qui réduit l’usage VRAM dans les scénarios de streaming, sans impacter les chemins existants (textures non‑tilées, ressources multi‑samples, etc.). Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests échouent toujours ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en évaluant l’impact réel de `XCL_TEXTURE_LEVEL_PAGES` sur la consommation mémoire et les performances.",
  "entries": [
   {
-   "sha": "5195b1442a53cd2c19b3a7eea5f60d611e750ddb",
-   "date": "2026-11-25",
-   "title": "XGameRuntime: snapshot blob enumeration across submitted updates",
-   "summary": ""
-  },
-  {
-   "sha": "707b84c7df012bff2b6f30cd5d7149b5d407fce4",
-   "date": "2026-11-25",
-   "title": "Tests: isolate e2e temp directories, report skips on stderr, and check exit status",
-   "summary": ""
-  },
-  {
    "sha": "74f96b395fc8977c0c6af959e5aebbd9a4f3addc",
    "date": "2026-11-25",
    "title": "kernelx: skip coherent UMA fallback for physical pages on sparse layouts",
@@ -239,6 +227,18 @@
    "sha": "55d64c277be137cb6b47d7528dc6a88082bf573e",
    "date": "2026-11-25",
    "title": "D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors",
+   "summary": ""
+  },
+  {
+   "sha": "af066dd1f849c3d97e585e6ace6fc91ed94a3d48",
+   "date": "2026-11-25",
+   "title": "Recompiler: direct compact form stores a branch's target in the entry",
+   "summary": ""
+  },
+  {
+   "sha": "50a9fdef81cb796b8756a31defb0648301d002ce",
+   "date": "2026-11-25",
+   "title": "Recompiler: a bridged mask write in the split form meets no barrier",
    "summary": ""
   }
  ]

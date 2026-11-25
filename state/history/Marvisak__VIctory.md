@@ -6,6 +6,13 @@ Après ce changement, le processus de démarrage de GTA VI réussit systémati
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `ea488a9` GPU: no typed unordered view in a format the host cannot store to
+- **2026-11-25** `136e39d` GPU: a page whose alias cannot be guarded stays changed
+- **2026-11-25** `78ed12e` GPU: write a null CBV when CreateConstantBufferView gets a null desc
+- **2026-11-25** `120233c` Shader: ignore guarded or modified v_mov_b32 in Lower::konst
+- **2026-11-25** `7ac1f54` Shaders: seed POPS collision id with wave_id != collision_id
+- **2026-11-25** `5c7489f` Shaders: a census that no opcode of the ISA may translate by crashing
+- **2026-11-25** `106377d` GPU: a partial refresh of an armed page updates the bytes saved of it
 - **2026-11-25** `2e319e5` Formats: add 7 invariant unit tests for xma/tables.rs
 - **2026-11-25** `25b1bf3` Shaders: add SQ_IMG_SAMP LOD-bias and no-mip range tests for emit/sampler.rs
 - **2026-11-25** `a7cb47c` GPU: no blending on integer render targets in host pipelines (fixes #806)
@@ -47,11 +54,3 @@ Après ce changement, le processus de démarrage de GTA VI réussit systémati
 - **2026-11-25** `5fa5de3` Shaders: a helper lane's v_readfirstlane reads its own value (#908)
 - **2026-11-25** `fcdefcf` GPU: copy title writes under ranges a submission's shaders write
 - **2026-11-25** `1bde03c` Shader tests: require a device readback in every waterfall test
-- **2026-11-25** `3688adc` Shaders: GFX10 FLAT offsets ignore bit 11
-- **2026-11-25** `13d1237` GPU: throttle failed swap-chain creation and resize
-- **2026-11-25** `3c47fd4` GPU: fences answer for ID3D12Fence1 as documented
-- **2026-11-25** `f73e8e1` Shaders: precompute MD5 round constants and avoid per-block Vec in md…
-- **2026-11-25** `520fefc` Shaders: fold empty loop latches containing only dead phis
-  Le commit corrige la détection des latches vides dans l’émission du bitcode en ignorant les phis morts, évitant ainsi que des boucles divergentes ne créent des blocs vides qui bloquent le driver AMD. Cette modification poursuit le chantier de stabilisation du pipeline shader en résolvant un bug d’émission qui pouvait laisser des latches non pliés. Le correctif ajoute un test unitaire confirmant que les latches contenant uniquement des phis morts sont correctement repliés, ce qui renforce la fiabilité du backend shader. Il ne touche pas directement le rendu du monde, mais élimine un risque de plantage lié aux shaders.
-- **2026-11-25** `ef65f88` Handle unsupported display deferrals in the HLE test
-- **2026-11-25** `19469bd` Shaders: hardware test for the integer v_min3/v_max3/v_med3

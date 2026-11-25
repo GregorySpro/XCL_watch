@@ -2,48 +2,6 @@
  "state": "Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
   {
-   "sha": "19469bd5f6e839611aaedf94ae48a9c5e4615fcc",
-   "date": "2026-11-25",
-   "title": "Shaders: hardware test for the integer v_min3/v_max3/v_med3",
-   "summary": ""
-  },
-  {
-   "sha": "ef65f88b825cb10f12799cccda550e01e3631388",
-   "date": "2026-11-25",
-   "title": "Handle unsupported display deferrals in the HLE test",
-   "summary": ""
-  },
-  {
-   "sha": "520fefc0aec2990bef62ca0033d12660a7bb9245",
-   "date": "2026-11-25",
-   "title": "Shaders: fold empty loop latches containing only dead phis",
-   "summary": "Le commit corrige la détection des latches vides dans l’émission du bitcode en ignorant les phis morts, évitant ainsi que des boucles divergentes ne créent des blocs vides qui bloquent le driver AMD. Cette modification poursuit le chantier de stabilisation du pipeline shader en résolvant un bug d’émission qui pouvait laisser des latches non pliés. Le correctif ajoute un test unitaire confirmant que les latches contenant uniquement des phis morts sont correctement repliés, ce qui renforce la fiabilité du backend shader. Il ne touche pas directement le rendu du monde, mais élimine un risque de plantage lié aux shaders."
-  },
-  {
-   "sha": "f73e8e18849e73b72c444d3a287fdbe6e97ccb5a",
-   "date": "2026-11-25",
-   "title": "Shaders: precompute MD5 round constants and avoid per-block Vec in md…",
-   "summary": ""
-  },
-  {
-   "sha": "3c47fd4945dd717a09ae42e14d6eae8bd10a4020",
-   "date": "2026-11-25",
-   "title": "GPU: fences answer for ID3D12Fence1 as documented",
-   "summary": ""
-  },
-  {
-   "sha": "13d1237b181e3f6f755010ddcc61136dd0b3b0e3",
-   "date": "2026-11-25",
-   "title": "GPU: throttle failed swap-chain creation and resize",
-   "summary": ""
-  },
-  {
-   "sha": "3688adc5abfded974311a04cf35302c8b1476e5d",
-   "date": "2026-11-25",
-   "title": "Shaders: GFX10 FLAT offsets ignore bit 11",
-   "summary": ""
-  },
-  {
    "sha": "1bde03c5befb3afd0843ced35448d5ed25c9ac0f",
    "date": "2026-11-25",
    "title": "Shader tests: require a device readback in every waterfall test",
@@ -239,6 +197,48 @@
    "sha": "2e319e5235de85127384e8fd2ae0d5ff24fce654",
    "date": "2026-11-25",
    "title": "Formats: add 7 invariant unit tests for xma/tables.rs",
+   "summary": ""
+  },
+  {
+   "sha": "106377d143e6dc8df99022126f0d0dc1afd2b0b6",
+   "date": "2026-11-25",
+   "title": "GPU: a partial refresh of an armed page updates the bytes saved of it",
+   "summary": ""
+  },
+  {
+   "sha": "5c7489f911cc005119ad60722a8b6807508fe355",
+   "date": "2026-11-25",
+   "title": "Shaders: a census that no opcode of the ISA may translate by crashing",
+   "summary": ""
+  },
+  {
+   "sha": "7ac1f54d83179d4d7656b39dee0a06917d139e2e",
+   "date": "2026-11-25",
+   "title": "Shaders: seed POPS collision id with wave_id != collision_id",
+   "summary": ""
+  },
+  {
+   "sha": "120233cf912173e4411431a4b47579ef420310fe",
+   "date": "2026-11-25",
+   "title": "Shader: ignore guarded or modified v_mov_b32 in Lower::konst",
+   "summary": ""
+  },
+  {
+   "sha": "78ed12eb79774bf141efaaf6ebd626a10bfb5bbf",
+   "date": "2026-11-25",
+   "title": "GPU: write a null CBV when CreateConstantBufferView gets a null desc",
+   "summary": ""
+  },
+  {
+   "sha": "136e39d09a147fe00e2bdefc42b7ce1ec3d2134b",
+   "date": "2026-11-25",
+   "title": "GPU: a page whose alias cannot be guarded stays changed",
+   "summary": ""
+  },
+  {
+   "sha": "ea488a9f9901e4375c547a57795ae8cb79d577a4",
+   "date": "2026-11-25",
+   "title": "GPU: no typed unordered view in a format the host cannot store to",
    "summary": ""
   }
  ]

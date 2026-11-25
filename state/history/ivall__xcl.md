@@ -6,6 +6,10 @@ Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le f
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `63547b7` Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)
+- **2026-11-25** `da6174d` Memory: bound sparse UMA first-fit searches by address
+- **2026-11-25** `0e45b97` Tests: label bench_split_wave64 by the form x64_spin really picks
+- **2026-11-25** `b282d6b` Tests: the sparse VRAM test binds the heaps its root signature indexes
 - **2026-11-25** `0be6ce8` DirectStorage: use SIMD for zlib checksums
   Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence.
 - **2026-11-25** `b8428c5` XAudio2: precompute XMA inverse quantizer gains
@@ -50,8 +54,3 @@ Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le f
 - **2026-11-24** `bfb8133` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
 - **2026-11-24** `9dcf2f6` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
 - **2026-11-24** `66879ef` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `9e27370` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `4e057cb` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `f251762` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-  Le nouveau commit retire le blocage qui refusait les fenêtres mémoire provenant du heap dans le mode per‑lane du recompiler DXIL. Ainsi `compute_with` accepte désormais `XCL_HEAP_WINDOWS`, ce qui prolonge la prise en charge déjà introduite pour le backend direct DXIL. Le changement s’inscrit dans la continuité du chantier d’optimisation du per‑lane form et de l’intégration des fenêtres mémoire, et permet à quelques programmes compute de s’exécuter avec les fenêtres du heap, même si les gains de taille restent négligeables. Les gros shaders restent encore refusés pour d’autres raisons structurelles.
-- **2026-11-24** `29eccc0` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)

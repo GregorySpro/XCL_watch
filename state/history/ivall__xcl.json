@@ -2,30 +2,6 @@
  "state": "Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles décompressions sont légèrement plus rapides et restent fonctionnellement identiques, aucune régression n’est apparente. Les blocages liés aux shaders volumineux et à l’optimisation du per‑lane form subsistent, de même que le nettoyage des PR inactives. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage du code.",
  "entries": [
   {
-   "sha": "29eccc018f4e04abbd647e1be2e69a2fa0d920ac",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "f2517621f2bc374daa206e24634f29414005e0c8",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": "Le nouveau commit retire le blocage qui refusait les fenêtres mémoire provenant du heap dans le mode per‑lane du recompiler DXIL. Ainsi `compute_with` accepte désormais `XCL_HEAP_WINDOWS`, ce qui prolonge la prise en charge déjà introduite pour le backend direct DXIL. Le changement s’inscrit dans la continuité du chantier d’optimisation du per‑lane form et de l’intégration des fenêtres mémoire, et permet à quelques programmes compute de s’exécuter avec les fenêtres du heap, même si les gains de taille restent négligeables. Les gros shaders restent encore refusés pour d’autres raisons structurelles."
-  },
-  {
-   "sha": "4e057cb91ee83aa0873eeccdedf14f163cfeb18a",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "9e27370765adfcdcc153fc24d2f18e70ee47502b",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
    "sha": "66879efc7d958cd18eaab93cb379492a85583d2b",
    "date": "2026-11-24",
    "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
@@ -240,6 +216,30 @@
    "date": "2026-11-25",
    "title": "DirectStorage: use SIMD for zlib checksums",
    "summary": "Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence."
+  },
+  {
+   "sha": "b282d6bdc2dfd43fc2aaef7f115dd1c3496ade50",
+   "date": "2026-11-25",
+   "title": "Tests: the sparse VRAM test binds the heaps its root signature indexes",
+   "summary": ""
+  },
+  {
+   "sha": "0e45b975235d6a46daf44076ee9bcd020ebef971",
+   "date": "2026-11-25",
+   "title": "Tests: label bench_split_wave64 by the form x64_spin really picks",
+   "summary": ""
+  },
+  {
+   "sha": "da6174d265c44ef399388995c8f2253a408f109d",
+   "date": "2026-11-25",
+   "title": "Memory: bound sparse UMA first-fit searches by address",
+   "summary": ""
+  },
+  {
+   "sha": "63547b7a96d6b347273794047f61722158205b1e",
+   "date": "2026-11-25",
+   "title": "Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)",
+   "summary": ""
   }
  ]
 }

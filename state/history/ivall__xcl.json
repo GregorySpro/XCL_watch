@@ -2,30 +2,6 @@
  "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
  "entries": [
   {
-   "sha": "266b845e4b2a193ea7ce1b86698ead08dc4a10c0",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: image_get_lod accepts static samplers",
-   "summary": ""
-  },
-  {
-   "sha": "177cd407e0114bd087622ae0c358fb3ba7e97484",
-   "date": "2026-11-24",
-   "title": "D3D12.X: promote R9G9B9E5_SHAREDEXP render/UAV targets to R11G11B10_FLOAT",
-   "summary": ""
-  },
-  {
-   "sha": "4e3515eed124b9f4779f5ef4e2b54adf97da936a",
-   "date": "2026-11-24",
-   "title": "D3D12.X: an ExecuteIndirect reads the arguments written before it",
-   "summary": ""
-  },
-  {
-   "sha": "c4d37bec1bb4286eb373aea963404a23f13401fa",
-   "date": "2026-11-24",
-   "title": "D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages",
-   "summary": ""
-  },
-  {
    "sha": "1d027e5c76c9a86a7ee2ca1cc677edf0be95d331",
    "date": "2026-11-24",
    "title": "CI: mark PRs idle for 3 days stale and close them after a week",
@@ -239,6 +215,30 @@
    "sha": "2bdf0477f84377d1b08e29424100c9bace4e530f",
    "date": "2026-11-25",
    "title": "D3D12.X: reduce retained texture upload staging",
+   "summary": ""
+  },
+  {
+   "sha": "8f5fca5bb9ad6e695093d75294ad2cec023bba60",
+   "date": "2026-11-25",
+   "title": "D3D12.X: detile 3D textures with packed mip tails",
+   "summary": ""
+  },
+  {
+   "sha": "393cbddf97f0ae78deb107fd60d1713d5b78ee97",
+   "date": "2026-11-25",
+   "title": "Recompiler: lower S_FF0_I32 and S_FLBIT_I32 on mask registers in the per-lane form",
+   "summary": ""
+  },
+  {
+   "sha": "86719eec1e9fc4c36c5fb568ec4951fd47a31b88",
+   "date": "2026-11-25",
+   "title": "Direct DXIL: write every dword of an unaligned multi-dword format store",
+   "summary": ""
+  },
+  {
+   "sha": "edf8c16122870e55333d85c40df48bcfcd1de9c3",
+   "date": "2026-11-25",
+   "title": "Recompiler: honor FP32 denormal mode in FREXP exponent",
    "summary": ""
   }
  ]

@@ -6,6 +6,10 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `edf8c16` Recompiler: honor FP32 denormal mode in FREXP exponent
+- **2026-11-25** `86719ee` Direct DXIL: write every dword of an unaligned multi-dword format store
+- **2026-11-25** `393cbdd` Recompiler: lower S_FF0_I32 and S_FLBIT_I32 on mask registers in the per-lane form
+- **2026-11-25** `8f5fca5` D3D12.X: detile 3D textures with packed mip tails
 - **2026-11-25** `2bdf047` D3D12.X: reduce retained texture upload staging
 - **2026-11-25** `99e4743` Recompiler: select vertices for BVH triangle node types 2 and 3
 - **2026-11-25** `6f45624` Recompiler: fix per-lane whole-wave predicate and SRC_SCC checks
@@ -50,7 +54,3 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 - **2026-11-24** `e9ac9f0` Direct DXIL: geometry mode, MSAA loads and directed f32 rounding
   Le nouveau commit ajoute un workflow GitHub Actions qui marque les pull‑requests inactives depuis trois jours comme « stale » puis les ferme après une semaine, sauf si elles portent les labels `goal:world-load` ou `keep-open`. Cette automatisation poursuit le chantier CI initié précédemment (voir le commit 1d027e5) et ne touche pas le code du recompiler ou les backends. Elle ne débloque aucune fonctionnalité du moteur, mais elle devrait réduire le bruit des PRs abandonnées et garder le dépôt plus propre.
 - **2026-11-24** `1d027e5` CI: mark PRs idle for 3 days stale and close them after a week
-- **2026-11-24** `c4d37be` D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages
-- **2026-11-24** `4e3515e` D3D12.X: an ExecuteIndirect reads the arguments written before it
-- **2026-11-24** `177cd40` D3D12.X: promote R9G9B9E5_SHAREDEXP render/UAV targets to R11G11B10_FLOAT
-- **2026-11-24** `266b845` Direct DXIL: image_get_lod accepts static samplers

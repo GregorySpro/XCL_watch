@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après cette modification, les shaders compute en mode `XCL_DIRECT_DXIL=1`/`XCL_HEAP_WINDOWS=0` bénéficient d’une compilation beaucoup plus rapide et d’une empreinte mémoire du driver nettement réduite, tandis que les shaders graphiques conservent le comportement précédent (et ne subissent pas de régression notable). Les tests existants sur le heap‑window et les vérifications de cohérence restent valides. Les blocages précédents (fuzz‑tests `XCL_TEXTURE_LEVEL_PAGES`, implémentation de `DispatchMesh` et les cinq échecs DXIL) ne sont pas résolus par ce changement et restent à traiter. La prochaine étape probable sera de poursuivre les optimisations du chemin compute (stores, atomics) et de s’attaquer aux tests de fuzz‑testing restants.
+Après l’ajout, le projet conserve son état fonctionnel : les shaders compute restent rapides et économes en mémoire, les tests GPU heap‑window continuent de passer, et les optimisations compute sont toujours en cours. Aucun nouveau code n’a été modifié, donc aucun nouveau bug n’est introduit, mais la documentation comble un manque important, facilitant le diagnostic des futures régressions. Les blocages précédents (fuzz‑tests, DispatchMesh, échecs DXIL) restent non résolus, et la prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `e1d84b7` README: the switches for a bug report's diagnostics
+  Le nouveau commit ajoute une section « Diagnostics for a bug report » au README, listant sept variables d’environnement que l’on peut activer pour obtenir des traces détaillées (durée d’exécution, activité périodique, dump de threads, traces de fautes d’accès, traces de mémoire, traces d’imports et trace D3D12). Cette documentation vient compléter le chantier de visibilité des réglages utilisateur, sans toucher au code. Désormais les développeurs et testeurs peuvent activer ces diagnostics pour mieux comprendre les blocages, mais cela ne résout pas les problèmes techniques encore ouverts (fuzz‑tests, DispatchMesh, échecs DXIL).
 - **2026-11-25** `6d12f58` Recompiler: flatten direct DXIL root-UAV loads for compute
   Le commit a remplacé les multiples branches `switch` utilisées pour chaque chargement direct DXIL root‑UAV par une séquence linéaire utilisant `rawBufferLoad` et `select` sur les shaders compute. Cette optimisation poursuit le chantier amorcé par le PR #2088 : réduire le nombre de blocs basiques générés en mode direct DXIL, ce qui diminue drastiquement les temps de compilation à froid et la consommation mémoire du driver NVIDIA. Le reste du pipeline (stores, atomics, chemins HLSL et graphics) reste inchangé, et les performances des shaders pixel restent identiques.
 - **2026-11-25** `e0d93c8` D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind
@@ -49,4 +51,3 @@ Après cette modification, les shaders compute en mode `XCL_DIRECT_DXIL=1`/`XCL_
 - **2026-11-25** `38ac3d9` D3D12.X: quarantine unmapped parked sparse tiles behind GPU fences
 - **2026-11-25** `22b6222` Direct DXIL: include pixel shader helper lanes in ballots and VOPC masks
 - **2026-11-25** `e44af70` Recompiler: the FSSM header's wave32 flag decides a program's wave size
-- **2026-11-25** `bd2ac50` Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)

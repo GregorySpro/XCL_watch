@@ -1,30 +1,6 @@
 {
- "state": "Après ce changement, le mécanisme XAsync ne se bloque plus lors du nettoyage d’appels échoués, et le test ajouté confirme que le verrou de complétion est bien libre pendant le cleanup. Le reste du projet reste inchangé : le pipeline shader produit toujours du DXIL compact, le rafraîchissement des textures fonctionne, les UAV sont initialisés à zéro, mais le rendu du monde reste noir, HDR et depth‑bounds ne sont pas encore implémentés, et le support waterfall doit encore être ajouté. La prochaine étape reste l’intégration du backend waterfall et la prise en charge HDR/depth‑bounds.",
+ "state": "Après l’ajout de la sérialisation WARP, les tests unitaires du crate victory‑shader s’exécutent sans plantage même en mode multithread, et le mécanisme XAsync continue de fonctionner sans blocage. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA restent opérationnels comme indiqué dans l’état connu. Le rendu du monde demeure noir, HDR et depth‑bounds sont toujours absents, et le backend waterfall n’est pas encore intégré. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
-  {
-   "sha": "86a5ed6bace9c789396494438f6ca75ba9084146",
-   "date": "2026-11-24",
-   "title": "GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored",
-   "summary": ""
-  },
-  {
-   "sha": "6d021fe3df542e5b5c59940a23703735e90ca603",
-   "date": "2026-11-24",
-   "title": "GPU: world frame cost",
-   "summary": ""
-  },
-  {
-   "sha": "bacb06afab3dde45f262343bcb9a92868b146bec",
-   "date": "2026-11-24",
-   "title": "GPU: a heap slot holds its view's own copy",
-   "summary": ""
-  },
-  {
-   "sha": "9c58a1c35a384552bde9b4c9b169731f282a15a1",
-   "date": "2026-11-24",
-   "title": "Pipeline pre-build from the shader pack (translate --cache --pipelines); mesh pipelines load from th",
-   "summary": ""
-  },
   {
    "sha": "700057393f69031b9ad418d23797ae4ede1abea6",
    "date": "2026-11-24",
@@ -240,6 +216,30 @@
    "date": "2026-11-25",
    "title": "XAsync: run a failed call's cleanup without the completion lock (#114)",
    "summary": "Le commit introduit un drapeau atomique `claimed` dans la structure `Call` et modifie la logique de complétion pour que le premier thread qui termine libère le verrou avant d’exécuter le nettoyage du provider. Cette correction élimine le deadlock qui pouvait survenir lorsqu’un nettoyage attendait un thread déjà en cours de complétion. Elle s’inscrit comme une résolution de blocage dans le système d’async, indépendante des optimisations shader récentes, et rend désormais les appels XAsync fiables même en cas d’échec."
+  },
+  {
+   "sha": "792602e27755034a5ecd72ab07eb10ba1b89c774",
+   "date": "2026-11-25",
+   "title": "Shaders: reuse SSA sums when tracing memory addresses",
+   "summary": "Le nouveau commit introduit un cache des sommes d’adresses SSA dans le traceur de ressources shader, évitant de recomposer les mêmes additions à chaque utilisation. Cette optimisation poursuit la série d’améliorations du suivi des ressources (réduction du nombre de handles, initialisation des UAV, etc.) en passant d’un coût quadratique à linéaire pour les chaînes d’adresses. Elle accélère fortement le `resource::track` (jusqu’à 22× sur de gros scénarios) et ajoute des tests vérifiant la bonne prise en compte des adresses dynamiques et du titre‑memory. Le rendu du monde reste toujours noir ; aucune nouvelle fonctionnalité de rendu n’est débloquée."
+  },
+  {
+   "sha": "bde8e7decb675d740b3ae75d2466aafdd221fdef",
+   "date": "2026-11-25",
+   "title": "Shaders: share and serialize WARP host operations across threads",
+   "summary": "Le nouveau commit introduit un dispositif WARP unique partagé au sein du processus et sérialise toutes les opérations host liées à WARP (création de device, root signatures, compilation de pipelines, draws et dispatches) derrière un mutex global. Cette mesure corrige les plantages d’accès violé (0xC0000005) observés sous Windows 11 lorsqu’on utilise plusieurs threads, poursuivant la série de correctifs récents (initialisation des UAV, mise en cache SSA, réduction des handles). Le reste du pipeline shader reste inchangé : le rendu du monde est toujours noir et les fonctionnalités HDR/depth‑bounds ne sont pas encore présentes."
+  },
+  {
+   "sha": "0665a0e8556d4fc8702977b90b5a9e3897b4724d",
+   "date": "2026-11-25",
+   "title": "Shaders: scope wave64 ds_bpermute_b32 to 32-lane halves",
+   "summary": ""
+  },
+  {
+   "sha": "61bfc773d3296252918572921237075d8a748649",
+   "date": "2026-11-25",
+   "title": "GPU: mirror placed unordered texture views",
+   "summary": ""
   }
  ]
 }

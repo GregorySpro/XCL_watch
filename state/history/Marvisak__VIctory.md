@@ -2,10 +2,16 @@
 
 ## État du projet
 
-Après ce changement, le mécanisme XAsync ne se bloque plus lors du nettoyage d’appels échoués, et le test ajouté confirme que le verrou de complétion est bien libre pendant le cleanup. Le reste du projet reste inchangé : le pipeline shader produit toujours du DXIL compact, le rafraîchissement des textures fonctionne, les UAV sont initialisés à zéro, mais le rendu du monde reste noir, HDR et depth‑bounds ne sont pas encore implémentés, et le support waterfall doit encore être ajouté. La prochaine étape reste l’intégration du backend waterfall et la prise en charge HDR/depth‑bounds.
+Après l’ajout de la sérialisation WARP, les tests unitaires du crate victory‑shader s’exécutent sans plantage même en mode multithread, et le mécanisme XAsync continue de fonctionner sans blocage. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA restent opérationnels comme indiqué dans l’état connu. Le rendu du monde demeure noir, HDR et depth‑bounds sont toujours absents, et le backend waterfall n’est pas encore intégré. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `61bfc77` GPU: mirror placed unordered texture views
+- **2026-11-25** `0665a0e` Shaders: scope wave64 ds_bpermute_b32 to 32-lane halves
+- **2026-11-25** `bde8e7d` Shaders: share and serialize WARP host operations across threads
+  Le nouveau commit introduit un dispositif WARP unique partagé au sein du processus et sérialise toutes les opérations host liées à WARP (création de device, root signatures, compilation de pipelines, draws et dispatches) derrière un mutex global. Cette mesure corrige les plantages d’accès violé (0xC0000005) observés sous Windows 11 lorsqu’on utilise plusieurs threads, poursuivant la série de correctifs récents (initialisation des UAV, mise en cache SSA, réduction des handles). Le reste du pipeline shader reste inchangé : le rendu du monde est toujours noir et les fonctionnalités HDR/depth‑bounds ne sont pas encore présentes.
+- **2026-11-25** `792602e` Shaders: reuse SSA sums when tracing memory addresses
+  Le nouveau commit introduit un cache des sommes d’adresses SSA dans le traceur de ressources shader, évitant de recomposer les mêmes additions à chaque utilisation. Cette optimisation poursuit la série d’améliorations du suivi des ressources (réduction du nombre de handles, initialisation des UAV, etc.) en passant d’un coût quadratique à linéaire pour les chaînes d’adresses. Elle accélère fortement le `resource::track` (jusqu’à 22× sur de gros scénarios) et ajoute des tests vérifiant la bonne prise en compte des adresses dynamiques et du titre‑memory. Le rendu du monde reste toujours noir ; aucune nouvelle fonctionnalité de rendu n’est débloquée.
 - **2026-11-25** `30a5202` XAsync: run a failed call's cleanup without the completion lock (#114)
   Le commit introduit un drapeau atomique `claimed` dans la structure `Call` et modifie la logique de complétion pour que le premier thread qui termine libère le verrou avant d’exécuter le nettoyage du provider. Cette correction élimine le deadlock qui pouvait survenir lorsqu’un nettoyage attendait un thread déjà en cours de complétion. Elle s’inscrit comme une résolution de blocage dans le système d’async, indépendante des optimisations shader récentes, et rend désormais les appels XAsync fiables même en cas d’échec.
 - **2026-11-25** `13f91ca` README: status of 2026-11-25, the prologue is reached at about 1 fps
@@ -48,7 +54,3 @@ Après ce changement, le mécanisme XAsync ne se bloque plus lors du nettoyage d
 - **2026-11-25** `88de5fc` run: stop with a clear message when the title's own DLLs are missing
 - **2026-11-24** `70564ae` README: status of 2026-11-24
 - **2026-11-24** `7000573` Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames
-- **2026-11-24** `9c58a1c` Pipeline pre-build from the shader pack (translate --cache --pipelines); mesh pipelines load from th
-- **2026-11-24** `bacb06a` GPU: a heap slot holds its view's own copy
-- **2026-11-24** `6d021fe` GPU: world frame cost
-- **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored

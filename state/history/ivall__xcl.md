@@ -2,10 +2,13 @@
 
 ## État du projet
 
-Après ce changement, le projet possède un nouveau test qui confirme la conformité du hook `CheckFeatureSupport` avec le driver D3D12 natif sur AMD RX 7600 et sur le rendu logiciel WARP, sans échec signalé. Les parties déjà stables – partage de tiles VRAM pour les cubemaps, heap GLOBAL_SAMPLER, recompilation des shaders – continuent de fonctionner. Les zones bloquantes restent les fuzz‑tests sur XCL_TEXTURE_LEVEL_PAGES et l’implémentation de DispatchMesh. La prochaine étape probable sera d’étendre ces vérifications à d’autres GPU (NVIDIA, Intel) et d’avancer sur les fonctionnalités manquantes identifiées par les fuzz‑tests.
+Après l’intégration, le projet dispose désormais de tests robustes confirmant la cohérence du heap‑window entre les implémentations HLSL et DXIL, ce qui renforce la stabilité de la pile de recompilation shader. Les parties déjà fonctionnelles (partage de tiles VRAM, heap GLOBAL_SAMPLER, recompilation des shaders) restent intactes. Les blocages persistants sont les fuzz‑tests sur `XCL_TEXTURE_LEVEL_PAGES` et l’implémentation de `DispatchMesh`, ainsi que les cinq échecs déjà existants liés aux pipelines DXIL et aux masques bridgés. La prochaine étape probable sera de corriger ces échecs de fuzz‑tests et d’étendre les nouvelles vérifications de heap‑window à d’autres GPU (NVIDIA, AMD, Intel).
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6d051da` Recompiler: load direct DXIL geometry ES inputs from the heap window
+- **2026-11-25** `fda0b1f` Tests: verify heap-window GPU equivalence and graphics validation
+  Le nouveau commit ajoute une batterie de tests de validation de l’équivalence GPU pour le mode `XCL_HEAP_WINDOWS=1`, couvrant les chargements, stockages, atomiques 32 bits et 64 bits ainsi que la validation des shaders graphiques sur plusieurs étapes. Ces tests s’inscrivent dans la continuité des récents travaux de vérification des tables de layout et des comparaisons avec le driver natif, en ciblant spécifiquement la correction du comportement des fenêtres de heap. Ils montrent que, sur le RTX 5090, les chemins HLSL et DXIL produisent des résultats bit‑for‑bit identiques, mais ne résolvent pas les échecs déjà présents dans les fuzz‑tests de création de pipeline et de masques bridgés.
 - **2026-11-25** `889ef3e` Tests: compare extra-page tiles when an unaligned va is placed again (#718)
 - **2026-11-25** `72f848c` Tests: host comparisons take the driver's own answer under Wine
 - **2026-11-25** `3f60df5` Tests: host comparisons take the driver's own answer under Wine
@@ -46,5 +49,3 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 - **2026-11-25** `bd2ac50` Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)
 - **2026-11-25** `943043e` Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)
 - **2026-11-25** `7ff2b2e` Shaders: cache translator refusals and DXC compile failures by capability
-- **2026-11-25** `c9ee916` README: the switches for how a title runs
-- **2026-11-25** `0437ecd` CLI: reject unknown options and invalid values in xcl rpf and xcl shaders (#2266)

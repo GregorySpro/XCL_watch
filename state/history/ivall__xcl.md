@@ -6,6 +6,10 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `c00f3fc` Direct DXIL: honour D16 packing in image_get_resinfo
+- **2026-11-25** `fb32c87` UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap
+- **2026-11-25** `6c9f947` Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode
+- **2026-11-25** `3da2abb` Recompiler: direct DXIL's signature dependencies are complete across loops
 - **2026-11-25** `edf8c16` Recompiler: honor FP32 denormal mode in FREXP exponent
 - **2026-11-25** `86719ee` Direct DXIL: write every dword of an unaligned multi-dword format store
 - **2026-11-25** `393cbdd` Recompiler: lower S_FF0_I32 and S_FLBIT_I32 on mask registers in the per-lane form
@@ -48,9 +52,3 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
   Le nouveau commit ajoute un fast‑path qui évite les appels coûteux à VirtualQuery sur les fenêtres UMA cohérentes déjà engagées, en les détectant via `uma.in_committed_window`. Cette optimisation s’inscrit dans la suite des améliorations de la gestion mémoire et du pipeline CPU‑GPU, suivant les récents travaux sur les backends DXIL et la réduction des blocages liés aux mises à jour de tuiles. Désormais les écritures CPU (`write_now`, `write_u64_now`, `writable`) et les requêtes de trace de vertex‑buffer utilisent ce raccourci, ce qui réduit les latences de 75‑80 ms observées auparavant. Le reste des fonctionnalités reste inchangé ; les performances globales du per‑lane form et les limites de shaders volumineux ne sont pas affectées.
 - **2026-11-24** `20cf130` dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash
   Le commit réordonne les appels DXIL en émettant d’abord `dx.op.textureLoad` puis `dx.op.getDimensions` pour les textures MSAA dynamiquement indexées, éliminant le plantage du compilateur AMD (`amdxc64.dll`) lors de la création de pipelines compute. Cette correction suit le précédent correctif #425b869 qui visait déjà les crashes liés aux textures MSAA, et vient clôturer le blocage qui empêchait l’exécution de shaders compute contenant des `Texture2DMS`/`Texture2DMSArray`. Désormais les shaders MSAA passent la compilation et l’exécution sur les GPU AMD, mais les autres problèmes (taille des shaders, lenteur CI, optimisation SSA) restent en suspens.
-- **2026-11-24** `425b869` dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash
-  Le commit modifie le backend DXIL pour émettre les appels `dx.op.textureLoad` avant `dx.op.getDimensions` dans les blocs basiques contenant des textures MSAA dynamiquement indexées, évitant ainsi le plantage du compilateur AMD (`amdxc64.dll`). Cette correction s’inscrit dans la suite des améliorations du support MSAA introduites récemment (geometry mode, MSAA loads) et résout un blocage qui empêchait la création de pipelines compute sur certaines cartes AMD. Désormais les shaders MSAA dynamiques peuvent être compilés sans crash, mais les autres limitations (shaders trop gros, optimisation SSA) restent inchangées.
-- **2026-11-24** `689f2db` Direct DXIL: geometry mode, MSAA loads and directed f32 rounding
-- **2026-11-24** `e9ac9f0` Direct DXIL: geometry mode, MSAA loads and directed f32 rounding
-  Le nouveau commit ajoute un workflow GitHub Actions qui marque les pull‑requests inactives depuis trois jours comme « stale » puis les ferme après une semaine, sauf si elles portent les labels `goal:world-load` ou `keep-open`. Cette automatisation poursuit le chantier CI initié précédemment (voir le commit 1d027e5) et ne touche pas le code du recompiler ou les backends. Elle ne débloque aucune fonctionnalité du moteur, mais elle devrait réduire le bruit des PRs abandonnées et garder le dépôt plus propre.
-- **2026-11-24** `1d027e5` CI: mark PRs idle for 3 days stale and close them after a week

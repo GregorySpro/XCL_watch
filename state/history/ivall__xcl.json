@@ -2,30 +2,6 @@
  "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
  "entries": [
   {
-   "sha": "1d027e5c76c9a86a7ee2ca1cc677edf0be95d331",
-   "date": "2026-11-24",
-   "title": "CI: mark PRs idle for 3 days stale and close them after a week",
-   "summary": ""
-  },
-  {
-   "sha": "e9ac9f08aeb226c1b195187011f09444785dbd3c",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: geometry mode, MSAA loads and directed f32 rounding",
-   "summary": "Le nouveau commit ajoute un workflow GitHub Actions qui marque les pull‑requests inactives depuis trois jours comme « stale » puis les ferme après une semaine, sauf si elles portent les labels `goal:world-load` ou `keep-open`. Cette automatisation poursuit le chantier CI initié précédemment (voir le commit 1d027e5) et ne touche pas le code du recompiler ou les backends. Elle ne débloque aucune fonctionnalité du moteur, mais elle devrait réduire le bruit des PRs abandonnées et garder le dépôt plus propre."
-  },
-  {
-   "sha": "689f2db477c3c062cf162649781640ef8a977c18",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: geometry mode, MSAA loads and directed f32 rounding",
-   "summary": ""
-  },
-  {
-   "sha": "425b86920b43d26a670cc0090787fc946976bce3",
-   "date": "2026-11-24",
-   "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
-   "summary": "Le commit modifie le backend DXIL pour émettre les appels `dx.op.textureLoad` avant `dx.op.getDimensions` dans les blocs basiques contenant des textures MSAA dynamiquement indexées, évitant ainsi le plantage du compilateur AMD (`amdxc64.dll`). Cette correction s’inscrit dans la suite des améliorations du support MSAA introduites récemment (geometry mode, MSAA loads) et résout un blocage qui empêchait la création de pipelines compute sur certaines cartes AMD. Désormais les shaders MSAA dynamiques peuvent être compilés sans crash, mais les autres limitations (shaders trop gros, optimisation SSA) restent inchangées."
-  },
-  {
    "sha": "20cf13022f764208384c610c2ae6a3f4eed201a2",
    "date": "2026-11-24",
    "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
@@ -239,6 +215,30 @@
    "sha": "edf8c16122870e55333d85c40df48bcfcd1de9c3",
    "date": "2026-11-25",
    "title": "Recompiler: honor FP32 denormal mode in FREXP exponent",
+   "summary": ""
+  },
+  {
+   "sha": "3da2abb81606df622610e009f0430de99aa9881c",
+   "date": "2026-11-25",
+   "title": "Recompiler: direct DXIL's signature dependencies are complete across loops",
+   "summary": ""
+  },
+  {
+   "sha": "6c9f9473e5cbe38cf0d01ec890eced284a9bb711",
+   "date": "2026-11-25",
+   "title": "Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode",
+   "summary": ""
+  },
+  {
+   "sha": "fb32c87a148df85763b91afda0229792af19e16b",
+   "date": "2026-11-25",
+   "title": "UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap",
+   "summary": ""
+  },
+  {
+   "sha": "c00f3fcfce59bb4dfd3a1f96bbc84c60e765b538",
+   "date": "2026-11-25",
+   "title": "Direct DXIL: honour D16 packing in image_get_resinfo",
    "summary": ""
   }
  ]

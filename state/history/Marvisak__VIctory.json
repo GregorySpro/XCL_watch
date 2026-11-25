@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le lancement de GTA VI continue de réussir systématiquement, le debug layer D3D12 ne bloque plus et le nouveau correctif empêche les crashes dus aux vues shader nulles. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA fonctionnent toujours, tout comme les tests unitaires du crate victory‑shader. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable demeure l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
+ "state": "Après ce changement, le pipeline GPU transmet maintenant le test de profondeur aux cartes qui le supportent, avec un avertissement et un fallback lorsqu’il n’est pas disponible. Le lancement de GTA VI continue de réussir, le debug layer D3D12 ne bloque plus et les vues shader nulles sont protégées. Le rendu du monde reste noir, HDR et le backend waterfall restent à implémenter, et le test de profondeur n’est encore que simulé (synthetic tests) ; la prochaine étape probable reste l’intégration du backend waterfall et la prise en charge complète d’HDR/depth‑bounds côté titre.",
  "entries": [
-  {
-   "sha": "4118f33b3910f6b6b738216d6a66e8b355502b28",
-   "date": "2026-11-25",
-   "title": "GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL",
-   "summary": ""
-  },
   {
    "sha": "42363ab6cd5265f0fb3b500ad265f2b84c6b5dbf",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "GPU: a null shader view has no alias source",
    "summary": "Le commit ajoute une vérification dans `alias_source` pour renvoyer `None` lorsqu’une vue de shader est nulle, évitant ainsi une violation d’accès au démarrage du jeu. Cette modification poursuit la série de correctifs récents qui renforcent la robustesse du GPU en gérant les cas limites (null CBV, alias de pages, etc.). Elle élimine le plantage lié à la lecture d’une description de ressource inexistante, mais ne touche pas aux problèmes de rendu noir, HDR ou depth‑bounds. Le projet peut maintenant avancer sans ce blocage de démarrage."
+  },
+  {
+   "sha": "842b0cb76f8f5fa9289bd779783c51ec24d75302",
+   "date": "2026-11-25",
+   "title": "GPU: the depth bounds test reaches the host",
+   "summary": "Le commit ajoute la prise en charge du test de profondeur (depth‑bounds) côté hôte : le drapeau est conservé dans l’état graphique, le sous‑objet 21 (`DEPTH_STENCIL1`) est utilisé quand le GPU le supporte, et la commande `OMSetDepthBounds` est réellement envoyée au GPU lors du bind d’un pipeline. Cela poursuit la série de correctifs qui renforcent la robustesse du GPU (null CBV, alias, etc.) et débloque une fonctionnalité manquante depuis le README. Le rendu du monde reste noir ; HDR, depth‑bounds réel (au sens du titre) et le backend waterfall sont encore absents."
   }
  ]
 }

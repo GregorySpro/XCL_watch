@@ -6,6 +6,10 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `5796cc4` Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)
+- **2026-11-25** `400e638` Pixel shaders: masks hold the helper lanes (#105 item 1)
+- **2026-11-25** `de36462` Shaders: size-based admission for big compute driver compiles
+- **2026-11-25** `2e1c956` dxil: lower 64-bit icmp via 32-bit dwords and guard MIMG heap indices
 - **2026-11-25** `7994cd1` Direct DXIL: TG_SIZE counts a partial last wave
 - **2026-11-25** `6567c5f` Recompiler: take native compute mask branches across the whole wave
 - **2026-11-25** `8c4a46a` D3D12.X: default DepthEnable to false in stream_pipeline when DSVFormat is UNKNOWN
@@ -53,7 +57,3 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 - **2026-11-24** `0b64aa0` dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory
 - **2026-11-24** `b9b6ea6` DirectStorage: decode eligible file requests in parallel
   Le commit ajoute une option `XCL_DSTORAGE_PARALLEL_DECOMPRESS=1` qui active un pool de travailleurs (quatre par défaut) et un budget de 32 MiB pour décompresser en parallèle les requêtes DirectStorage zlib à destination virtuelle. Cette fonctionnalité s’inscrit dans la série d’améliorations récentes du backend Direct DXIL, mais cible maintenant le sous‑système DirectStorage plutôt que le traducteur shader. Elle permet désormais de gagner jusqu’à 2 × le débit de décompression pour les petits flux compressés, tout en conservant l’ordre de retrait des requêtes; les performances sur de gros flux restent proches de l’ancien comportement.
-- **2026-11-24** `f3242b2` Recompiler: split-form geometry keeps the ES and GS phases apart in programs with branches
-- **2026-11-24** `85e3826` Shaders: speed up translated pipeline compiles and add PSO measurements
-- **2026-11-24** `6c89285` D3D12.X: an ExecuteIndirect dispatch of an untranslated compute pipeline is skipped, as Dispatch is
-- **2026-11-24** `7ccf774` kernelx: Sleep does not count the time a bind waits for a pipeline build

@@ -2,30 +2,6 @@
  "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles caches de shaders et de blobs PSO accélèrent le throughput de compilation et diminuent les blocages lors du preload, mais les problèmes de shaders trop gros et d’optimisation du per‑lane form persistent. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
  "entries": [
   {
-   "sha": "7ccf774cf0a3f4415ff1940aa2b4b554f08f6a32",
-   "date": "2026-11-24",
-   "title": "kernelx: Sleep does not count the time a bind waits for a pipeline build",
-   "summary": ""
-  },
-  {
-   "sha": "6c89285b8b529bde59cd17a26b911c39912fb677",
-   "date": "2026-11-24",
-   "title": "D3D12.X: an ExecuteIndirect dispatch of an untranslated compute pipeline is skipped, as Dispatch is",
-   "summary": ""
-  },
-  {
-   "sha": "85e38262ff94aecd75d6f83fa8156a8b7697bd13",
-   "date": "2026-11-24",
-   "title": "Shaders: speed up translated pipeline compiles and add PSO measurements",
-   "summary": ""
-  },
-  {
-   "sha": "f3242b2edeced2dc9079d8026c27c8370313ef2e",
-   "date": "2026-11-24",
-   "title": "Recompiler: split-form geometry keeps the ES and GS phases apart in programs with branches",
-   "summary": ""
-  },
-  {
    "sha": "b9b6ea62080cc62fc19e212033372d01c6214e5c",
    "date": "2026-11-24",
    "title": "DirectStorage: decode eligible file requests in parallel",
@@ -239,6 +215,30 @@
    "sha": "7994cd1d4c0194f9607032a28746869b65f0c914",
    "date": "2026-11-25",
    "title": "Direct DXIL: TG_SIZE counts a partial last wave",
+   "summary": ""
+  },
+  {
+   "sha": "2e1c956241094f4569e5ea1818324434fe8d4c5d",
+   "date": "2026-11-25",
+   "title": "dxil: lower 64-bit icmp via 32-bit dwords and guard MIMG heap indices",
+   "summary": ""
+  },
+  {
+   "sha": "de36462e0b1043b915a418d4591ed1e397622ede",
+   "date": "2026-11-25",
+   "title": "Shaders: size-based admission for big compute driver compiles",
+   "summary": ""
+  },
+  {
+   "sha": "400e638869ee8e8f8238079db3b70fce2abd3c2b",
+   "date": "2026-11-25",
+   "title": "Pixel shaders: masks hold the helper lanes (#105 item 1)",
+   "summary": ""
+  },
+  {
+   "sha": "5796cc467d80e3dac5d7d231ec34f1b0bebce169",
+   "date": "2026-11-25",
+   "title": "Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)",
    "summary": ""
   }
  ]

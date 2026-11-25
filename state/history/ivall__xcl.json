@@ -2,18 +2,6 @@
  "state": "Après ce correctif, la couche XCL charge correctement les DLL correspondant à des motifs contenant plusieurs `*`, ce qui élimine les avertissements silencieux liés aux alias de configuration. Les shaders pixel avec boucles `v_readfirstlane` fonctionnent toujours sur les GPU RDNA2, les gains de performance sur les pipelines compute restent en place, et les diagnostics DRED sont actifs. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz.",
  "entries": [
   {
-   "sha": "0c50bb4f32bdf8898d3071a5c4b7084cd4271051",
-   "date": "2026-11-25",
-   "title": "Recompiler: a PS sample mask from exp mrtz is written to SV_Coverage",
-   "summary": "Le nouveau commit ajoute la prise en charge du masque d’échantillon (`SV_Coverage`) lorsqu’un pixel shader exporte `exp mrtz`. Le compilateur déclare désormais `SV_Coverage` uniquement si le masque est réellement écrit, initialise `xo.xcl_mask` à 0xFFFFFFFF et génère le code d’écriture du masque. Cette amélioration s’inscrit dans la suite du chantier d’optimisation du backend recomp, qui corrige les omissions de sorties système et renforce la fidélité du rendu. Désormais les shaders qui utilisent `exp mrtz` produisent correctement le masque de couverture, ce qui élimine les erreurs de couverture précédentes ; les autres parties du projet restent inchangées."
-  },
-  {
-   "sha": "5ebaf3ebbe7945ac27a749ac14eabf9249366ee3",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: image_get_resinfo of a 1D array gives the layers in y",
-   "summary": "Le commit corrige la traduction directe DXIL pour les tableaux 1D en renvoyant le nombre de couches dans le composant y (et z) au lieu de z seul, alignant ainsi le comportement avec la voie HLSL déjà corrigée. Cette modification poursuit le chantier de fiabilité du backend Direct DXIL, qui vient après les récents correctifs de masquage d’échantillon et d’optimisation du split‑wave64. Désormais les tests `gpu_image_get_resinfo_1d_array` passent avec `XCL_DIRECT_DXIL=1`, tandis que les autres échecs restent liés à des problèmes distincts (ex. `gpu_fmt_encode_int_sat_and_f16_rtz`)."
-  },
-  {
    "sha": "59d6ded77de46fe368f0dedc6e8bb2427c9c7fe4",
    "date": "2026-11-25",
    "title": "Recompiler: image_get_resinfo gives depth 0 for 1D, 2D and 2D MSAA",
@@ -239,6 +227,18 @@
    "sha": "764d9ed0fcb42b561a8f6b9fd6d06c17165c5a10",
    "date": "2026-11-25",
    "title": "Config: device_type in xcl.toml names the Series S in every spelling",
+   "summary": ""
+  },
+  {
+   "sha": "e9f129d8a73772523e45ab8be45541f726e6a776",
+   "date": "2026-11-25",
+   "title": "XCL_NETWORK=0: GetAddrInfoExW answers local names like getaddrinfo does",
+   "summary": ""
+  },
+  {
+   "sha": "3f4495a2b325ae5a9df314dd86d10327502b5cf5",
+   "date": "2026-11-25",
+   "title": "Recompiler: emit globallycoherent on compute memory windows only when needed",
    "summary": ""
   }
  ]

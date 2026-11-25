@@ -1,60 +1,6 @@
 {
- "state": "Après ce correctif, le système de suivi des pages GPU évite désormais de sauvegarder une page déjà en cours de copie, ce qui améliore la fiabilité du pipeline shader (les 108 shaders traduits et les 249 bloqués restent inchangés). Le rendu du monde reste toujours noir, les fonctionnalités HDR et depth‑bounds sont toujours manquantes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
+ "state": "Après ce changement, le pipeline shader génère un DXIL plus compact et crée beaucoup moins de handles, ce qui devrait alléger la charge du compilateur et du runtime. Le rafraîchissement des textures continue de fonctionner avec les gains précédents, et les correctifs de gestion de pages restent en place. Le rendu du monde est toujours noir, HDR et depth‑bounds manquent, et le support waterfall doit encore être intégré. La prochaine étape probable reste l’ajout des informations waterfall dans le backend et la poursuite de l’extension du support waterfall.",
  "entries": [
-  {
-   "sha": "a51bdfa50024948447e66852810d3204995af224",
-   "date": "2026-11-24",
-   "title": "Merge pull request #696 from catminou4/devin/formats-doc-micro-link",
-   "summary": ""
-  },
-  {
-   "sha": "58fed3704f72c49f48a18c013b4910986168a9ef",
-   "date": "2026-11-24",
-   "title": "Merge pull request #706 from Lyrnc/fix/cmp-lg-ordered",
-   "summary": ""
-  },
-  {
-   "sha": "2005e35afd2e6ed5a40494625807a924c7ae38cc",
-   "date": "2026-11-24",
-   "title": "Merge pull request #88 from AndyLatimer/fix/title-size-overflows",
-   "summary": ""
-  },
-  {
-   "sha": "c7a5f4953fc81978a94e839fddd510361c7d075f",
-   "date": "2026-11-24",
-   "title": "Merge pull request #93 from TG0000/perf/bcpack-bucket-lookup",
-   "summary": ""
-  },
-  {
-   "sha": "8e79c80e4b71e252bcd271e0587aa662c4770008",
-   "date": "2026-11-24",
-   "title": "CI: clippy and tests on pull requests and main",
-   "summary": ""
-  },
-  {
-   "sha": "e09dbb6dae4a853750b1412a664fbc117b25ffce",
-   "date": "2026-11-24",
-   "title": "Merge upstream main (8e79c80) into shader/per-lane-phi",
-   "summary": ""
-  },
-  {
-   "sha": "74a9d3316de69b65eb64b2fa5c06089d8979ed6f",
-   "date": "2026-11-24",
-   "title": "Shader tests: the waterfall tests take the GPU one at a time, with the VALU tests",
-   "summary": ""
-  },
-  {
-   "sha": "ca48fbea88ea6e8db9d0a69a28db406c00951040",
-   "date": "2026-11-24",
-   "title": "Merge pull request #566 from r4tedx/shader/per-lane-phi",
-   "summary": ""
-  },
-  {
-   "sha": "ffe310eb2098e52169f4c44db5ffdabf43a72622",
-   "date": "2026-11-24",
-   "title": "Shaders: the console's waterfall loop over a first-lane table offset",
-   "summary": "Le commit ajoute la prise en charge du « waterfall » où chaque lane charge son propre descriptif à partir du décalage de la première lane, en marquant ces charges comme `per_lane` dans le générateur d’heap. Il enrichit la structure `Waterfall` avec une liste `loads` et intègre la détection de ces charges dans le suivi des shaders. Cette évolution poursuit les correctifs récents sur les boucles de vertex et les comparaisons, en débloquant partiellement la traduction des boucles de chargement non uniformes, mais le rendu du monde reste encore cassé."
-  },
   {
    "sha": "819f62275bf88f66299a7cbe83efe82a5f004fed",
    "date": "2026-11-24",
@@ -240,6 +186,60 @@
    "date": "2026-11-25",
    "title": "GPU: a marked page's copy-back does not save the page for its own copy",
    "summary": "Le commit ajoute une fonction `unarm` qui retire une page de la liste des pages « armées » lorsqu’une copie‑back est en cours, et l’appelle avant de sauvegarder la page dans `shadow.rs`. Cela corrige le problème où une page marquée était re‑sauvegardée lors de sa propre copie, un bug identifié dans le suivi des pages GPU. Ce changement poursuit le chantier de stabilisation du pipeline de copie‑back, réduisant les risques de redondance et de corruption, mais n’affecte pas directement le rendu du monde qui reste noir."
+  },
+  {
+   "sha": "9cc37c5f5b2092b06d6e34c6e4a0ff3dec49c145",
+   "date": "2026-11-25",
+   "title": "GPU: lists wait on memory values; queues hold work until its waits hold",
+   "summary": ""
+  },
+  {
+   "sha": "8f2a6f14547586d1f403edc22453ecd1eb6c25d9",
+   "date": "2026-11-25",
+   "title": "GPU: a texture refresh reads title memory into its thread's own buffer",
+   "summary": "Le commit fait lire la mémoire titre d’une texture rafraîchie dans un tampon persistant du thread de travail au lieu d’allouer un nouveau buffer à chaque rafraîchissement. Cette optimisation élimine les remplissages à zéro et les défauts de page qui coûtaient ~129 k défauts par image, réduisant le temps de rafraîchissement de 2,2 ms/MB à 1,8 ms/MB. Elle s’inscrit dans la suite d’améliorations du pipeline GPU (gestion des pages, copies, listes d’attente) et débloque une partie du coût de rafraîchissement des textures, mais le rendu du monde reste noir et les fonctionnalités HDR/depth‑bounds sont toujours absentes."
+  },
+  {
+   "sha": "286a00e9b69851d1dc0d68d313a01822a251084f",
+   "date": "2026-11-25",
+   "title": "Shaders: the DXIL writer leaves out what no edge or reader reaches",
+   "summary": ""
+  },
+  {
+   "sha": "850b66ffd7e06a9c21bc20ccd9168a627f653f3d",
+   "date": "2026-11-25",
+   "title": "Shaders: one handle per descriptor at a fixed address, and per join",
+   "summary": "Le commit introduit une gestion unifiée des descripteurs : chaque descripteur à adresse fixe reçoit un seul handle, créé au bloc d’entrée ou au join correspondant, au lieu d’en créer un à chaque chargement. Cette optimisation réduit drastiquement le nombre de handles heap (de 2 608 à 65) et la taille du bitcode DXIL de 4 %. Elle s’inscrit dans la série d’améliorations du pipeline shader visant à diminuer les surcoûts liés aux copies et aux allocations, après les récents travaux sur le rafraîchissement des textures et la gestion des pages. Le rendu reste bloqué sur le noir du monde ; le changement ne touche pas les problèmes HDR, depth‑bounds ou le support waterfall."
+  },
+  {
+   "sha": "8681044f025dd6203a2249f4fac71ecbe4400cf0",
+   "date": "2026-11-25",
+   "title": "Shader tests: the differential harness binds the view-stride table",
+   "summary": ""
+  },
+  {
+   "sha": "a1a2077a3d9ab6bf51d457c1a3f86db166554446",
+   "date": "2026-11-25",
+   "title": "Shaders: vertex, geometry and mesh programs with UAVs say so in their flags",
+   "summary": ""
+  },
+  {
+   "sha": "4015a182e3999bbaa881f6831360eb257f168c82",
+   "date": "2026-11-25",
+   "title": "Shaders: quad reads in pixel programs reach the helpers at triangle edges",
+   "summary": ""
+  },
+  {
+   "sha": "315cea185d2505ed84643b2b47c39c224e757837",
+   "date": "2026-11-25",
+   "title": "GPU: barriers start from the states resources are in: prelude order, the clamp's own buffer",
+   "summary": ""
+  },
+  {
+   "sha": "54ab40676850007650e71cd147c1bff1d0c4a4de",
+   "date": "2026-11-25",
+   "title": "Shaders: descriptors joined by nested control flow, again",
+   "summary": ""
   }
  ]
 }

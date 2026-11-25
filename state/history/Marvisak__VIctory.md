@@ -2,10 +2,21 @@
 
 ## État du projet
 
-Après ce correctif, le système de suivi des pages GPU évite désormais de sauvegarder une page déjà en cours de copie, ce qui améliore la fiabilité du pipeline shader (les 108 shaders traduits et les 249 bloqués restent inchangés). Le rendu du monde reste toujours noir, les fonctionnalités HDR et depth‑bounds sont toujours manquantes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.
+Après ce changement, le pipeline shader génère un DXIL plus compact et crée beaucoup moins de handles, ce qui devrait alléger la charge du compilateur et du runtime. Le rafraîchissement des textures continue de fonctionner avec les gains précédents, et les correctifs de gestion de pages restent en place. Le rendu du monde est toujours noir, HDR et depth‑bounds manquent, et le support waterfall doit encore être intégré. La prochaine étape probable reste l’ajout des informations waterfall dans le backend et la poursuite de l’extension du support waterfall.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `54ab406` Shaders: descriptors joined by nested control flow, again
+- **2026-11-25** `315cea1` GPU: barriers start from the states resources are in: prelude order, the clamp's own buffer
+- **2026-11-25** `4015a18` Shaders: quad reads in pixel programs reach the helpers at triangle edges
+- **2026-11-25** `a1a2077` Shaders: vertex, geometry and mesh programs with UAVs say so in their flags
+- **2026-11-25** `8681044` Shader tests: the differential harness binds the view-stride table
+- **2026-11-25** `850b66f` Shaders: one handle per descriptor at a fixed address, and per join
+  Le commit introduit une gestion unifiée des descripteurs : chaque descripteur à adresse fixe reçoit un seul handle, créé au bloc d’entrée ou au join correspondant, au lieu d’en créer un à chaque chargement. Cette optimisation réduit drastiquement le nombre de handles heap (de 2 608 à 65) et la taille du bitcode DXIL de 4 %. Elle s’inscrit dans la série d’améliorations du pipeline shader visant à diminuer les surcoûts liés aux copies et aux allocations, après les récents travaux sur le rafraîchissement des textures et la gestion des pages. Le rendu reste bloqué sur le noir du monde ; le changement ne touche pas les problèmes HDR, depth‑bounds ou le support waterfall.
+- **2026-11-25** `286a00e` Shaders: the DXIL writer leaves out what no edge or reader reaches
+- **2026-11-25** `8f2a6f1` GPU: a texture refresh reads title memory into its thread's own buffer
+  Le commit fait lire la mémoire titre d’une texture rafraîchie dans un tampon persistant du thread de travail au lieu d’allouer un nouveau buffer à chaque rafraîchissement. Cette optimisation élimine les remplissages à zéro et les défauts de page qui coûtaient ~129 k défauts par image, réduisant le temps de rafraîchissement de 2,2 ms/MB à 1,8 ms/MB. Elle s’inscrit dans la suite d’améliorations du pipeline GPU (gestion des pages, copies, listes d’attente) et débloque une partie du coût de rafraîchissement des textures, mais le rendu du monde reste noir et les fonctionnalités HDR/depth‑bounds sont toujours absentes.
+- **2026-11-25** `9cc37c5` GPU: lists wait on memory values; queues hold work until its waits hold
 - **2026-11-25** `940d32f` GPU: a marked page's copy-back does not save the page for its own copy
   Le commit ajoute une fonction `unarm` qui retire une page de la liste des pages « armées » lorsqu’une copie‑back est en cours, et l’appelle avant de sauvegarder la page dans `shadow.rs`. Cela corrige le problème où une page marquée était re‑sauvegardée lors de sa propre copie, un bug identifié dans le suivi des pages GPU. Ce changement poursuit le chantier de stabilisation du pipeline de copie‑back, réduisant les risques de redondance et de corruption, mais n’affecte pas directement le rendu du monde qui reste noir.
 - **2026-11-25** `cd94d35` GPU: shaders mark the pages they write through views; copy-backs compare only those
@@ -40,13 +51,3 @@ Après ce correctif, le système de suivi des pages GPU évite désormais de sau
 - **2026-11-24** `e0034c2` Shaders: register-relative moves reach only what their index can
 - **2026-11-24** `819f622` translate: progress counts finished shaders, not ones handed out
   Le commit ajuste le calcul du progrès affiché par le traducteur : il ne compte plus simplement les jobs distribués, mais soustrait les workers encore actifs pour ne retenir que les shaders réellement terminés. Cette modification poursuit le chantier d’amélioration de la visibilité du pipeline, corrigeant un affichage trompeur introduit précédemment. Elle ne change pas le comportement du moteur de shaders ni le support du waterfall, mais permet de suivre plus fidèlement l’avancement des traductions.
-- **2026-11-24** `ffe310e` Shaders: the console's waterfall loop over a first-lane table offset
-  Le commit ajoute la prise en charge du « waterfall » où chaque lane charge son propre descriptif à partir du décalage de la première lane, en marquant ces charges comme `per_lane` dans le générateur d’heap. Il enrichit la structure `Waterfall` avec une liste `loads` et intègre la détection de ces charges dans le suivi des shaders. Cette évolution poursuit les correctifs récents sur les boucles de vertex et les comparaisons, en débloquant partiellement la traduction des boucles de chargement non uniformes, mais le rendu du monde reste encore cassé.
-- **2026-11-24** `ca48fbe` Merge pull request #566 from r4tedx/shader/per-lane-phi
-- **2026-11-24** `74a9d33` Shader tests: the waterfall tests take the GPU one at a time, with the VALU tests
-- **2026-11-24** `e09dbb6` Merge upstream main (8e79c80) into shader/per-lane-phi
-- **2026-11-24** `8e79c80` CI: clippy and tests on pull requests and main
-- **2026-11-24** `c7a5f49` Merge pull request #93 from TG0000/perf/bcpack-bucket-lookup
-- **2026-11-24** `2005e35` Merge pull request #88 from AndyLatimer/fix/title-size-overflows
-- **2026-11-24** `58fed37` Merge pull request #706 from Lyrnc/fix/cmp-lg-ordered
-- **2026-11-24** `a51bdfa` Merge pull request #696 from catminou4/devin/formats-doc-micro-link

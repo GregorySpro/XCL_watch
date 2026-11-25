@@ -6,6 +6,9 @@ Après ce changement, le backend Direct DXIL supporte correctement les gathers
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `b56a7d3` D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs
+- **2026-11-25** `93d8f0f` D3D12.X: enforce hard concurrency cap on wanted >= 256 KB huge PSO compiles
+- **2026-11-25** `0f68883` Textures: cache GFX10 tiling Layout offset tables
 - **2026-11-25** `3dc3a42` dxil: emulate explicit-LOD gather4_l(_o) and support UNORM=1 non-cube sampling
   Le nouveau commit ajoute l’émulation des instructions `image_gather4_l` (et variantes) avec LOD explicite ainsi que la prise en charge du mode `UNORM=1` pour les textures non‑cube dans le traducteur Direct DXIL. Cette fonctionnalité s’inscrit dans la suite des correctifs de fiabilité du backend DXIL (résolution d’info d’image, profondeur 0, etc.) et complète le chantier d’émulation d’opérations d’image avancées. Désormais le compilateur peut générer des chargements de mip‑levels multiples et normaliser les coordonnées non‑cube, ce qui était impossible auparavant. Les tests unitaires associés passent, mais les fuzz‑tests DXIL restent en échec, donc le problème global n’est pas totalement résolu.
 - **2026-11-25** `59d6ded` Recompiler: image_get_resinfo gives depth 0 for 1D, 2D and 2D MSAA
@@ -64,6 +67,3 @@ Après ce changement, le backend Direct DXIL supporte correctement les gathers
 - **2026-11-25** `c00f3fc` Direct DXIL: honour D16 packing in image_get_resinfo
 - **2026-11-25** `fb32c87` UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap
 - **2026-11-25** `6c9f947` Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode
-- **2026-11-25** `3da2abb` Recompiler: direct DXIL's signature dependencies are complete across loops
-- **2026-11-25** `edf8c16` Recompiler: honor FP32 denormal mode in FREXP exponent
-- **2026-11-25** `86719ee` Direct DXIL: write every dword of an unaligned multi-dword format store

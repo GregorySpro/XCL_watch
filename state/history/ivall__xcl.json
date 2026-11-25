@@ -2,24 +2,6 @@
  "state": "Après ce changement, le backend Direct DXIL supporte correctement les gathers à LOD explicite et le sampling `UNORM=1` pour les textures 2D et 2D Array non‑cube, avec les vérifications de limites d’heap conservées. Les tests GPU précédents (GetDimensions, image_get_resinfo) continuent de réussir, et les nouveaux tests de gather4_lod sont verts. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation reste à analyser. La prochaine étape probable reste l’investigation de ces échecs de fuzz et l’évaluation de l’influence du nesting.",
  "entries": [
   {
-   "sha": "86719eec1e9fc4c36c5fb568ec4951fd47a31b88",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: write every dword of an unaligned multi-dword format store",
-   "summary": ""
-  },
-  {
-   "sha": "edf8c16122870e55333d85c40df48bcfcd1de9c3",
-   "date": "2026-11-25",
-   "title": "Recompiler: honor FP32 denormal mode in FREXP exponent",
-   "summary": ""
-  },
-  {
-   "sha": "3da2abb81606df622610e009f0430de99aa9881c",
-   "date": "2026-11-25",
-   "title": "Recompiler: direct DXIL's signature dependencies are complete across loops",
-   "summary": ""
-  },
-  {
    "sha": "6c9f9473e5cbe38cf0d01ec890eced284a9bb711",
    "date": "2026-11-25",
    "title": "Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode",
@@ -240,6 +222,24 @@
    "date": "2026-11-25",
    "title": "dxil: emulate explicit-LOD gather4_l(_o) and support UNORM=1 non-cube sampling",
    "summary": "Le nouveau commit ajoute l’émulation des instructions `image_gather4_l` (et variantes) avec LOD explicite ainsi que la prise en charge du mode `UNORM=1` pour les textures non‑cube dans le traducteur Direct DXIL. Cette fonctionnalité s’inscrit dans la suite des correctifs de fiabilité du backend DXIL (résolution d’info d’image, profondeur 0, etc.) et complète le chantier d’émulation d’opérations d’image avancées. Désormais le compilateur peut générer des chargements de mip‑levels multiples et normaliser les coordonnées non‑cube, ce qui était impossible auparavant. Les tests unitaires associés passent, mais les fuzz‑tests DXIL restent en échec, donc le problème global n’est pas totalement résolu."
+  },
+  {
+   "sha": "0f6888301d7898f342bf20bf0c289e879b58d6dd",
+   "date": "2026-11-25",
+   "title": "Textures: cache GFX10 tiling Layout offset tables",
+   "summary": ""
+  },
+  {
+   "sha": "93d8f0f2c76846c26a6b8e24720bb45e060a5477",
+   "date": "2026-11-25",
+   "title": "D3D12.X: enforce hard concurrency cap on wanted >= 256 KB huge PSO compiles",
+   "summary": ""
+  },
+  {
+   "sha": "b56a7d3f14d4db0173d93b8cad8d35909b36171d",
+   "date": "2026-11-25",
+   "title": "D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs",
+   "summary": ""
   }
  ]
 }

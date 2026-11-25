@@ -2,12 +2,6 @@
  "state": "Après ce changement, les trois plus gros programmes de compute direct se compilent 1,7 à 2,1 × plus rapidement qu’avec le découpage précédent, et le temps GPU du chemin de shading tardif passe de 1,59 × à 1,23 × celui du programme complet. Le reste du projet reste inchangé : les requêtes d’information d’image D3D12 sont toujours correctes, les logs DRED affichent les hashes des shaders console, et le correctif DispatchMesh reste sans logique d’exécution. Les fuzz‑tests et le nesting restent bloquants, la prochaine étape probable demeure l’implémentation du traitement réel des slots DispatchMesh et la poursuite de l’analyse des échecs de fuzz.",
  "entries": [
   {
-   "sha": "bb35b4586218e01f1dce04b87cddd411ac528950",
-   "date": "2026-11-25",
-   "title": "README: the requirements' DXC line is not a list item",
-   "summary": "Le commit corrige le rendu Markdown du README en retirant le « + » qui faisait de la ligne DXC un élément de liste, évitant ainsi qu’une partie des exigences apparaisse comme un bullet. Cette petite modification s’inscrit dans la série de nettoyages de la documentation déjà engagés (ajout de page d’accueil, correction du badge Discord, mise à jour de l’avancement du jeu). Elle n’affecte aucune fonctionnalité du code ; le README s’affiche désormais correctement, mais le projet reste limité par les performances et le pipeline incomplet du jeu retail."
-  },
-  {
    "sha": "6020a33b16ba2de25b3aef5947552f2dc1831f09",
    "date": "2026-11-25",
    "title": "README: the requirements' DXC line is not a list item",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "Recompiler: give each split handoff value one scratch slot and load it where it's used",
    "summary": "Le commit ajoute un mécanisme de «scratch slot» dédié à chaque valeur qui doit traverser les découpes de pipelines de compute direct, en écrivant la valeur à la sortie du morceau qui la définit et en la charge au point d’entrée du morceau qui l’utilise. Cette amélioration poursuit le chantier de découpage lancé avec #2080, en réduisant le nombre de valeurs vivantes à travers les blocs et ainsi le temps de compilation et d’exécution, surtout sur les drivers NVIDIA. Elle ne touche pas les autres parties du projet (requêtes d’image, DRED, DispatchMesh) et ne résout pas encore les blocages liés aux fuzz‑tests ou au mapping DispatchMesh."
+  },
+  {
+   "sha": "06c9f5505f63f10c5ec49ef932d75b2c28177324",
+   "date": "2026-11-25",
+   "title": "D3D12.X: newer list layout #139 Reset goes through title_list::reset",
+   "summary": ""
   }
  ]
 }

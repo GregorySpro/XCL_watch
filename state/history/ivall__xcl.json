@@ -1,18 +1,6 @@
 {
- "state": "Après ce changement, les shaders pixel avec des boucles basées sur `v_readfirstlane` ou des masques de lanes fonctionnent correctement sur les GPU AMD RDNA2, éliminant le blocage qui provoquait des resets du GPU. Le projet conserve les gains de performance sur les gros pipelines de compute et les diagnostics DRED déjà en place. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de sorte que la prochaine étape probable reste l’implémentation du traitement effectif de `DispatchMesh` et l’analyse des échecs de fuzz.",
+ "state": "Après ce correctif, la couche XCL charge correctement les DLL correspondant à des motifs contenant plusieurs `*`, ce qui élimine les avertissements silencieux liés aux alias de configuration. Les shaders pixel avec boucles `v_readfirstlane` fonctionnent toujours sur les GPU RDNA2, les gains de performance sur les pipelines compute restent en place, et les diagnostics DRED sont actifs. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz.",
  "entries": [
-  {
-   "sha": "ca04ad680696708fa078010b89614f0e618aedcf",
-   "date": "2026-11-25",
-   "title": "Direct DXIL compact: two-level nested dispatch for large class counts",
-   "summary": "Le nouveau commit introduit la prise en charge d’un dispatch à deux niveaux pour le compilateur DXIL compact, en regroupant les classes de blocs au‑delà d’un certain seuil afin de réduire le fan‑in du switch principal. Cette fonctionnalité s’inscrit dans la continuité de l’optimisation du backend (suite du travail sur split‑wave64) et vient compléter les améliorations de fiabilité des tests GPU. Elle permet désormais de générer des shaders plus scalables quand le nombre de classes dépasse 512, tout en conservant le comportement plat pour les petits programmes ; les performances d’exécution restent à évaluer et les tests GPU continuent d’échouer."
-  },
-  {
-   "sha": "fef1d5da70c9799b4e8fe5abfdaad5f38d23e0f6",
-   "date": "2026-11-25",
-   "title": "recomp: enable whole-wave branches and dead-SCC elision in split wave64",
-   "summary": "Le nouveau commit active les branches à onde complète et l’élimination des écritures SCC mortes dans le backend split‑wave64, en ajoutant la détection de la vivacité du registre SCC et en conditionnant les ballots à son usage. Cette évolution poursuit le chantier d’optimisation du backend DXIL compact amorcé par le support du nesting et les précédentes améliorations de split‑wave64. Elle permet désormais de couvrir 39 / 205 shaders per‑lane en split‑wave64 (soit +50 %), avec presque aucune refus de branche et aucune erreur de validation DXIL. Il reste toutefois les échecs de tests GPU liés à d’autres parties du pipeline et les cas où la taille du thread‑group n’est pas multiple de 64."
-  },
   {
    "sha": "0c50bb4f32bdf8898d3071a5c4b7084cd4271051",
    "date": "2026-11-25",
@@ -239,6 +227,18 @@
    "sha": "082944135cd2b96288470a595861fa608eee08dc",
    "date": "2026-11-25",
    "title": "D3D12.X: the scratch of split dispatches is bounded over all recordings",
+   "summary": ""
+  },
+  {
+   "sha": "4114da86c9725e62f6b33dea63cedd6fb4faff0a",
+   "date": "2026-11-25",
+   "title": "Config: an alias pattern with several '*' matches its DLLs",
+   "summary": "Le nouveau commit corrige la fonction `glob_match` pour qu’elle gère correctement plusieurs jokers `*` dans les motifs d’alias du fichier `xcl.toml`. Cette amélioration poursuit le chantier de fiabilité de la configuration, en débloquant la résolution des DLL d’API‑set comme `api‑ms‑win-*-l1-1-*.dll` qui était auparavant ignorée. Désormais les alias multi‑étoiles sont reconnus, ce qui élargit la compatibilité des jeux dépendant de ces bibliothèques. Le reste du projet (shaders, DRED, splits) reste inchangé."
+  },
+  {
+   "sha": "764d9ed0fcb42b561a8f6b9fd6d06c17165c5a10",
+   "date": "2026-11-25",
+   "title": "Config: device_type in xcl.toml names the Series S in every spelling",
    "summary": ""
   }
  ]

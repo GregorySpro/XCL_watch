@@ -1,12 +1,6 @@
 {
- "state": "Après ce petit ajustement, la documentation reste claire et correctement rendue ; les badges, le tableau d’avancement du jeu retail et les exigences de build sont affichés sans artefacts de mise en forme. Le projet continue de fonctionner comme indiqué précédemment : backends DXIL, fallback `pc`, logging SSA, pool DirectStorage SIMD et `TilePool` sont opérationnels, les tests unitaires et GPU restent verts. Les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis à relever.",
+ "state": "Après ce changement, la documentation continue d’être correctement rendue, avec les badges et le tableau d’avancement du jeu retail affichés sans artefacts. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` restent opérationnels, et les tests unitaires ainsi que les tests GPU sont verts. Le seul point modifié est le lien Discord, désormais à jour, tandis que les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis à relever. La prochaine étape probable reste l’optimisation du pipeline retail.",
  "entries": [
-  {
-   "sha": "0be6ce8cc20a9de06e6f0f443113af42a6c21248",
-   "date": "2026-11-25",
-   "title": "DirectStorage: use SIMD for zlib checksums",
-   "summary": "Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence."
-  },
   {
    "sha": "b282d6bdc2dfd43fc2aaef7f115dd1c3496ade50",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "README: the requirements' DXC line is not a list item",
    "summary": "Le commit corrige le formatage d’une ligne du README où la mention du fichier DXC était précédée d’un « + », ce qui faisait apparaître le texte comme un élément de liste. Cette modification s’inscrit dans la même vague de ménage de la documentation déjà amorcée (corrections de liens Discord, ajout de page d’accueil). Elle n’affecte aucun code et ne change donc pas les fonctionnalités existantes, mais améliore la lisibilité du guide de construction."
+  },
+  {
+   "sha": "6e1e2befc7430126b1e7b98b5c3fe93813c866b6",
+   "date": "2026-11-25",
+   "title": "Update Discord link in README.md",
+   "summary": "Le commit remplace l’URL du badge Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà amorcé, où l’on corrige les liens et le formatage du README. Elle ne touche aucun code ni aucune fonctionnalité du moteur XCL. Ainsi, l’accès au serveur Discord devient plus fiable, mais les performances et le pipeline retail restent inchangés."
   }
  ]
 }

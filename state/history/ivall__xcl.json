@@ -1,48 +1,6 @@
 {
- "state": "Après ce changement, les trois plus gros programmes de compute direct se compilent 1,7 à 2,1 × plus rapidement qu’avec le découpage précédent, et le temps GPU du chemin de shading tardif passe de 1,59 × à 1,23 × celui du programme complet. Le reste du projet reste inchangé : les requêtes d’information d’image D3D12 sont toujours correctes, les logs DRED affichent les hashes des shaders console, et le correctif DispatchMesh reste sans logique d’exécution. Les fuzz‑tests et le nesting restent bloquants, la prochaine étape probable demeure l’implémentation du traitement réel des slots DispatchMesh et la poursuite de l’analyse des échecs de fuzz.",
+ "state": "Après ce changement, les shaders pixel avec des boucles basées sur `v_readfirstlane` ou des masques de lanes fonctionnent correctement sur les GPU AMD RDNA2, éliminant le blocage qui provoquait des resets du GPU. Le projet conserve les gains de performance sur les gros pipelines de compute et les diagnostics DRED déjà en place. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de sorte que la prochaine étape probable reste l’implémentation du traitement effectif de `DispatchMesh` et l’analyse des échecs de fuzz.",
  "entries": [
-  {
-   "sha": "6020a33b16ba2de25b3aef5947552f2dc1831f09",
-   "date": "2026-11-25",
-   "title": "README: the requirements' DXC line is not a list item",
-   "summary": "Le commit corrige le formatage d’une ligne du README où la mention du fichier DXC était précédée d’un « + », ce qui faisait apparaître le texte comme un élément de liste. Cette modification s’inscrit dans la même vague de ménage de la documentation déjà amorcée (corrections de liens Discord, ajout de page d’accueil). Elle n’affecte aucun code et ne change donc pas les fonctionnalités existantes, mais améliore la lisibilité du guide de construction."
-  },
-  {
-   "sha": "6e1e2befc7430126b1e7b98b5c3fe93813c866b6",
-   "date": "2026-11-25",
-   "title": "Update Discord link in README.md",
-   "summary": "Le commit remplace l’URL du badge Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà amorcé, où l’on corrige les liens et le formatage du README. Elle ne touche aucun code ni aucune fonctionnalité du moteur XCL. Ainsi, l’accès au serveur Discord devient plus fiable, mais les performances et le pipeline retail restent inchangés."
-  },
-  {
-   "sha": "6ea813a61f7d324e2fcbeb0c6a068edcd37e818b",
-   "date": "2026-11-25",
-   "title": "Update README.md",
-   "summary": "Le commit remplace l’URL du serveur Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà engagé, où les liens Discord ont été corrigés et formatés. Elle ne touche aucun code ni aucune fonctionnalité du projet. Désormais, le lien vers le Discord pointe vers l’adresse officielle, ce qui facilite l’accès pour les contributeurs, sans changer l’état fonctionnel du projet."
-  },
-  {
-   "sha": "f0e1b2f149cc61231d04b838482f2fd5ec05b391",
-   "date": "2026-11-25",
-   "title": "README: the newer retail game at about 60 %, ~5 fps in its world",
-   "summary": "Le commit met à jour le README et l’illustration associée pour refléter une progression plus réaliste du jeu retail : l’estimation passe de ~65 % à ~60 % et la performance dans le monde 3D est corrigée de 14 fps moyen à ~5 fps. Cette modification poursuit le chantier de documentation en affinant les chiffres présentés, sans toucher au code. Elle ne débloque aucune fonctionnalité supplémentaire, mais donne une image plus précise de l’état actuel du jeu, confirmant que la partie 3D reste très lente."
-  },
-  {
-   "sha": "568e7db7729c8fa6c8f0f4b32d798faaf11462bb",
-   "date": "2026-11-25",
-   "title": "README: the newer retail game at about 60 %, ~5 fps in its world",
-   "summary": "Le commit met à jour le README et l’illustration pour corriger l’estimation du jeu retail : le progrès passe de ~65 % à ~60 % et la performance dans le monde 3D est précisée à ~5 fps (au lieu de 14 fps moyen). Cette modification poursuit le chantier de documentation en affinant les chiffres affichés, sans toucher au code. Elle rend la situation actuelle plus réaliste, mais ne débloque aucune limitation technique ; la partie 3D reste lente et incomplète."
-  },
-  {
-   "sha": "283068c8d7bc78aec3d6481c90613701a8d9df1a",
-   "date": "2026-11-25",
-   "title": "recomp: enable whole-wave branches and dead-SCC elision in split wave64",
-   "summary": "Le commit active les branches à onde complète et l’élimination des écritures SCC mortes dans la forme split‑wave64 lorsqu’un partenaire de vague est présent ou synchronisé. Cette amélioration poursuit le chantier d’optimisation du backend de compilation : elle augmente la couverture du compute per‑lane de 26 à 39 shaders sur le jeu de test et supprime la plupart des refus liés aux branches. Ainsi, plus de shaders passent la validation DXIL, mais les performances 3D restent limitées et le goulet du pipeline retail persiste."
-  },
-  {
-   "sha": "72d048b2266852dcb029f461187b3533a4d017fd",
-   "date": "2026-11-25",
-   "title": "Tests: enable D3D12 debug layer before GPU runner device",
-   "summary": "Le commit introduit une fonction unique `enable_debug_layer()` qui active la couche de débogage D3D12 une seule fois par processus, puis l’appelle avant la création du dispositif GPU dans le test runner et dans D3D12.X. Cette modification poursuit le chantier d’amélioration de la fiabilité des tests GPU en résolvant le blocage où la couche de débogage était activée trop tard, ce qui supprimait le dispositif déjà créé. Désormais les tests peuvent s’exécuter avec la couche de débogage activée sans perdre le dispositif, même si certains tests restent échoués pour d’autres raisons."
-  },
   {
    "sha": "ca04ad680696708fa078010b89614f0e618aedcf",
    "date": "2026-11-25",
@@ -239,6 +197,48 @@
    "sha": "06c9f5505f63f10c5ec49ef932d75b2c28177324",
    "date": "2026-11-25",
    "title": "D3D12.X: newer list layout #139 Reset goes through title_list::reset",
+   "summary": ""
+  },
+  {
+   "sha": "0306d1050017e6a4f30381721b3de16582b78e01",
+   "date": "2026-11-25",
+   "title": "Recompiler: pixel shader loops end on primitive edges (helper lanes)",
+   "summary": "Le commit corrige la lecture de v_readfirstlane dans les pixel shaders en faisant en sorte qu’elle prenne la première lane active d’EXEC lorsqu’il existe une lane helper, au lieu de toujours lire la première lane du masque complet. Cette modification s’inscrit dans la suite d’améliorations du recompiler qui visent à gérer correctement les boucles de pixel shaders et les masques de lanes, après les précédents travaux de découpage de pipelines compute et de correction du mapping DispatchMesh. Désormais les boucles qui s’appuient sur des lanes helpers ne s’exécutent plus jusqu’au budget maximal, ce qui évite les blocages GPU observés sur les cartes RDNA2 ; les autres parties du projet restent inchangées."
+  },
+  {
+   "sha": "8fcc11131f9fe3daec6cfb207bacf87f73f75463",
+   "date": "2026-11-25",
+   "title": "Recompiler: pixel shader loops end on primitive edges (helper lanes)",
+   "summary": "Le nouveau commit modifie le recompileur pour que les tests de masque de lanes dans les pixel shaders ne comptent que les lanes actives. En pratique, les boucles qui s’appuient sur un masque issu de EXEC se terminent correctement, même sur les drivers AMD RDNA2 qui bloquaient les lanes helpers. Cette amélioration poursuit la série de correctifs sur les boucles de pixel shader (v_readfirstlane et masques) et débloque enfin le cas de la passe de lumière volumétrique qui faisait planter le GPU. Il reste toutefois les slots DispatchMesh non implémentés et les fuzz‑tests qui continuent d’échouer."
+  },
+  {
+   "sha": "7906df76ec2da841ed2e4f90feae88ba7a1912cc",
+   "date": "2026-11-25",
+   "title": "Recompiler: pixel shader loops end on primitive edges (helper lanes)",
+   "summary": "Le nouveau commit modifie le recompileur pour que `v_readfirstlane` lise la première lane réellement active (live) dans les pixel shaders, et que les tests de masque de lanes ne comptent que les lanes vivantes. Cela poursuit le chantier amorcé par les précédents correctifs sur les boucles de pixel shaders et les lanes helpers, résolvant le plantage GPU sur les cartes AMD RDNA2 lors du passage volumétrique. Désormais les boucles qui dépendaient de masques d’exécution se terminent correctement, mais le traitement complet de `DispatchMesh` reste toujours absent."
+  },
+  {
+   "sha": "12f25f147c40f883a07cf022f520792dcee4bab9",
+   "date": "2026-11-25",
+   "title": "Recompiler: whole-wave reductions of wave32 VS / PS count every live lane",
+   "summary": ""
+  },
+  {
+   "sha": "625a0f36485c488cf3764b07609652c352d022fd",
+   "date": "2026-11-25",
+   "title": "D3D12.X: stand-ins of pipelines not built yet share the driver's pipelines",
+   "summary": ""
+  },
+  {
+   "sha": "e9ddf17e145c589d9ba9e79178e2068ef1204bba",
+   "date": "2026-11-25",
+   "title": "D3D12.X: a split dispatch runs in slabs that share a bounded scratch",
+   "summary": ""
+  },
+  {
+   "sha": "082944135cd2b96288470a595861fa608eee08dc",
+   "date": "2026-11-25",
+   "title": "D3D12.X: the scratch of split dispatches is bounded over all recordings",
    "summary": ""
   }
  ]

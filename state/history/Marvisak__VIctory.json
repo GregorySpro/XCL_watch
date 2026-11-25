@@ -2,24 +2,6 @@
  "state": "Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
   {
-   "sha": "1bde03c5befb3afd0843ced35448d5ed25c9ac0f",
-   "date": "2026-11-25",
-   "title": "Shader tests: require a device readback in every waterfall test",
-   "summary": ""
-  },
-  {
-   "sha": "fcdefcfc89af9466555e84439cd5477764427a7f",
-   "date": "2026-11-25",
-   "title": "GPU: copy title writes under ranges a submission's shaders write",
-   "summary": ""
-  },
-  {
-   "sha": "5fa5de35eec21664ec448dfcf742128986ed944f",
-   "date": "2026-11-25",
-   "title": "Shaders: a helper lane's v_readfirstlane reads its own value (#908)",
-   "summary": ""
-  },
-  {
    "sha": "4436fca34dd4200a0c061fab4f479021063bf34c",
    "date": "2026-11-25",
    "title": "Shaders: honor op_sel, omod and clamp on v_interp_p2_f16",
@@ -239,6 +221,24 @@
    "sha": "ea488a9f9901e4375c547a57795ae8cb79d577a4",
    "date": "2026-11-25",
    "title": "GPU: no typed unordered view in a format the host cannot store to",
+   "summary": ""
+  },
+  {
+   "sha": "366a9786cb7b5277f71515092293ca55f5954407",
+   "date": "2026-11-25",
+   "title": "Shaders: guarded scalar writes kill stale SGPRs in dead_on_edge",
+   "summary": ""
+  },
+  {
+   "sha": "e815cef29b448dbaa37484a1095a041a5df2d18a",
+   "date": "2026-11-25",
+   "title": "Shaders: look up the second page of straddling title-memory writes in the page table",
+   "summary": ""
+  },
+  {
+   "sha": "f3578e386ea0f06153445af10a698df029620aad",
+   "date": "2026-11-25",
+   "title": "Shaders: decode f16 inline float constants in whole-wave v_add_f16 simulation",
    "summary": ""
   }
  ]

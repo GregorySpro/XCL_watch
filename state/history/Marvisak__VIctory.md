@@ -6,6 +6,9 @@ Après ce changement, le processus de démarrage de GTA VI réussit systémati
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `f3578e3` Shaders: decode f16 inline float constants in whole-wave v_add_f16 simulation
+- **2026-11-25** `e815cef` Shaders: look up the second page of straddling title-memory writes in the page table
+- **2026-11-25** `366a978` Shaders: guarded scalar writes kill stale SGPRs in dead_on_edge
 - **2026-11-25** `ea488a9` GPU: no typed unordered view in a format the host cannot store to
 - **2026-11-25** `136e39d` GPU: a page whose alias cannot be guarded stays changed
 - **2026-11-25** `78ed12e` GPU: write a null CBV when CreateConstantBufferView gets a null desc
@@ -51,6 +54,3 @@ Après ce changement, le processus de démarrage de GTA VI réussit systémati
 - **2026-11-25** `42363ab` Tests: hardware-only shader checks skip on a machine without a GPU
 - **2026-11-25** `4118f33` GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL
 - **2026-11-25** `4436fca` Shaders: honor op_sel, omod and clamp on v_interp_p2_f16
-- **2026-11-25** `5fa5de3` Shaders: a helper lane's v_readfirstlane reads its own value (#908)
-- **2026-11-25** `fcdefcf` GPU: copy title writes under ranges a submission's shaders write
-- **2026-11-25** `1bde03c` Shader tests: require a device readback in every waterfall test

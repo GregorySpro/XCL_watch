@@ -2,10 +2,18 @@
 
 ## État du projet
 
-Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les tests GPU liés à la VRAM sparse et à l’import UMA sont désormais fiables et passent même en exécution parallèle, éliminant le blocage précédent sur les cartes NVIDIA. Le reste du projet reste tel que décrit dans l’état connu : les vérifications SCC et la gestion de VCC améliorent la fiabilité du recompiler, mais le per‑lane form demeure un goulet de performance, et le nettoyage des PR inactives ainsi que l’optimisation du per‑lane form restent les prochaines étapes probables.
+Après ce correctif, la documentation du projet possède un lien Discord correctement formaté, facilitant la navigation des nouveaux contributeurs. Les deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu continuent de fonctionner, avec tous les tests unitaires verts et les tests GPU de VRAM sparse fiables. Les goulets de performance du per‑lane form et le nettoyage des PR inactives restent les prochains objectifs, et aucune régression fonctionnelle n’est apparente. La prochaine étape probable reste l’optimisation des performances et le tri des pull‑requests en attente.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6987e49` Fix Discord link formatting in README.md
+  Le commit corrige le format du lien Discord dans le README en retirant un crochet superflu et en affichant correctement le texte cliquable. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans impacter le code ni les fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les contributeurs. Aucun changement fonctionnel n’est introduit, le projet reste dans la même dynamique de stabilisation.
+- **2026-11-25** `c390263` Fix Discord link formatting in README.md
+  Le commit corrige le formatage du lien Discord dans le README en ajustant la syntaxe markdown du badge. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans toucher au code ni aux fonctionnalités existantes. Elle rend l’accès au serveur Discord plus fiable, mais n’apporte aucun changement fonctionnel au projet. Aucun nouveau blocage n’est introduit et les capacités précédentes restent inchangées.
+- **2026-11-25** `2f27167` Fix Discord link formatting in README.md
+  Le commit corrige le format du lien Discord dans le README en encapsulant correctement l’URL dans un lien markdown. Cette modification poursuit le ménage de la documentation amorcé précédemment, sans toucher au code ni aux fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les lecteurs. Aucun nouvel obstacle n’est introduit, mais cela n’apporte pas de changement fonctionnel au projet.
+- **2026-11-25** `330a365` Fix Discord link and update display text
+  Le commit corrige simplement le lien et le texte du badge Discord dans le README, remplaçant l’URL erronée par la bonne. Cette modification s’inscrit dans la phase de ménage du projet, où l’on affine la documentation après avoir stabilisé les tests et les backends. Elle ne change aucune fonctionnalité du code, mais rend désormais le point de contact communautaire fiable pour les contributeurs.
 - **2026-11-25** `cbc296a` D3D12.X: a huge compute program the driver refuses is logged with its verdict
 - **2026-11-25** `56ec08d` Tests: verify D3D12.X resource, heap start, fence, and queue sync parity
 - **2026-11-25** `aaa0936` Recompiler: direct DXIL lowers a repeating compute program's blocks once
@@ -45,7 +53,3 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 - **2026-11-25** `152de4e` acphal: a reconnect drops messages queued for the old channel
 - **2026-11-25** `137b542` GameInput: a DualShock 4 or DualSense is the gamepad without XInput
 - **2026-11-25** `5796cc4` Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)
-- **2026-11-25** `400e638` Pixel shaders: masks hold the helper lanes (#105 item 1)
-- **2026-11-25** `de36462` Shaders: size-based admission for big compute driver compiles
-- **2026-11-25** `2e1c956` dxil: lower 64-bit icmp via 32-bit dwords and guard MIMG heap indices
-- **2026-11-25** `7994cd1` Direct DXIL: TG_SIZE counts a partial last wave

@@ -2,48 +2,6 @@
  "state": "Après ce changement, le projet possède un nouveau test qui confirme la conformité du hook `CheckFeatureSupport` avec le driver D3D12 natif sur AMD RX 7600 et sur le rendu logiciel WARP, sans échec signalé. Les parties déjà stables – partage de tiles VRAM pour les cubemaps, heap GLOBAL_SAMPLER, recompilation des shaders – continuent de fonctionner. Les zones bloquantes restent les fuzz‑tests sur XCL_TEXTURE_LEVEL_PAGES et l’implémentation de DispatchMesh. La prochaine étape probable sera d’étendre ces vérifications à d’autres GPU (NVIDIA, Intel) et d’avancer sur les fonctionnalités manquantes identifiées par les fuzz‑tests.",
  "entries": [
   {
-   "sha": "f54019e7d9430daf840f92c9f6e35b461ca9dc95",
-   "date": "2026-11-25",
-   "title": "xcl run: a panic on any thread is written to xcl.log",
-   "summary": ""
-  },
-  {
-   "sha": "db4ad096ab4932b426e703ecd15515928c235345",
-   "date": "2026-11-25",
-   "title": "Tests: avoid poisoning SYNC_GRAPH with an unmapped fake fence in queue_tests (#1978)",
-   "summary": ""
-  },
-  {
-   "sha": "ed95117d0cd09bed67a72b75491044591b695754",
-   "date": "2026-11-25",
-   "title": "D3D12.X: fence reclaimed VRAM heaps across all live queues and isolate arenas by device",
-   "summary": ""
-  },
-  {
-   "sha": "b32811395a17379e79ea9a957626aa58cb87d548",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: sign-extend i1 to i64 through i32",
-   "summary": ""
-  },
-  {
-   "sha": "d5080060893725f9475c7df3afc7ca1fa7511057",
-   "date": "2026-11-25",
-   "title": "D3D12.X: align promoted UAV clear values, key UAV support by adapter LUID, and use device-aware footprints fallback",
-   "summary": ""
-  },
-  {
-   "sha": "9bcb867bb1c20cc76efb3af903fec564fca14bd2",
-   "date": "2026-11-25",
-   "title": "D3D12.X: coalesce released shared sampler ranges and fix view/census checks in console_heap",
-   "summary": "Le commit fusionne la PR #2261 qui corrige trois bugs du tas partagé de samplers globaux (`GLOBAL_SAMPLER`). Il ajoute la coalescence des plages libérées et ignore les libérations à zéro, exclut les tas de samplers des vérifications `in_global` et utilise les indices réels des pages de samplers dans le recensement. Ces correctifs poursuivent le chantier amorcé par #1991, qui visait à stabiliser la gestion des descripteurs de samplers et à éviter les épuisements prématurés. Désormais le runtime ne tombera plus dans le fallback du slot 0 lorsqu’une petite page de samplers est libérée, et le tracing des samplers partagés sera plus précis, même si les autres parties du projet (ex. `DispatchMesh`) restent inchangées."
-  },
-  {
-   "sha": "397ea9617554a543995fd5fe7a652ed3eea66f75",
-   "date": "2026-11-25",
-   "title": "D3D12.X: ensure view and sampler descriptor heaps before console-list dispatches",
-   "summary": ""
-  },
-  {
    "sha": "59cdc7184c979d8d5a8bf5b8d4a180d820893574",
    "date": "2026-11-25",
    "title": "Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]",
@@ -239,6 +197,48 @@
    "sha": "266402110339d793d7e0f4a73e91bccdf9fb712b",
    "date": "2026-11-25",
    "title": "Tests: compare GetResourceAllocationInfo and GetCustomHeapProperties against host D3D12 driver",
+   "summary": ""
+  },
+  {
+   "sha": "72b59b5013bcea085deb17d02c94ae7a9411de17",
+   "date": "2026-11-25",
+   "title": "Tests: console descriptor heap slot/copy/unregister contract",
+   "summary": ""
+  },
+  {
+   "sha": "8a3f91230b6ca01f3b85d5b637240d04a0671921",
+   "date": "2026-11-25",
+   "title": "Tests: pin the generated D3D12 layout table invariants",
+   "summary": ""
+  },
+  {
+   "sha": "23865ea5ee6985400434b58e176b0d607ef5af8d",
+   "date": "2026-11-25",
+   "title": "Tests: a failed copy scratch check no longer aborts the lib test binary",
+   "summary": ""
+  },
+  {
+   "sha": "38c38621ac27351be0cf619cda0992beb6f5b55a",
+   "date": "2026-11-25",
+   "title": "Tests: wait for the late release before freeing the coherent buffer test's heap (#1487)",
+   "summary": ""
+  },
+  {
+   "sha": "27fa5f3da8dbc1c6b77179775963d89e28841ad2",
+   "date": "2026-11-25",
+   "title": "Tests: honor the selected adapter in the indirect argument test",
+   "summary": ""
+  },
+  {
+   "sha": "d48b065ea6cd6b6b5629fe1ffe34c946857878a0",
+   "date": "2026-11-25",
+   "title": "Tests: assert the refused depth-buffer UAV state on Windows only",
+   "summary": ""
+  },
+  {
+   "sha": "44eb541cde023fcf31d18541d93551650014cafe",
+   "date": "2026-11-25",
+   "title": "Tests: pin the pipeline stream subobject table to the PC headers",
    "summary": ""
   }
  ]

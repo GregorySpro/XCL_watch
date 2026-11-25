@@ -6,6 +6,13 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `44eb541` Tests: pin the pipeline stream subobject table to the PC headers
+- **2026-11-25** `d48b065` Tests: assert the refused depth-buffer UAV state on Windows only
+- **2026-11-25** `27fa5f3` Tests: honor the selected adapter in the indirect argument test
+- **2026-11-25** `38c3862` Tests: wait for the late release before freeing the coherent buffer test's heap (#1487)
+- **2026-11-25** `23865ea` Tests: a failed copy scratch check no longer aborts the lib test binary
+- **2026-11-25** `8a3f912` Tests: pin the generated D3D12 layout table invariants
+- **2026-11-25** `72b59b5` Tests: console descriptor heap slot/copy/unregister contract
 - **2026-11-25** `2664021` Tests: compare GetResourceAllocationInfo and GetCustomHeapProperties against host D3D12 driver
 - **2026-11-25** `8b38c1d` Tests: verify CreateHeap console fallback and IID retry against host driver
 - **2026-11-25** `661373a` Tests: compare CheckFeatureSupport hook against host D3D12 driver
@@ -41,11 +48,3 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 - **2026-11-25** `be67bfc` Recompiler: an S# word written with s_brev_b32 is a constant too
 - **2026-11-25** `9ed0c13` Shaders: reverse the halves of an i64 Bfrev with shifts and masks on AMD
 - **2026-11-25** `59cdc71` Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]
-- **2026-11-25** `397ea96` D3D12.X: ensure view and sampler descriptor heaps before console-list dispatches
-- **2026-11-25** `9bcb867` D3D12.X: coalesce released shared sampler ranges and fix view/census checks in console_heap
-  Le commit fusionne la PR #2261 qui corrige trois bugs du tas partagé de samplers globaux (`GLOBAL_SAMPLER`). Il ajoute la coalescence des plages libérées et ignore les libérations à zéro, exclut les tas de samplers des vérifications `in_global` et utilise les indices réels des pages de samplers dans le recensement. Ces correctifs poursuivent le chantier amorcé par #1991, qui visait à stabiliser la gestion des descripteurs de samplers et à éviter les épuisements prématurés. Désormais le runtime ne tombera plus dans le fallback du slot 0 lorsqu’une petite page de samplers est libérée, et le tracing des samplers partagés sera plus précis, même si les autres parties du projet (ex. `DispatchMesh`) restent inchangées.
-- **2026-11-25** `d508006` D3D12.X: align promoted UAV clear values, key UAV support by adapter LUID, and use device-aware footprints fallback
-- **2026-11-25** `b328113` Direct DXIL: sign-extend i1 to i64 through i32
-- **2026-11-25** `ed95117` D3D12.X: fence reclaimed VRAM heaps across all live queues and isolate arenas by device
-- **2026-11-25** `db4ad09` Tests: avoid poisoning SYNC_GRAPH with an unmapped fake fence in queue_tests (#1978)
-- **2026-11-25** `f54019e` xcl run: a panic on any thread is written to xcl.log

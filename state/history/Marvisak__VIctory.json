@@ -2,12 +2,6 @@
  "state": "Après ce changement, le pipeline shader génère un DXIL plus compact et crée beaucoup moins de handles, ce qui devrait alléger la charge du compilateur et du runtime. Le rafraîchissement des textures continue de fonctionner avec les gains précédents, et les correctifs de gestion de pages restent en place. Le rendu du monde est toujours noir, HDR et depth‑bounds manquent, et le support waterfall doit encore être intégré. La prochaine étape probable reste l’ajout des informations waterfall dans le backend et la poursuite de l’extension du support waterfall.",
  "entries": [
   {
-   "sha": "819f62275bf88f66299a7cbe83efe82a5f004fed",
-   "date": "2026-11-24",
-   "title": "translate: progress counts finished shaders, not ones handed out",
-   "summary": "Le commit ajuste le calcul du progrès affiché par le traducteur : il ne compte plus simplement les jobs distribués, mais soustrait les workers encore actifs pour ne retenir que les shaders réellement terminés. Cette modification poursuit le chantier d’amélioration de la visibilité du pipeline, corrigeant un affichage trompeur introduit précédemment. Elle ne change pas le comportement du moteur de shaders ni le support du waterfall, mais permet de suivre plus fidèlement l’avancement des traductions."
-  },
-  {
    "sha": "e0034c2a9cd98fd20f0f0c1a344925c4d95a5bdb",
    "date": "2026-11-24",
    "title": "Shaders: register-relative moves reach only what their index can",
@@ -239,6 +233,12 @@
    "sha": "54ab40676850007650e71cd147c1bff1d0c4a4de",
    "date": "2026-11-25",
    "title": "Shaders: descriptors joined by nested control flow, again",
+   "summary": ""
+  },
+  {
+   "sha": "da82e444ec46a162ca779c82d4cf191a69182971",
+   "date": "2026-11-25",
+   "title": "Shader: normalized buffer codes convert to the float nearest their quotient",
    "summary": ""
   }
  ]

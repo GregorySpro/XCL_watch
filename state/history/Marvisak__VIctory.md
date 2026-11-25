@@ -6,6 +6,7 @@ Après ce changement, le pipeline shader génère un DXIL plus compact et crée 
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `da82e44` Shader: normalized buffer codes convert to the float nearest their quotient
 - **2026-11-25** `54ab406` Shaders: descriptors joined by nested control flow, again
 - **2026-11-25** `315cea1` GPU: barriers start from the states resources are in: prelude order, the clamp's own buffer
 - **2026-11-25** `4015a18` Shaders: quad reads in pixel programs reach the helpers at triangle edges
@@ -49,5 +50,3 @@ Après ce changement, le pipeline shader génère un DXIL plus compact et crée 
 - **2026-11-24** `224e786` GPU tests: the frame pacing test tolerates a busy host
 - **2026-11-24** `13bbd6f` GPU: one host texture per texture memory, and writable twins for depth textures
 - **2026-11-24** `e0034c2` Shaders: register-relative moves reach only what their index can
-- **2026-11-24** `819f622` translate: progress counts finished shaders, not ones handed out
-  Le commit ajuste le calcul du progrès affiché par le traducteur : il ne compte plus simplement les jobs distribués, mais soustrait les workers encore actifs pour ne retenir que les shaders réellement terminés. Cette modification poursuit le chantier d’amélioration de la visibilité du pipeline, corrigeant un affichage trompeur introduit précédemment. Elle ne change pas le comportement du moteur de shaders ni le support du waterfall, mais permet de suivre plus fidèlement l’avancement des traductions.

@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le pipeline GPU transmet maintenant le test de profondeur aux cartes qui le supportent, avec un avertissement et un fallback lorsqu’il n’est pas disponible. Le lancement de GTA VI continue de réussir, le debug layer D3D12 ne bloque plus et les vues shader nulles sont protégées. Le rendu du monde reste noir, HDR et le backend waterfall restent à implémenter, et le test de profondeur n’est encore que simulé (synthetic tests) ; la prochaine étape probable reste l’intégration du backend waterfall et la prise en charge complète d’HDR/depth‑bounds côté titre.",
+ "state": "Après ce changement, le projet continue de lancer GTA VI, d’afficher les menus à 30 fps et de charger le monde ainsi que le prologue, mais le rendu du monde reste à 1 fps, rendant le jeu injouable. Le pipeline GPU transmet le test de profondeur aux cartes compatibles, le debug layer D3D12 ne bloque plus et les vues shader nulles sont protégées. Le backend waterfall, le support complet d’HDR et le test de profondeur réel restent à implémenter, et la prochaine étape probable reste l’optimisation du rendu pour atteindre un framerate jouable.",
  "entries": [
-  {
-   "sha": "42363ab6cd5265f0fb3b500ad265f2b84c6b5dbf",
-   "date": "2026-11-25",
-   "title": "Tests: hardware-only shader checks skip on a machine without a GPU",
-   "summary": ""
-  },
   {
    "sha": "ccfb02996eac831853e8324156f123eeff083e9d",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "GPU: the depth bounds test reaches the host",
    "summary": "Le commit ajoute la prise en charge du test de profondeur (depth‑bounds) côté hôte : le drapeau est conservé dans l’état graphique, le sous‑objet 21 (`DEPTH_STENCIL1`) est utilisé quand le GPU le supporte, et la commande `OMSetDepthBounds` est réellement envoyée au GPU lors du bind d’un pipeline. Cela poursuit la série de correctifs qui renforcent la robustesse du GPU (null CBV, alias, etc.) et débloque une fonctionnalité manquante depuis le README. Le rendu du monde reste noir ; HDR, depth‑bounds réel (au sens du titre) et le backend waterfall sont encore absents."
+  },
+  {
+   "sha": "63bcca43c6a00a758510398fa43096ce7e4f7df0",
+   "date": "2026-11-25",
+   "title": "update readme",
+   "summary": "Le commit met à jour le README pour préciser que le jeu n’est pas jouable à cause d’un framerate d’environ 1 fps dans le monde, tout en rappelant que le démarrage, les menus et le prologue fonctionnent. Cette modification vient compléter les récents correctifs GPU en informant clairement de la limitation actuelle de performance, sans changer le code. Elle ne débloque rien côté technique, mais rend l’état du projet plus transparent pour les contributeurs et les utilisateurs."
   }
  ]
 }

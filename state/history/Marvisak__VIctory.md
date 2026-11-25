@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le pipeline GPU transmet maintenant le test de profondeur aux cartes qui le supportent, avec un avertissement et un fallback lorsqu’il n’est pas disponible. Le lancement de GTA VI continue de réussir, le debug layer D3D12 ne bloque plus et les vues shader nulles sont protégées. Le rendu du monde reste noir, HDR et le backend waterfall restent à implémenter, et le test de profondeur n’est encore que simulé (synthetic tests) ; la prochaine étape probable reste l’intégration du backend waterfall et la prise en charge complète d’HDR/depth‑bounds côté titre.
+Après ce changement, le projet continue de lancer GTA VI, d’afficher les menus à 30 fps et de charger le monde ainsi que le prologue, mais le rendu du monde reste à 1 fps, rendant le jeu injouable. Le pipeline GPU transmet le test de profondeur aux cartes compatibles, le debug layer D3D12 ne bloque plus et les vues shader nulles sont protégées. Le backend waterfall, le support complet d’HDR et le test de profondeur réel restent à implémenter, et la prochaine étape probable reste l’optimisation du rendu pour atteindre un framerate jouable.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `63bcca4` update readme
+  Le commit met à jour le README pour préciser que le jeu n’est pas jouable à cause d’un framerate d’environ 1 fps dans le monde, tout en rappelant que le démarrage, les menus et le prologue fonctionnent. Cette modification vient compléter les récents correctifs GPU en informant clairement de la limitation actuelle de performance, sans changer le code. Elle ne débloque rien côté technique, mais rend l’état du projet plus transparent pour les contributeurs et les utilisateurs.
 - **2026-11-25** `842b0cb` GPU: the depth bounds test reaches the host
   Le commit ajoute la prise en charge du test de profondeur (depth‑bounds) côté hôte : le drapeau est conservé dans l’état graphique, le sous‑objet 21 (`DEPTH_STENCIL1`) est utilisé quand le GPU le supporte, et la commande `OMSetDepthBounds` est réellement envoyée au GPU lors du bind d’un pipeline. Cela poursuit la série de correctifs qui renforcent la robustesse du GPU (null CBV, alias, etc.) et débloque une fonctionnalité manquante depuis le README. Le rendu du monde reste noir ; HDR, depth‑bounds réel (au sens du titre) et le backend waterfall sont encore absents.
 - **2026-11-25** `219878a` GPU: a null shader view has no alias source
@@ -55,4 +57,3 @@ Après ce changement, le pipeline GPU transmet maintenant le test de profondeur 
   Le commit ajoute une fonction `unarm` qui retire une page de la liste des pages « armées » lorsqu’une copie‑back est en cours, et l’appelle avant de sauvegarder la page dans `shadow.rs`. Cela corrige le problème où une page marquée était re‑sauvegardée lors de sa propre copie, un bug identifié dans le suivi des pages GPU. Ce changement poursuit le chantier de stabilisation du pipeline de copie‑back, réduisant les risques de redondance et de corruption, mais n’affecte pas directement le rendu du monde qui reste noir.
 - **2026-11-25** `cd94d35` GPU: shaders mark the pages they write through views; copy-backs compare only those
 - **2026-11-25** `ccfb029` Tests: a machine with no GPU has no hardware adapter to check shaders on
-- **2026-11-25** `42363ab` Tests: hardware-only shader checks skip on a machine without a GPU

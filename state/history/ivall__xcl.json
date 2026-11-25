@@ -1,54 +1,6 @@
 {
- "state": "Après l’intégration, le traducteur DXIL accepte et compile correctement les 16 formes d’atomiques d’image 64 bits, les tests `direct_image_atomic_64bit_validates` passent sur les GPU AMD/NVIDIA, et le désassembleur continue d’afficher les contrôles DPP. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de même que la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` qui reste à surveiller. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests.",
+ "state": "Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les libérations sont correctement fusionnées, les requêtes de 8 slots ne sont plus bloquées par des fragments, et le tracing XCL montre les bons indices de samplers. Les tests de fuzz et la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` restent inchangés et continuent d’attendre résolution. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests, maintenant que le sous‑système de samplers ne constitue plus un goulet d’étranglement.",
  "entries": [
-  {
-   "sha": "cdb08914a9d86c2f04b6b3e168a8822ec6148592",
-   "date": "2026-11-25",
-   "title": "Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure",
-   "summary": ""
-  },
-  {
-   "sha": "963313835813f475037b3a9f5fcc3cb591696928",
-   "date": "2026-11-25",
-   "title": "Tests: add launcher integration tests for target selection and error handling",
-   "summary": ""
-  },
-  {
-   "sha": "0d13b071a55caaf4cc1ab5a73298139006edd7c6",
-   "date": "2026-11-25",
-   "title": "Tests: two expectations that no longer match the code",
-   "summary": "Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting)."
-  },
-  {
-   "sha": "426a5a745db4d5e4b037449ede0b70cb342f5192",
-   "date": "2026-11-25",
-   "title": "Tests: two expectations that no longer match the code",
-   "summary": ""
-  },
-  {
-   "sha": "16d679301ba4851c2459358336f7c3f8d904d1a5",
-   "date": "2026-11-25",
-   "title": "DXIL: lower window_at address carry in 32-bit without i64",
-   "summary": ""
-  },
-  {
-   "sha": "ea088a58024f063f3a7188c1390a5b83b4a0f606",
-   "date": "2026-11-25",
-   "title": "Recompiler: image_get_resinfo past the last level gives 0 sizes on AMD too",
-   "summary": "Le commit corrige la gestion des requêtes d’informations d’image lorsqu’on interroge un niveau de mip‑map au‑delà du dernier disponible. Au lieu de renvoyer les dimensions du niveau le plus proche (comportement observé sur certains drivers AMD RDNA4), le code compare maintenant le niveau demandé avec le nombre total de niveaux et renvoie des tailles nulles, comme le font les drivers NVIDIA et l’API D3D12. Cette modification poursuit la série de correctifs autour du recompiler et du traitement des images, éliminant ainsi un échec récurrent sur les GPUs AMD. Désormais les shaders qui utilisent GetDimensions ou image_get_resinfo recevront des valeurs cohérentes (0,0,0) pour les niveaux hors limites, ce qui devrait réduire les divergences de comportement entre les cartes."
-  },
-  {
-   "sha": "f45409c8e9dbb89c2b8d8d574c302f8d9c951ba6",
-   "date": "2026-11-25",
-   "title": "D3D12.X: re-fingerprint unwatched streamed textures at spaced frame milestones",
-   "summary": ""
-  },
-  {
-   "sha": "1a0bbe3a2ba91ea8f5b6fc29130a053868d3c9e6",
-   "date": "2026-11-25",
-   "title": "kernelx: Sleep does not count PC calls that keep the title's threads",
-   "summary": ""
-  },
   {
    "sha": "8e9af35c331f7cdc07b64eadc16a34e5c9c7b48f",
    "date": "2026-11-25",
@@ -239,6 +191,54 @@
    "sha": "b32811395a17379e79ea9a957626aa58cb87d548",
    "date": "2026-11-25",
    "title": "Direct DXIL: sign-extend i1 to i64 through i32",
+   "summary": ""
+  },
+  {
+   "sha": "d5080060893725f9475c7df3afc7ca1fa7511057",
+   "date": "2026-11-25",
+   "title": "D3D12.X: align promoted UAV clear values, key UAV support by adapter LUID, and use device-aware footprints fallback",
+   "summary": ""
+  },
+  {
+   "sha": "9bcb867bb1c20cc76efb3af903fec564fca14bd2",
+   "date": "2026-11-25",
+   "title": "D3D12.X: coalesce released shared sampler ranges and fix view/census checks in console_heap",
+   "summary": "Le commit fusionne la PR #2261 qui corrige trois bugs du tas partagé de samplers globaux (`GLOBAL_SAMPLER`). Il ajoute la coalescence des plages libérées et ignore les libérations à zéro, exclut les tas de samplers des vérifications `in_global` et utilise les indices réels des pages de samplers dans le recensement. Ces correctifs poursuivent le chantier amorcé par #1991, qui visait à stabiliser la gestion des descripteurs de samplers et à éviter les épuisements prématurés. Désormais le runtime ne tombera plus dans le fallback du slot 0 lorsqu’une petite page de samplers est libérée, et le tracing des samplers partagés sera plus précis, même si les autres parties du projet (ex. `DispatchMesh`) restent inchangées."
+  },
+  {
+   "sha": "397ea9617554a543995fd5fe7a652ed3eea66f75",
+   "date": "2026-11-25",
+   "title": "D3D12.X: ensure view and sampler descriptor heaps before console-list dispatches",
+   "summary": ""
+  },
+  {
+   "sha": "59cdc7184c979d8d5a8bf5b8d4a180d820893574",
+   "date": "2026-11-25",
+   "title": "Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]",
+   "summary": ""
+  },
+  {
+   "sha": "9ed0c13ca7f3a4f0ce4e9461022fd5a9ce9f2f1b",
+   "date": "2026-11-25",
+   "title": "Shaders: reverse the halves of an i64 Bfrev with shifts and masks on AMD",
+   "summary": ""
+  },
+  {
+   "sha": "be67bfcfe8143e21a62bbfd5d279d292229e27f9",
+   "date": "2026-11-25",
+   "title": "Recompiler: an S# word written with s_brev_b32 is a constant too",
+   "summary": ""
+  },
+  {
+   "sha": "728e254892a86cb891e806dc9356a39f71dc4ed1",
+   "date": "2026-11-25",
+   "title": "GPU: fail closed on unresolved control flow and errored FSSMs in effects",
+   "summary": ""
+  },
+  {
+   "sha": "31608c9159c63f77063b92170f592eb1106dc6ec",
+   "date": "2026-11-25",
+   "title": "GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test",
    "summary": ""
   }
  ]

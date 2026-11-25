@@ -2,10 +2,19 @@
 
 ## État du projet
 
-Après l’intégration, le traducteur DXIL accepte et compile correctement les 16 formes d’atomiques d’image 64 bits, les tests `direct_image_atomic_64bit_validates` passent sur les GPU AMD/NVIDIA, et le désassembleur continue d’afficher les contrôles DPP. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de même que la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` qui reste à surveiller. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests.
+Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les libérations sont correctement fusionnées, les requêtes de 8 slots ne sont plus bloquées par des fragments, et le tracing XCL montre les bons indices de samplers. Les tests de fuzz et la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` restent inchangés et continuent d’attendre résolution. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests, maintenant que le sous‑système de samplers ne constitue plus un goulet d’étranglement.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `31608c9` GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test
+- **2026-11-25** `728e254` GPU: fail closed on unresolved control flow and errored FSSMs in effects
+- **2026-11-25** `be67bfc` Recompiler: an S# word written with s_brev_b32 is a constant too
+- **2026-11-25** `9ed0c13` Shaders: reverse the halves of an i64 Bfrev with shifts and masks on AMD
+- **2026-11-25** `59cdc71` Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]
+- **2026-11-25** `397ea96` D3D12.X: ensure view and sampler descriptor heaps before console-list dispatches
+- **2026-11-25** `9bcb867` D3D12.X: coalesce released shared sampler ranges and fix view/census checks in console_heap
+  Le commit fusionne la PR #2261 qui corrige trois bugs du tas partagé de samplers globaux (`GLOBAL_SAMPLER`). Il ajoute la coalescence des plages libérées et ignore les libérations à zéro, exclut les tas de samplers des vérifications `in_global` et utilise les indices réels des pages de samplers dans le recensement. Ces correctifs poursuivent le chantier amorcé par #1991, qui visait à stabiliser la gestion des descripteurs de samplers et à éviter les épuisements prématurés. Désormais le runtime ne tombera plus dans le fallback du slot 0 lorsqu’une petite page de samplers est libérée, et le tracing des samplers partagés sera plus précis, même si les autres parties du projet (ex. `DispatchMesh`) restent inchangées.
+- **2026-11-25** `d508006` D3D12.X: align promoted UAV clear values, key UAV support by adapter LUID, and use device-aware footprints fallback
 - **2026-11-25** `b328113` Direct DXIL: sign-extend i1 to i64 through i32
 - **2026-11-25** `ed95117` D3D12.X: fence reclaimed VRAM heaps across all live queues and isolate arenas by device
 - **2026-11-25** `db4ad09` Tests: avoid poisoning SYNC_GRAPH with an unmapped fake fence in queue_tests (#1978)
@@ -51,13 +60,3 @@ Après l’intégration, le traducteur DXIL accepte et compile correctement les 
   Le nouveau commit ajoute la prise en charge du DRED (Device Removed Extended Diagnostics) avec l’option `XCL_DRED=1`. Il enregistre les pipelines traduits (hashes des shaders console) associés à chaque liste de commandes et les marque via des hooks `SetPipelineState` et `SetMarker`, permettant d’identifier quel pipeline a causé un plantage GPU. Cette amélioration s’inscrit dans la suite de correctifs autour du suivi des listes et du mapping des slots DispatchMesh, en comblant un manque d’information sur les fautes de page shader. Désormais les logs DRED indiquent le pipeline fautif, mais le traitement réel des slots DispatchMesh reste inchangé et les fuzz‑tests restent bloquants.
 - **2026-11-25** `8e9af35` D3D12.X: the newer layout's DispatchMesh is the older #127
   Le commit corrige le mapping des slots de la nouvelle disposition de la liste de commandes D3D12.X pour la fonction DispatchMesh. Au lieu d’associer le slot plus récent #129 à l’ancien #126, il le relie correctement au slot plus ancien #127, alignant ainsi la table NEWER_LIST_SLOTS avec le comportement observé dans les titres retail. Cette mise à jour poursuit la série de correctifs sur la correspondance des méthodes de la nouvelle layout, résolvant un décalage qui bloquait la prise en charge de DispatchMesh. Désormais le moteur peut identifier correctement le slot DispatchMesh, mais les implémentations effectives de ces slots restent à venir.
-- **2026-11-25** `1a0bbe3` kernelx: Sleep does not count PC calls that keep the title's threads
-- **2026-11-25** `f45409c` D3D12.X: re-fingerprint unwatched streamed textures at spaced frame milestones
-- **2026-11-25** `ea088a5` Recompiler: image_get_resinfo past the last level gives 0 sizes on AMD too
-  Le commit corrige la gestion des requêtes d’informations d’image lorsqu’on interroge un niveau de mip‑map au‑delà du dernier disponible. Au lieu de renvoyer les dimensions du niveau le plus proche (comportement observé sur certains drivers AMD RDNA4), le code compare maintenant le niveau demandé avec le nombre total de niveaux et renvoie des tailles nulles, comme le font les drivers NVIDIA et l’API D3D12. Cette modification poursuit la série de correctifs autour du recompiler et du traitement des images, éliminant ainsi un échec récurrent sur les GPUs AMD. Désormais les shaders qui utilisent GetDimensions ou image_get_resinfo recevront des valeurs cohérentes (0,0,0) pour les niveaux hors limites, ce qui devrait réduire les divergences de comportement entre les cartes.
-- **2026-11-25** `16d6793` DXIL: lower window_at address carry in 32-bit without i64
-- **2026-11-25** `426a5a7` Tests: two expectations that no longer match the code
-- **2026-11-25** `0d13b07` Tests: two expectations that no longer match the code
-  Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting).
-- **2026-11-25** `9633138` Tests: add launcher integration tests for target selection and error handling
-- **2026-11-25** `cdb0891` Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure

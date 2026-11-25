@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après l’intégration, le projet dispose désormais de tests robustes confirmant la cohérence du heap‑window entre les implémentations HLSL et DXIL, ce qui renforce la stabilité de la pile de recompilation shader. Les parties déjà fonctionnelles (partage de tiles VRAM, heap GLOBAL_SAMPLER, recompilation des shaders) restent intactes. Les blocages persistants sont les fuzz‑tests sur `XCL_TEXTURE_LEVEL_PAGES` et l’implémentation de `DispatchMesh`, ainsi que les cinq échecs déjà existants liés aux pipelines DXIL et aux masques bridgés. La prochaine étape probable sera de corriger ces échecs de fuzz‑tests et d’étendre les nouvelles vérifications de heap‑window à d’autres GPU (NVIDIA, AMD, Intel).
+Après cette modification, les shaders compute en mode `XCL_DIRECT_DXIL=1`/`XCL_HEAP_WINDOWS=0` bénéficient d’une compilation beaucoup plus rapide et d’une empreinte mémoire du driver nettement réduite, tandis que les shaders graphiques conservent le comportement précédent (et ne subissent pas de régression notable). Les tests existants sur le heap‑window et les vérifications de cohérence restent valides. Les blocages précédents (fuzz‑tests `XCL_TEXTURE_LEVEL_PAGES`, implémentation de `DispatchMesh` et les cinq échecs DXIL) ne sont pas résolus par ce changement et restent à traiter. La prochaine étape probable sera de poursuivre les optimisations du chemin compute (stores, atomics) et de s’attaquer aux tests de fuzz‑testing restants.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6d12f58` Recompiler: flatten direct DXIL root-UAV loads for compute
+  Le commit a remplacé les multiples branches `switch` utilisées pour chaque chargement direct DXIL root‑UAV par une séquence linéaire utilisant `rawBufferLoad` et `select` sur les shaders compute. Cette optimisation poursuit le chantier amorcé par le PR #2088 : réduire le nombre de blocs basiques générés en mode direct DXIL, ce qui diminue drastiquement les temps de compilation à froid et la consommation mémoire du driver NVIDIA. Le reste du pipeline (stores, atomics, chemins HLSL et graphics) reste inchangé, et les performances des shaders pixel restent identiques.
 - **2026-11-25** `e0d93c8` D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind
 - **2026-11-25** `6d051da` Recompiler: load direct DXIL geometry ES inputs from the heap window
 - **2026-11-25** `fda0b1f` Tests: verify heap-window GPU equivalence and graphics validation
@@ -48,4 +50,3 @@ Après l’intégration, le projet dispose désormais de tests robustes confirma
 - **2026-11-25** `22b6222` Direct DXIL: include pixel shader helper lanes in ballots and VOPC masks
 - **2026-11-25** `e44af70` Recompiler: the FSSM header's wave32 flag decides a program's wave size
 - **2026-11-25** `bd2ac50` Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)
-- **2026-11-25** `943043e` Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)

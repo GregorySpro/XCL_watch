@@ -1,12 +1,6 @@
 {
- "state": "Après l’intégration, le projet dispose désormais de tests robustes confirmant la cohérence du heap‑window entre les implémentations HLSL et DXIL, ce qui renforce la stabilité de la pile de recompilation shader. Les parties déjà fonctionnelles (partage de tiles VRAM, heap GLOBAL_SAMPLER, recompilation des shaders) restent intactes. Les blocages persistants sont les fuzz‑tests sur `XCL_TEXTURE_LEVEL_PAGES` et l’implémentation de `DispatchMesh`, ainsi que les cinq échecs déjà existants liés aux pipelines DXIL et aux masques bridgés. La prochaine étape probable sera de corriger ces échecs de fuzz‑tests et d’étendre les nouvelles vérifications de heap‑window à d’autres GPU (NVIDIA, AMD, Intel).",
+ "state": "Après cette modification, les shaders compute en mode `XCL_DIRECT_DXIL=1`/`XCL_HEAP_WINDOWS=0` bénéficient d’une compilation beaucoup plus rapide et d’une empreinte mémoire du driver nettement réduite, tandis que les shaders graphiques conservent le comportement précédent (et ne subissent pas de régression notable). Les tests existants sur le heap‑window et les vérifications de cohérence restent valides. Les blocages précédents (fuzz‑tests `XCL_TEXTURE_LEVEL_PAGES`, implémentation de `DispatchMesh` et les cinq échecs DXIL) ne sont pas résolus par ce changement et restent à traiter. La prochaine étape probable sera de poursuivre les optimisations du chemin compute (stores, atomics) et de s’attaquer aux tests de fuzz‑testing restants.",
  "entries": [
-  {
-   "sha": "943043e87ce32ec4ec8cc51525ba25ebc4d6649d",
-   "date": "2026-11-25",
-   "title": "Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)",
-   "summary": ""
-  },
   {
    "sha": "bd2ac50703a3ec1232744624f99e903e8fff62b9",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind",
    "summary": ""
+  },
+  {
+   "sha": "6d12f58a229bc73889878a448c64dc3af25eeba0",
+   "date": "2026-11-25",
+   "title": "Recompiler: flatten direct DXIL root-UAV loads for compute",
+   "summary": "Le commit a remplacé les multiples branches `switch` utilisées pour chaque chargement direct DXIL root‑UAV par une séquence linéaire utilisant `rawBufferLoad` et `select` sur les shaders compute. Cette optimisation poursuit le chantier amorcé par le PR #2088 : réduire le nombre de blocs basiques générés en mode direct DXIL, ce qui diminue drastiquement les temps de compilation à froid et la consommation mémoire du driver NVIDIA. Le reste du pipeline (stores, atomics, chemins HLSL et graphics) reste inchangé, et les performances des shaders pixel restent identiques."
   }
  ]
 }

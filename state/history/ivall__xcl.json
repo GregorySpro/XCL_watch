@@ -1,54 +1,6 @@
 {
- "state": "Après ce changement, la documentation reflète correctement 60 % d’avancement et ~5 fps dans le monde 3D, tandis que les menus restent à 30 fps et le temps d’accès à ~4 s. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` fonctionnent toujours, les tests unitaires et GPU restent verts, et le lien Discord est correct. Le goulet de performance du pipeline retail persiste : la 3D reste très lente et incomplète, la prochaine étape probable reste l’optimisation du pipeline retail et la résolution des blocages du per‑lane form.",
+ "state": "Après ce changement, le backend Direct DXIL supporte correctement les gathers à LOD explicite et le sampling `UNORM=1` pour les textures 2D et 2D Array non‑cube, avec les vérifications de limites d’heap conservées. Les tests GPU précédents (GetDimensions, image_get_resinfo) continuent de réussir, et les nouveaux tests de gather4_lod sont verts. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation reste à analyser. La prochaine étape probable reste l’investigation de ces échecs de fuzz et l’évaluation de l’influence du nesting.",
  "entries": [
-  {
-   "sha": "63547b7a96d6b347273794047f61722158205b1e",
-   "date": "2026-11-25",
-   "title": "Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)",
-   "summary": ""
-  },
-  {
-   "sha": "7b9eabb6acac85b4cb38be395214bb5104790446",
-   "date": "2026-11-25",
-   "title": "Recompiler: v_rcp_f64 and v_rsq_f64 keep NaN, infinities and denormals",
-   "summary": ""
-  },
-  {
-   "sha": "bf9eebd53e3ebf9a0311326d3d2a92c0e240ee5c",
-   "date": "2026-11-25",
-   "title": "Recompiler: keep entered far-jump sequences indirect",
-   "summary": ""
-  },
-  {
-   "sha": "6f45624c976be27824a754d036599d349121e523",
-   "date": "2026-11-25",
-   "title": "Recompiler: fix per-lane whole-wave predicate and SRC_SCC checks",
-   "summary": "Le commit corrige la logique de prédicats whole‑wave en mode per‑lane, en introduisant le suivi du type de réduction SCC (Uniform, Any, All) et en arrêtant l’AND de VCC avec EXEC lorsqu’on n’utilise pas de branches wave‑wide. Cela poursuit les efforts récents sur le recompiler (classification wave64, gestion des masques) et comble trois failles de soundness qui bloquaient la précision des shaders volumineux. Désormais les analyses de masques tiennent compte des lanes inactives et les tests unitaires valident ces cas, mais les optimisations de per‑lane form restent encore à améliorer."
-  },
-  {
-   "sha": "99e474352fbaa0d94b318e1932dcf7939824f471",
-   "date": "2026-11-25",
-   "title": "Recompiler: select vertices for BVH triangle node types 2 and 3",
-   "summary": ""
-  },
-  {
-   "sha": "2bdf0477f84377d1b08e29424100c9bace4e530f",
-   "date": "2026-11-25",
-   "title": "D3D12.X: reduce retained texture upload staging",
-   "summary": ""
-  },
-  {
-   "sha": "8f5fca5bb9ad6e695093d75294ad2cec023bba60",
-   "date": "2026-11-25",
-   "title": "D3D12.X: detile 3D textures with packed mip tails",
-   "summary": ""
-  },
-  {
-   "sha": "393cbddf97f0ae78deb107fd60d1713d5b78ee97",
-   "date": "2026-11-25",
-   "title": "Recompiler: lower S_FF0_I32 and S_FLBIT_I32 on mask registers in the per-lane form",
-   "summary": ""
-  },
   {
    "sha": "86719eec1e9fc4c36c5fb568ec4951fd47a31b88",
    "date": "2026-11-25",
@@ -240,6 +192,54 @@
    "date": "2026-11-25",
    "title": "README: the newer retail game at about 60 %, ~5 fps in its world",
    "summary": "Le commit met à jour le README et l’illustration pour corriger l’estimation du jeu retail : le progrès passe de ~65 % à ~60 % et la performance dans le monde 3D est précisée à ~5 fps (au lieu de 14 fps moyen). Cette modification poursuit le chantier de documentation en affinant les chiffres affichés, sans toucher au code. Elle rend la situation actuelle plus réaliste, mais ne débloque aucune limitation technique ; la partie 3D reste lente et incomplète."
+  },
+  {
+   "sha": "283068c8d7bc78aec3d6481c90613701a8d9df1a",
+   "date": "2026-11-25",
+   "title": "recomp: enable whole-wave branches and dead-SCC elision in split wave64",
+   "summary": "Le commit active les branches à onde complète et l’élimination des écritures SCC mortes dans la forme split‑wave64 lorsqu’un partenaire de vague est présent ou synchronisé. Cette amélioration poursuit le chantier d’optimisation du backend de compilation : elle augmente la couverture du compute per‑lane de 26 à 39 shaders sur le jeu de test et supprime la plupart des refus liés aux branches. Ainsi, plus de shaders passent la validation DXIL, mais les performances 3D restent limitées et le goulet du pipeline retail persiste."
+  },
+  {
+   "sha": "72d048b2266852dcb029f461187b3533a4d017fd",
+   "date": "2026-11-25",
+   "title": "Tests: enable D3D12 debug layer before GPU runner device",
+   "summary": "Le commit introduit une fonction unique `enable_debug_layer()` qui active la couche de débogage D3D12 une seule fois par processus, puis l’appelle avant la création du dispositif GPU dans le test runner et dans D3D12.X. Cette modification poursuit le chantier d’amélioration de la fiabilité des tests GPU en résolvant le blocage où la couche de débogage était activée trop tard, ce qui supprimait le dispositif déjà créé. Désormais les tests peuvent s’exécuter avec la couche de débogage activée sans perdre le dispositif, même si certains tests restent échoués pour d’autres raisons."
+  },
+  {
+   "sha": "ca04ad680696708fa078010b89614f0e618aedcf",
+   "date": "2026-11-25",
+   "title": "Direct DXIL compact: two-level nested dispatch for large class counts",
+   "summary": "Le nouveau commit introduit la prise en charge d’un dispatch à deux niveaux pour le compilateur DXIL compact, en regroupant les classes de blocs au‑delà d’un certain seuil afin de réduire le fan‑in du switch principal. Cette fonctionnalité s’inscrit dans la continuité de l’optimisation du backend (suite du travail sur split‑wave64) et vient compléter les améliorations de fiabilité des tests GPU. Elle permet désormais de générer des shaders plus scalables quand le nombre de classes dépasse 512, tout en conservant le comportement plat pour les petits programmes ; les performances d’exécution restent à évaluer et les tests GPU continuent d’échouer."
+  },
+  {
+   "sha": "fef1d5da70c9799b4e8fe5abfdaad5f38d23e0f6",
+   "date": "2026-11-25",
+   "title": "recomp: enable whole-wave branches and dead-SCC elision in split wave64",
+   "summary": "Le nouveau commit active les branches à onde complète et l’élimination des écritures SCC mortes dans le backend split‑wave64, en ajoutant la détection de la vivacité du registre SCC et en conditionnant les ballots à son usage. Cette évolution poursuit le chantier d’optimisation du backend DXIL compact amorcé par le support du nesting et les précédentes améliorations de split‑wave64. Elle permet désormais de couvrir 39 / 205 shaders per‑lane en split‑wave64 (soit +50 %), avec presque aucune refus de branche et aucune erreur de validation DXIL. Il reste toutefois les échecs de tests GPU liés à d’autres parties du pipeline et les cas où la taille du thread‑group n’est pas multiple de 64."
+  },
+  {
+   "sha": "0c50bb4f32bdf8898d3071a5c4b7084cd4271051",
+   "date": "2026-11-25",
+   "title": "Recompiler: a PS sample mask from exp mrtz is written to SV_Coverage",
+   "summary": "Le nouveau commit ajoute la prise en charge du masque d’échantillon (`SV_Coverage`) lorsqu’un pixel shader exporte `exp mrtz`. Le compilateur déclare désormais `SV_Coverage` uniquement si le masque est réellement écrit, initialise `xo.xcl_mask` à 0xFFFFFFFF et génère le code d’écriture du masque. Cette amélioration s’inscrit dans la suite du chantier d’optimisation du backend recomp, qui corrige les omissions de sorties système et renforce la fidélité du rendu. Désormais les shaders qui utilisent `exp mrtz` produisent correctement le masque de couverture, ce qui élimine les erreurs de couverture précédentes ; les autres parties du projet restent inchangées."
+  },
+  {
+   "sha": "5ebaf3ebbe7945ac27a749ac14eabf9249366ee3",
+   "date": "2026-11-25",
+   "title": "Direct DXIL: image_get_resinfo of a 1D array gives the layers in y",
+   "summary": "Le commit corrige la traduction directe DXIL pour les tableaux 1D en renvoyant le nombre de couches dans le composant y (et z) au lieu de z seul, alignant ainsi le comportement avec la voie HLSL déjà corrigée. Cette modification poursuit le chantier de fiabilité du backend Direct DXIL, qui vient après les récents correctifs de masquage d’échantillon et d’optimisation du split‑wave64. Désormais les tests `gpu_image_get_resinfo_1d_array` passent avec `XCL_DIRECT_DXIL=1`, tandis que les autres échecs restent liés à des problèmes distincts (ex. `gpu_fmt_encode_int_sat_and_f16_rtz`)."
+  },
+  {
+   "sha": "59d6ded77de46fe368f0dedc6e8bb2427c9c7fe4",
+   "date": "2026-11-25",
+   "title": "Recompiler: image_get_resinfo gives depth 0 for 1D, 2D and 2D MSAA",
+   "summary": "Le nouveau commit corrige `image_get_resinfo` pour renvoyer une profondeur 0 sur les dimensions 1D, 2D et 2D MSAA, conformément aux mesures hardware RDNA2. Cette modification poursuit le chantier de fiabilité du backend Direct DXIL entamé précédemment (correction des résolutions d’info d’image pour les tableaux 1D) et élimine un autre blocage de tests GPU. Désormais les tests qui vérifiaient une profondeur 1 passent, mais les fuzz‑tests et l’analyse du format d’encodage restent à traiter."
+  },
+  {
+   "sha": "3dc3a428de7e79f3befd688f07a71c0e11c8afd2",
+   "date": "2026-11-25",
+   "title": "dxil: emulate explicit-LOD gather4_l(_o) and support UNORM=1 non-cube sampling",
+   "summary": "Le nouveau commit ajoute l’émulation des instructions `image_gather4_l` (et variantes) avec LOD explicite ainsi que la prise en charge du mode `UNORM=1` pour les textures non‑cube dans le traducteur Direct DXIL. Cette fonctionnalité s’inscrit dans la suite des correctifs de fiabilité du backend DXIL (résolution d’info d’image, profondeur 0, etc.) et complète le chantier d’émulation d’opérations d’image avancées. Désormais le compilateur peut générer des chargements de mip‑levels multiples et normaliser les coordonnées non‑cube, ce qui était impossible auparavant. Les tests unitaires associés passent, mais les fuzz‑tests DXIL restent en échec, donc le problème global n’est pas totalement résolu."
   }
  ]
 }

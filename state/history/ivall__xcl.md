@@ -6,6 +6,9 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `889ef3e` Tests: compare extra-page tiles when an unaligned va is placed again (#718)
+- **2026-11-25** `72f848c` Tests: host comparisons take the driver's own answer under Wine
+- **2026-11-25** `3f60df5` Tests: host comparisons take the driver's own answer under Wine
 - **2026-11-25** `06055a7` Tests: verify D3D12.X guard, split, and tracer thunks for game callers
 - **2026-11-25** `8f87d72` Tests: verify D3D12.X console queue descriptor translation
 - **2026-11-25** `2715714` Tests: compare CreateReservedResource against the host D3D12 driver
@@ -45,6 +48,3 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 - **2026-11-25** `7ff2b2e` Shaders: cache translator refusals and DXC compile failures by capability
 - **2026-11-25** `c9ee916` README: the switches for how a title runs
 - **2026-11-25** `0437ecd` CLI: reject unknown options and invalid values in xcl rpf and xcl shaders (#2266)
-- **2026-11-25** `569f0fc` DXIL: lower unclamped v_dot8_u32_u4 using Dot4AddU8Packed
-- **2026-11-25** `31608c9` GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test
-- **2026-11-25** `728e254` GPU: fail closed on unresolved control flow and errored FSSMs in effects

@@ -2,24 +2,6 @@
  "state": "Après ce changement, le projet possède un nouveau test qui confirme la conformité du hook `CheckFeatureSupport` avec le driver D3D12 natif sur AMD RX 7600 et sur le rendu logiciel WARP, sans échec signalé. Les parties déjà stables – partage de tiles VRAM pour les cubemaps, heap GLOBAL_SAMPLER, recompilation des shaders – continuent de fonctionner. Les zones bloquantes restent les fuzz‑tests sur XCL_TEXTURE_LEVEL_PAGES et l’implémentation de DispatchMesh. La prochaine étape probable sera d’étendre ces vérifications à d’autres GPU (NVIDIA, Intel) et d’avancer sur les fonctionnalités manquantes identifiées par les fuzz‑tests.",
  "entries": [
   {
-   "sha": "728e254892a86cb891e806dc9356a39f71dc4ed1",
-   "date": "2026-11-25",
-   "title": "GPU: fail closed on unresolved control flow and errored FSSMs in effects",
-   "summary": ""
-  },
-  {
-   "sha": "31608c9159c63f77063b92170f592eb1106dc6ec",
-   "date": "2026-11-25",
-   "title": "GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test",
-   "summary": ""
-  },
-  {
-   "sha": "569f0fc556e268767abbfe6fb51efff78602c7b0",
-   "date": "2026-11-25",
-   "title": "DXIL: lower unclamped v_dot8_u32_u4 using Dot4AddU8Packed",
-   "summary": ""
-  },
-  {
    "sha": "0437ecd9286df0e1dca8ec2be1b1e634c7d156ef",
    "date": "2026-11-25",
    "title": "CLI: reject unknown options and invalid values in xcl rpf and xcl shaders (#2266)",
@@ -239,6 +221,24 @@
    "sha": "06055a7a0fb43c5f83f55e7a2ce201417de171e9",
    "date": "2026-11-25",
    "title": "Tests: verify D3D12.X guard, split, and tracer thunks for game callers",
+   "summary": ""
+  },
+  {
+   "sha": "3f60df5a5ace7b6cef3e222be808037772b61aa6",
+   "date": "2026-11-25",
+   "title": "Tests: host comparisons take the driver's own answer under Wine",
+   "summary": ""
+  },
+  {
+   "sha": "72f848cabfa588201554c1c01c9406a73fe7e964",
+   "date": "2026-11-25",
+   "title": "Tests: host comparisons take the driver's own answer under Wine",
+   "summary": ""
+  },
+  {
+   "sha": "889ef3e8aa7f267323ab4879e735e65da6bcef10",
+   "date": "2026-11-25",
+   "title": "Tests: compare extra-page tiles when an unaligned va is placed again (#718)",
    "summary": ""
   }
  ]

@@ -2,24 +2,6 @@
  "state": "Après ce changement, le traducteur indique désormais le nombre exact de shaders traduits, en excluant ceux encore en cours d’exécution. Le reste du pipeline reste inchangé : le support du waterfall est actif, 108 shaders passent les boucles, 249 restent bloqués, le rendu du monde est toujours noir et les fonctionnalités HDR et depth‑bounds manquent. La prochaine étape probable reste l’extension du support du waterfall aux requêtes de taille par lane et l’intégration de ces informations dans le backend.",
  "entries": [
   {
-   "sha": "f0894c2b5c64a1e95d622c9d8723bab965f2d347",
-   "date": "2026-11-24",
-   "title": "Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors",
-   "summary": ""
-  },
-  {
-   "sha": "ce42e77634656b607812b325dd9ba464345fd8e5",
-   "date": "2026-11-24",
-   "title": "Merge pull request #432 from Proudnoob4/fix/uninitialized-sgprs",
-   "summary": ""
-  },
-  {
-   "sha": "0ddbce888e699285a6681017b21fd08d45ea953b",
-   "date": "2026-11-24",
-   "title": "Merge pull request #433 from r4tedx/tests/serialise-valu-gpu-tests",
-   "summary": ""
-  },
-  {
    "sha": "dd54de2f711c2f816cfd6be9e0a54ba92582ef60",
    "date": "2026-11-24",
    "title": "Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros",
@@ -239,6 +221,24 @@
    "sha": "4bf51006914933a544ef690aae3eaec91ffc6dda",
    "date": "2026-11-25",
    "title": "Check the required package archive before title startup",
+   "summary": ""
+  },
+  {
+   "sha": "fdce5f5880b8116f4f38f5ad65fbd6f51fa450e6",
+   "date": "2026-11-25",
+   "title": "Shaders: negative-zero ordering test for the f16 min/max forms",
+   "summary": ""
+  },
+  {
+   "sha": "19469bd5f6e839611aaedf94ae48a9c5e4615fcc",
+   "date": "2026-11-25",
+   "title": "Shaders: hardware test for the integer v_min3/v_max3/v_med3",
+   "summary": ""
+  },
+  {
+   "sha": "ef65f88b825cb10f12799cccda550e01e3631388",
+   "date": "2026-11-25",
+   "title": "Handle unsupported display deferrals in the HLE test",
    "summary": ""
   }
  ]

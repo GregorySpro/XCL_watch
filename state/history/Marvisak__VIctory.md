@@ -6,6 +6,9 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `ef65f88` Handle unsupported display deferrals in the HLE test
+- **2026-11-25** `19469bd` Shaders: hardware test for the integer v_min3/v_max3/v_med3
+- **2026-11-25** `fdce5f5` Shaders: negative-zero ordering test for the f16 min/max forms
 - **2026-11-25** `4bf5100` Check the required package archive before title startup
 - **2026-11-25** `26e03c3` XGameSave: a stray or unreadable version folder never costs the save (#870)
 - **2026-11-25** `d4ef9eb` HLE: show title windows through a stand-in that always reads its messages
@@ -45,6 +48,3 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 - **2026-11-24** `a4d7b16` Merge pull request #565 from SAitken91/shader/conservative-depth-position
 - **2026-11-24** `fd92558` Merge pull request #520 from Quat3rnion/victory-xasync-payload
 - **2026-11-24** `dd54de2` Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros
-- **2026-11-24** `0ddbce8` Merge pull request #433 from r4tedx/tests/serialise-valu-gpu-tests
-- **2026-11-24** `ce42e77` Merge pull request #432 from Proudnoob4/fix/uninitialized-sgprs
-- **2026-11-24** `f0894c2` Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors

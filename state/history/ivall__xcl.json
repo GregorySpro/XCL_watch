@@ -1,48 +1,6 @@
 {
- "state": "Après ce changement, la couche XCL charge toujours les DLL avec des motifs multi‑`*`, les boucles de pixel `v_readfirstlane` fonctionnent sur RDNA2 et DRED est actif. Le nouveau garde empêche l’adoption incorrecte des ressources créées par le runtime, ce qui élimine le crash lors de l’utilisation du debug layer avec DRED. Les autres parties du projet restent inchangées : les allocations de pages de texture niveau par niveau fonctionnent, les slots `DispatchMesh` sont toujours manquants et les fuzz‑tests continuent d’échouer. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en surveillant l’impact de `XCL_TEXTURE_LEVEL_PAGES` sur la mémoire.",
+ "state": "Après l’intégration, le traducteur DXIL accepte et compile correctement les 16 formes d’atomiques d’image 64 bits, les tests `direct_image_atomic_64bit_validates` passent sur les GPU AMD/NVIDIA, et le désassembleur continue d’afficher les contrôles DPP. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de même que la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` qui reste à surveiller. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests.",
  "entries": [
-  {
-   "sha": "1c17aa55087febb4c92ffe2c8ba47550b12a26a8",
-   "date": "2026-11-25",
-   "title": "Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)",
-   "summary": ""
-  },
-  {
-   "sha": "5478c4a7c1ae5adba127c8d27018d7fdbf3a8725",
-   "date": "2026-11-25",
-   "title": "e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle",
-   "summary": "Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests."
-  },
-  {
-   "sha": "c9a5d58fae060224f5658df08a008b41cbd68de4",
-   "date": "2026-11-25",
-   "title": "D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots",
-   "summary": ""
-  },
-  {
-   "sha": "8c9ad92b2f4ba265973aa10df919d1d8ade40b7c",
-   "date": "2026-11-25",
-   "title": "Recompiler: guard and scale direct DXIL v_rcp_f64 and v_rsq_f64",
-   "summary": ""
-  },
-  {
-   "sha": "a7ec0db9b524ee08ca0b0b64071cd860878c16ba",
-   "date": "2026-11-25",
-   "title": "D3D12.X: binds go on without big compute programs that write only images",
-   "summary": ""
-  },
-  {
-   "sha": "c55ba167295333c81b7024a307e654ec818c475f",
-   "date": "2026-11-25",
-   "title": "Tests: report texture_states skips on stderr and honor XCL_REQUIRE_GPU",
-   "summary": ""
-  },
-  {
-   "sha": "f087b998d0d51a9f11bbfa0761967a63e778edd9",
-   "date": "2026-11-25",
-   "title": "Recompiler: an aniso point sampler filter samples points, not linearly",
-   "summary": ""
-  },
   {
    "sha": "cdb08914a9d86c2f04b6b3e168a8822ec6148592",
    "date": "2026-11-25",
@@ -240,6 +198,48 @@
    "date": "2026-11-25",
    "title": "D3D12.X: a runtime-made resource inside a device creation call is not adopted",
    "summary": "Le commit ajoute un garde thread‑local `IN_CREATOR` qui détecte quand l’appel `creator!` provient d’une création de ressource interne du runtime (le tampon d’auto‑breadcrumb DRED généré par D3D12Core lors de `CreateCommandList`). Dans ce cas la création est déléguée directement au runtime, évitant l’adoption erronée du resource et le crash nul‑pointer. Cette correction poursuit le chantier de stabilité de la couche avec le debug layer DRED, résolvant le blocage #2298. Désormais les tests sous le debug layer avec `XCL_DRED=1` passent, mais les slots `DispatchMesh` et les fuzz‑tests restent non résolus."
+  },
+  {
+   "sha": "73e3aba648c9d985b044f1af1c8e5c4dfe634cf8",
+   "date": "2026-11-25",
+   "title": "Shaders: xcl disasm prints DPP controls, masks and source modifiers",
+   "summary": "Le nouveau commit enrichit le désassembleur `xcl disasm` en affichant les contrôles DPP, leurs masques et les modificateurs de source, qui étaient auparavant omis. Cette amélioration poursuit le chantier de visibilité du shader en complétant le support déjà ajouté pour les variantes SDWA. Désormais les lignes DPP sont imprimées avec toutes les informations de contrôle (quad_perm, row_shl, row_mask, bank_mask, etc.) et les signes/abs des sources, ce qui facilite la comparaison avec LLVM et le débogage. Le reste du projet reste inchangé : les DLL multi‑`*` sont toujours gérées, le garde `IN_CREATOR` empêche toujours les crashes DRED, et les slots `DispatchMesh` restent absents."
+  },
+  {
+   "sha": "e89f5ca5c54de25e78bcf248306221e0a246c576",
+   "date": "2026-11-25",
+   "title": "dxil: support 64-bit typed image_atomic_* via SM 6.6 heap atomics",
+   "summary": "Le commit ajoute la prise en charge des instructions atomiques d’image 64 bits (`image_atomic_*`) via les heap atomics SM 6.6, en introduisant du code de bas niveau pour détecter ces cas, générer les opérations DXIL appropriées et gérer les variantes (add, sub, cmpswap, fcmpswap, etc.). Cette évolution poursuit le chantier de complétude du recompiler, qui avait déjà ajouté le support DPP et les masques, en débloquant maintenant les shaders qui utilisent des atomiques 64 bits. Désormais les tests unitaires valident ces nouvelles variantes, mais les parties dépendantes (ex. DispatchMesh) restent inchangées."
+  },
+  {
+   "sha": "88d7a98cc2cd7345d58e72fdeeebdda186beab14",
+   "date": "2026-11-25",
+   "title": "Shaders: list offline precompile options in CLI help",
+   "summary": ""
+  },
+  {
+   "sha": "f54019e7d9430daf840f92c9f6e35b461ca9dc95",
+   "date": "2026-11-25",
+   "title": "xcl run: a panic on any thread is written to xcl.log",
+   "summary": ""
+  },
+  {
+   "sha": "db4ad096ab4932b426e703ecd15515928c235345",
+   "date": "2026-11-25",
+   "title": "Tests: avoid poisoning SYNC_GRAPH with an unmapped fake fence in queue_tests (#1978)",
+   "summary": ""
+  },
+  {
+   "sha": "ed95117d0cd09bed67a72b75491044591b695754",
+   "date": "2026-11-25",
+   "title": "D3D12.X: fence reclaimed VRAM heaps across all live queues and isolate arenas by device",
+   "summary": ""
+  },
+  {
+   "sha": "b32811395a17379e79ea9a957626aa58cb87d548",
+   "date": "2026-11-25",
+   "title": "Direct DXIL: sign-extend i1 to i64 through i32",
+   "summary": ""
   }
  ]
 }

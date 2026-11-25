@@ -2,10 +2,19 @@
 
 ## État du projet
 
-Après ce changement, la couche XCL charge toujours les DLL avec des motifs multi‑`*`, les boucles de pixel `v_readfirstlane` fonctionnent sur RDNA2 et DRED est actif. Le nouveau garde empêche l’adoption incorrecte des ressources créées par le runtime, ce qui élimine le crash lors de l’utilisation du debug layer avec DRED. Les autres parties du projet restent inchangées : les allocations de pages de texture niveau par niveau fonctionnent, les slots `DispatchMesh` sont toujours manquants et les fuzz‑tests continuent d’échouer. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en surveillant l’impact de `XCL_TEXTURE_LEVEL_PAGES` sur la mémoire.
+Après l’intégration, le traducteur DXIL accepte et compile correctement les 16 formes d’atomiques d’image 64 bits, les tests `direct_image_atomic_64bit_validates` passent sur les GPU AMD/NVIDIA, et le désassembleur continue d’afficher les contrôles DPP. Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests continuent d’échouer, de même que la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` qui reste à surveiller. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `b328113` Direct DXIL: sign-extend i1 to i64 through i32
+- **2026-11-25** `ed95117` D3D12.X: fence reclaimed VRAM heaps across all live queues and isolate arenas by device
+- **2026-11-25** `db4ad09` Tests: avoid poisoning SYNC_GRAPH with an unmapped fake fence in queue_tests (#1978)
+- **2026-11-25** `f54019e` xcl run: a panic on any thread is written to xcl.log
+- **2026-11-25** `88d7a98` Shaders: list offline precompile options in CLI help
+- **2026-11-25** `e89f5ca` dxil: support 64-bit typed image_atomic_* via SM 6.6 heap atomics
+  Le commit ajoute la prise en charge des instructions atomiques d’image 64 bits (`image_atomic_*`) via les heap atomics SM 6.6, en introduisant du code de bas niveau pour détecter ces cas, générer les opérations DXIL appropriées et gérer les variantes (add, sub, cmpswap, fcmpswap, etc.). Cette évolution poursuit le chantier de complétude du recompiler, qui avait déjà ajouté le support DPP et les masques, en débloquant maintenant les shaders qui utilisent des atomiques 64 bits. Désormais les tests unitaires valident ces nouvelles variantes, mais les parties dépendantes (ex. DispatchMesh) restent inchangées.
+- **2026-11-25** `73e3aba` Shaders: xcl disasm prints DPP controls, masks and source modifiers
+  Le nouveau commit enrichit le désassembleur `xcl disasm` en affichant les contrôles DPP, leurs masques et les modificateurs de source, qui étaient auparavant omis. Cette amélioration poursuit le chantier de visibilité du shader en complétant le support déjà ajouté pour les variantes SDWA. Désormais les lignes DPP sont imprimées avec toutes les informations de contrôle (quad_perm, row_shl, row_mask, bank_mask, etc.) et les signes/abs des sources, ce qui facilite la comparaison avec LLVM et le débogage. Le reste du projet reste inchangé : les DLL multi‑`*` sont toujours gérées, le garde `IN_CREATOR` empêche toujours les crashes DRED, et les slots `DispatchMesh` restent absents.
 - **2026-11-25** `68a284a` D3D12.X: a runtime-made resource inside a device creation call is not adopted
   Le commit ajoute un garde thread‑local `IN_CREATOR` qui détecte quand l’appel `creator!` provient d’une création de ressource interne du runtime (le tampon d’auto‑breadcrumb DRED généré par D3D12Core lors de `CreateCommandList`). Dans ce cas la création est déléguée directement au runtime, évitant l’adoption erronée du resource et le crash nul‑pointer. Cette correction poursuit le chantier de stabilité de la couche avec le debug layer DRED, résolvant le blocage #2298. Désormais les tests sous le debug layer avec `XCL_DRED=1` passent, mais les slots `DispatchMesh` et les fuzz‑tests restent non résolus.
 - **2026-11-25** `50a9fde` Recompiler: a bridged mask write in the split form meets no barrier
@@ -52,11 +61,3 @@ Après ce changement, la couche XCL charge toujours les DLL avec des motifs mult
   Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting).
 - **2026-11-25** `9633138` Tests: add launcher integration tests for target selection and error handling
 - **2026-11-25** `cdb0891` Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure
-- **2026-11-25** `f087b99` Recompiler: an aniso point sampler filter samples points, not linearly
-- **2026-11-25** `c55ba16` Tests: report texture_states skips on stderr and honor XCL_REQUIRE_GPU
-- **2026-11-25** `a7ec0db` D3D12.X: binds go on without big compute programs that write only images
-- **2026-11-25** `8c9ad92` Recompiler: guard and scale direct DXIL v_rcp_f64 and v_rsq_f64
-- **2026-11-25** `c9a5d58` D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots
-- **2026-11-25** `5478c4a` e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle
-  Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests.
-- **2026-11-25** `1c17aa5` Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)

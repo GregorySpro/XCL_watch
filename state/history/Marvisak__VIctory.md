@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le pipeline shader génère un DXIL plus compact et crée beaucoup moins de handles, ce qui devrait alléger la charge du compilateur et du runtime. Le rafraîchissement des textures continue de fonctionner avec les gains précédents, et les correctifs de gestion de pages restent en place. Le rendu du monde est toujours noir, HDR et depth‑bounds manquent, et le support waterfall doit encore être intégré. La prochaine étape probable reste l’ajout des informations waterfall dans le backend et la poursuite de l’extension du support waterfall.
+Après ce changement, le pipeline shader continue de produire un DXIL compact et le rafraîchissement des textures fonctionne avec les gains antérieurs. Les UAVs sont maintenant correctement initialisés à zéro, éliminant les faux positifs dans les tests de compute. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le support waterfall doit encore être ajouté dans le backend. La prochaine étape probable reste l’intégration des informations waterfall et la poursuite du support HDR/depth‑bounds.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `67e8ae1` Shader tests: the compute harness zeroes its UAVs
+  Le commit ajoute une fonction qui initialise à zéro tous les UAV utilisés comme cibles de copie avant le dispatch du compute shader, en copiant depuis un tampon d'upload rempli de zéros. Cette correction vient après les optimisations précédentes sur la réduction du nombre de handles et la gestion des pages, et résout un bug où la mémoire réutilisée par WARP conservait des bits résiduels, ce qui faisait échouer certains tests de shader. Désormais les buffers, textures et UAVs sont garantis à zéro, ce qui rend les tests de compute plus fiables, mais le rendu du monde reste toujours noir et les fonctionnalités HDR, depth‑bounds et waterfall sont toujours manquantes.
 - **2026-11-25** `da82e44` Shader: normalized buffer codes convert to the float nearest their quotient
 - **2026-11-25** `54ab406` Shaders: descriptors joined by nested control flow, again
 - **2026-11-25** `315cea1` GPU: barriers start from the states resources are in: prelude order, the clamp's own buffer
@@ -49,4 +51,3 @@ Après ce changement, le pipeline shader génère un DXIL plus compact et crée 
 - **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored
 - **2026-11-24** `224e786` GPU tests: the frame pacing test tolerates a busy host
 - **2026-11-24** `13bbd6f` GPU: one host texture per texture memory, and writable twins for depth textures
-- **2026-11-24** `e0034c2` Shaders: register-relative moves reach only what their index can

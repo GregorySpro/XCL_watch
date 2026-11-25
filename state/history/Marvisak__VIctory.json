@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le pipeline shader génère un DXIL plus compact et crée beaucoup moins de handles, ce qui devrait alléger la charge du compilateur et du runtime. Le rafraîchissement des textures continue de fonctionner avec les gains précédents, et les correctifs de gestion de pages restent en place. Le rendu du monde est toujours noir, HDR et depth‑bounds manquent, et le support waterfall doit encore être intégré. La prochaine étape probable reste l’ajout des informations waterfall dans le backend et la poursuite de l’extension du support waterfall.",
+ "state": "Après ce changement, le pipeline shader continue de produire un DXIL compact et le rafraîchissement des textures fonctionne avec les gains antérieurs. Les UAVs sont maintenant correctement initialisés à zéro, éliminant les faux positifs dans les tests de compute. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le support waterfall doit encore être ajouté dans le backend. La prochaine étape probable reste l’intégration des informations waterfall et la poursuite du support HDR/depth‑bounds.",
  "entries": [
-  {
-   "sha": "e0034c2a9cd98fd20f0f0c1a344925c4d95a5bdb",
-   "date": "2026-11-24",
-   "title": "Shaders: register-relative moves reach only what their index can",
-   "summary": ""
-  },
   {
    "sha": "13bbd6fec406f18ac56ea13bb34bae7fa1a5c606",
    "date": "2026-11-24",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "Shader: normalized buffer codes convert to the float nearest their quotient",
    "summary": ""
+  },
+  {
+   "sha": "67e8ae1401df112248aed36d0024483181b718b7",
+   "date": "2026-11-25",
+   "title": "Shader tests: the compute harness zeroes its UAVs",
+   "summary": "Le commit ajoute une fonction qui initialise à zéro tous les UAV utilisés comme cibles de copie avant le dispatch du compute shader, en copiant depuis un tampon d'upload rempli de zéros. Cette correction vient après les optimisations précédentes sur la réduction du nombre de handles et la gestion des pages, et résout un bug où la mémoire réutilisée par WARP conservait des bits résiduels, ce qui faisait échouer certains tests de shader. Désormais les buffers, textures et UAVs sont garantis à zéro, ce qui rend les tests de compute plus fiables, mais le rendu du monde reste toujours noir et les fonctionnalités HDR, depth‑bounds et waterfall sont toujours manquantes."
   }
  ]
 }

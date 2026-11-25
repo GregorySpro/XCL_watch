@@ -6,6 +6,12 @@ Après l’intégration, le backend Direct DXIL conserve ses capacités : ga
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `9633138` Tests: add launcher integration tests for target selection and error handling
+- **2026-11-25** `cdb0891` Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure
+- **2026-11-25** `f087b99` Recompiler: an aniso point sampler filter samples points, not linearly
+- **2026-11-25** `c55ba16` Tests: report texture_states skips on stderr and honor XCL_REQUIRE_GPU
+- **2026-11-25** `a7ec0db` D3D12.X: binds go on without big compute programs that write only images
+- **2026-11-25** `8c9ad92` Recompiler: guard and scale direct DXIL v_rcp_f64 and v_rsq_f64
 - **2026-11-25** `c9a5d58` D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots
 - **2026-11-25** `5478c4a` e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle
   Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests.
@@ -61,10 +67,3 @@ Après l’intégration, le backend Direct DXIL conserve ses capacités : ga
 - **2026-11-25** `56ec08d` Tests: verify D3D12.X resource, heap start, fence, and queue sync parity
 - **2026-11-25** `aaa0936` Recompiler: direct DXIL lowers a repeating compute program's blocks once
 - **2026-11-25** `5ce558f` Tests: skip half_precision_overloads_run without native 16-bit ops
-- **2026-11-25** `a1a2978` Tests: the sparse VRAM test no longer depends on what ran before it
-  Le nouveau commit rend les tests de VRAM sparse indépendants du contexte d’exécution en corrigeant deux bugs : les charges scalaires S_LOAD_DWORD* n’utilisaient plus d’offset de registre (SOFFSET=125) et les tests utilisent désormais l’instance backend déjà initialisée via `d3d12x::backend()` au lieu d’appeler `real::init()` directement. Cette modification poursuit le chantier de stabilisation des tests GPU, éliminant les dépendances qui provoquaient des lectures hors‑heap et des blocages sur les cartes NVIDIA 32‑lane. Le résultat est que les suites de tests peuvent s’exécuter en parallèle sans plantage, mais les performances du per‑lane form restent inchangées.
-- **2026-11-25** `092d49a` D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale
-- **2026-11-25** `94193f0` D3D12.X: the null device's struct-returning methods take the buffer first or second
-- **2026-11-25** `982c641` Tests: add disasm integration coverage for --all flag, bounds checks and missing files
-- **2026-11-25** `8ff5c31` Shaders: -O0 compiles leave out DXC's debug no-ops
-- **2026-11-25** `2aa2d1a` Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts

@@ -2,42 +2,6 @@
  "state": "Après l’intégration, le backend Direct DXIL conserve ses capacités : gathers à LOD explicite et sampling UNORM=1 fonctionnent, les tests GPU existants restent verts et les nouveaux gather4_lod passent. Les tests e2e passent tous (1154 réussis, 0 échecs) et les fuites d’event/COM ainsi que le double signal de fence sont éliminés. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation n’a pas encore été évalué. La prochaine étape probable reste l’analyse des échecs de fuzz et la mesure de l’influence du nesting.",
  "entries": [
   {
-   "sha": "2aa2d1a54396885bb5bfce8edef4285cf24803c2",
-   "date": "2026-11-25",
-   "title": "Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts",
-   "summary": ""
-  },
-  {
-   "sha": "8ff5c31e5a4f85beaa70e247b8d814b0984cbf86",
-   "date": "2026-11-25",
-   "title": "Shaders: -O0 compiles leave out DXC's debug no-ops",
-   "summary": ""
-  },
-  {
-   "sha": "982c641bdb90618bf211439229af5f463b281e5b",
-   "date": "2026-11-25",
-   "title": "Tests: add disasm integration coverage for --all flag, bounds checks and missing files",
-   "summary": ""
-  },
-  {
-   "sha": "94193f0c8a4a01bf6d3ca3cd2e3a608f0444eb84",
-   "date": "2026-11-25",
-   "title": "D3D12.X: the null device's struct-returning methods take the buffer first or second",
-   "summary": ""
-  },
-  {
-   "sha": "092d49aa96a286f00ed3cf0a3e6f27a949eb6592",
-   "date": "2026-11-25",
-   "title": "D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale",
-   "summary": ""
-  },
-  {
-   "sha": "a1a2978ec33dd5ad2a027c41435a15a662a9eca1",
-   "date": "2026-11-25",
-   "title": "Tests: the sparse VRAM test no longer depends on what ran before it",
-   "summary": "Le nouveau commit rend les tests de VRAM sparse indépendants du contexte d’exécution en corrigeant deux bugs : les charges scalaires S_LOAD_DWORD* n’utilisaient plus d’offset de registre (SOFFSET=125) et les tests utilisent désormais l’instance backend déjà initialisée via `d3d12x::backend()` au lieu d’appeler `real::init()` directement. Cette modification poursuit le chantier de stabilisation des tests GPU, éliminant les dépendances qui provoquaient des lectures hors‑heap et des blocages sur les cartes NVIDIA 32‑lane. Le résultat est que les suites de tests peuvent s’exécuter en parallèle sans plantage, mais les performances du per‑lane form restent inchangées."
-  },
-  {
    "sha": "5ce558f82a48c51d527f6035234dacbd29db3f05",
    "date": "2026-11-25",
    "title": "Tests: skip half_precision_overloads_run without native 16-bit ops",
@@ -239,6 +203,42 @@
    "sha": "c9a5d58fae060224f5658df08a008b41cbd68de4",
    "date": "2026-11-25",
    "title": "D3D12.X: populate companion SRVs for all image UAV dimensions and preserve null image view slots",
+   "summary": ""
+  },
+  {
+   "sha": "8c9ad92b2f4ba265973aa10df919d1d8ade40b7c",
+   "date": "2026-11-25",
+   "title": "Recompiler: guard and scale direct DXIL v_rcp_f64 and v_rsq_f64",
+   "summary": ""
+  },
+  {
+   "sha": "a7ec0db9b524ee08ca0b0b64071cd860878c16ba",
+   "date": "2026-11-25",
+   "title": "D3D12.X: binds go on without big compute programs that write only images",
+   "summary": ""
+  },
+  {
+   "sha": "c55ba167295333c81b7024a307e654ec818c475f",
+   "date": "2026-11-25",
+   "title": "Tests: report texture_states skips on stderr and honor XCL_REQUIRE_GPU",
+   "summary": ""
+  },
+  {
+   "sha": "f087b998d0d51a9f11bbfa0761967a63e778edd9",
+   "date": "2026-11-25",
+   "title": "Recompiler: an aniso point sampler filter samples points, not linearly",
+   "summary": ""
+  },
+  {
+   "sha": "cdb08914a9d86c2f04b6b3e168a8822ec6148592",
+   "date": "2026-11-25",
+   "title": "Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure",
+   "summary": ""
+  },
+  {
+   "sha": "963313835813f475037b3a9f5fcc3cb591696928",
+   "date": "2026-11-25",
+   "title": "Tests: add launcher integration tests for target selection and error handling",
    "summary": ""
   }
  ]

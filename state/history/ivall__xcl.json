@@ -2,12 +2,6 @@
  "state": "Après ce changement, la couche XCL continue de charger correctement les DLL avec des motifs contenant plusieurs `*`, les boucles de pixel `v_readfirstlane` fonctionnent sur les GPU RDNA2, et les diagnostics DRED sont actifs. La nouvelle logique de `place_pages` alloue les pages de texture niveau par niveau uniquement lorsqu’elles contiennent des données, ce qui réduit l’usage VRAM dans les scénarios de streaming, sans impacter les chemins existants (textures non‑tilées, ressources multi‑samples, etc.). Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests échouent toujours ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en évaluant l’impact réel de `XCL_TEXTURE_LEVEL_PAGES` sur la consommation mémoire et les performances.",
  "entries": [
   {
-   "sha": "b56a7d3f14d4db0173d93b8cad8d35909b36171d",
-   "date": "2026-11-25",
-   "title": "D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs",
-   "summary": ""
-  },
-  {
    "sha": "5195b1442a53cd2c19b3a7eea5f60d611e750ddb",
    "date": "2026-11-25",
    "title": "XGameRuntime: snapshot blob enumeration across submitted updates",
@@ -239,6 +233,12 @@
    "sha": "65fc114a140d9043f8e3d70ffb863f7987816d8f",
    "date": "2026-11-25",
    "title": "D3D12.X: composite multi-plane PresentX overlays",
+   "summary": ""
+  },
+  {
+   "sha": "55d64c277be137cb6b47d7528dc6a88082bf573e",
+   "date": "2026-11-25",
+   "title": "D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors",
    "summary": ""
   }
  ]

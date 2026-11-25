@@ -6,6 +6,7 @@ Après ce changement, la couche XCL continue de charger correctement les DLL ave
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `55d64c2` D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors
 - **2026-11-25** `65fc114` D3D12.X: composite multi-plane PresentX overlays
 - **2026-11-25** `9f02f9d` kernelx: XMemMapPhysicalPagesScatter with no page array unmaps
 - **2026-11-25** `30ba7a2` D3D12.X: XCL_TEXTURE_LEVEL_PAGES=1 gives a sampled texture's levels their pages with their texels
@@ -58,4 +59,3 @@ Après ce changement, la couche XCL continue de charger correctement les DLL ave
 - **2026-11-25** `74f96b3` kernelx: skip coherent UMA fallback for physical pages on sparse layouts
 - **2026-11-25** `707b84c` Tests: isolate e2e temp directories, report skips on stderr, and check exit status
 - **2026-11-25** `5195b14` XGameRuntime: snapshot blob enumeration across submitted updates
-- **2026-11-25** `b56a7d3` D3D12.X: skip direct draws and unmatched ExecuteIndirect on two-pass MS/GS PSOs

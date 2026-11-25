@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le pipeline shader continue de produire un DXIL compact et le rafraîchissement des textures fonctionne avec les gains antérieurs. Les UAVs sont maintenant correctement initialisés à zéro, éliminant les faux positifs dans les tests de compute. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le support waterfall doit encore être ajouté dans le backend. La prochaine étape probable reste l’intégration des informations waterfall et la poursuite du support HDR/depth‑bounds.
+Après ce changement, le mécanisme XAsync ne se bloque plus lors du nettoyage d’appels échoués, et le test ajouté confirme que le verrou de complétion est bien libre pendant le cleanup. Le reste du projet reste inchangé : le pipeline shader produit toujours du DXIL compact, le rafraîchissement des textures fonctionne, les UAV sont initialisés à zéro, mais le rendu du monde reste noir, HDR et depth‑bounds ne sont pas encore implémentés, et le support waterfall doit encore être ajouté. La prochaine étape reste l’intégration du backend waterfall et la prise en charge HDR/depth‑bounds.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `30a5202` XAsync: run a failed call's cleanup without the completion lock (#114)
+  Le commit introduit un drapeau atomique `claimed` dans la structure `Call` et modifie la logique de complétion pour que le premier thread qui termine libère le verrou avant d’exécuter le nettoyage du provider. Cette correction élimine le deadlock qui pouvait survenir lorsqu’un nettoyage attendait un thread déjà en cours de complétion. Elle s’inscrit comme une résolution de blocage dans le système d’async, indépendante des optimisations shader récentes, et rend désormais les appels XAsync fiables même en cas d’échec.
 - **2026-11-25** `13f91ca` README: status of 2026-11-25, the prologue is reached at about 1 fps
 - **2026-11-25** `67e8ae1` Shader tests: the compute harness zeroes its UAVs
   Le commit ajoute une fonction qui initialise à zéro tous les UAV utilisés comme cibles de copie avant le dispatch du compute shader, en copiant depuis un tampon d'upload rempli de zéros. Cette correction vient après les optimisations précédentes sur la réduction du nombre de handles et la gestion des pages, et résout un bug où la mémoire réutilisée par WARP conservait des bits résiduels, ce qui faisait échouer certains tests de shader. Désormais les buffers, textures et UAVs sont garantis à zéro, ce qui rend les tests de compute plus fiables, mais le rendu du monde reste toujours noir et les fonctionnalités HDR, depth‑bounds et waterfall sont toujours manquantes.
@@ -50,4 +52,3 @@ Après ce changement, le pipeline shader continue de produire un DXIL compact et
 - **2026-11-24** `bacb06a` GPU: a heap slot holds its view's own copy
 - **2026-11-24** `6d021fe` GPU: world frame cost
 - **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored
-- **2026-11-24** `224e786` GPU tests: the frame pacing test tolerates a busy host

@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le pipeline shader continue de produire un DXIL compact et le rafraîchissement des textures fonctionne avec les gains antérieurs. Les UAVs sont maintenant correctement initialisés à zéro, éliminant les faux positifs dans les tests de compute. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le support waterfall doit encore être ajouté dans le backend. La prochaine étape probable reste l’intégration des informations waterfall et la poursuite du support HDR/depth‑bounds.",
+ "state": "Après ce changement, le mécanisme XAsync ne se bloque plus lors du nettoyage d’appels échoués, et le test ajouté confirme que le verrou de complétion est bien libre pendant le cleanup. Le reste du projet reste inchangé : le pipeline shader produit toujours du DXIL compact, le rafraîchissement des textures fonctionne, les UAV sont initialisés à zéro, mais le rendu du monde reste noir, HDR et depth‑bounds ne sont pas encore implémentés, et le support waterfall doit encore être ajouté. La prochaine étape reste l’intégration du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
-  {
-   "sha": "224e7869f031c9b2cd88f399859646e77f36ea4f",
-   "date": "2026-11-24",
-   "title": "GPU tests: the frame pacing test tolerates a busy host",
-   "summary": ""
-  },
   {
    "sha": "86a5ed6bace9c789396494438f6ca75ba9084146",
    "date": "2026-11-24",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "README: status of 2026-11-25, the prologue is reached at about 1 fps",
    "summary": ""
+  },
+  {
+   "sha": "30a5202f0916469dbc5f5e3d33c147fdd8af42dc",
+   "date": "2026-11-25",
+   "title": "XAsync: run a failed call's cleanup without the completion lock (#114)",
+   "summary": "Le commit introduit un drapeau atomique `claimed` dans la structure `Call` et modifie la logique de complétion pour que le premier thread qui termine libère le verrou avant d’exécuter le nettoyage du provider. Cette correction élimine le deadlock qui pouvait survenir lorsqu’un nettoyage attendait un thread déjà en cours de complétion. Elle s’inscrit comme une résolution de blocage dans le système d’async, indépendante des optimisations shader récentes, et rend désormais les appels XAsync fiables même en cas d’échec."
   }
  ]
 }

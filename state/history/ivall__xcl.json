@@ -2,24 +2,6 @@
  "state": "Après ce changement, le projet possède un nouveau test qui confirme la conformité du hook `CheckFeatureSupport` avec le driver D3D12 natif sur AMD RX 7600 et sur le rendu logiciel WARP, sans échec signalé. Les parties déjà stables – partage de tiles VRAM pour les cubemaps, heap GLOBAL_SAMPLER, recompilation des shaders – continuent de fonctionner. Les zones bloquantes restent les fuzz‑tests sur XCL_TEXTURE_LEVEL_PAGES et l’implémentation de DispatchMesh. La prochaine étape probable sera d’étendre ces vérifications à d’autres GPU (NVIDIA, Intel) et d’avancer sur les fonctionnalités manquantes identifiées par les fuzz‑tests.",
  "entries": [
   {
-   "sha": "59cdc7184c979d8d5a8bf5b8d4a180d820893574",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]",
-   "summary": ""
-  },
-  {
-   "sha": "9ed0c13ca7f3a4f0ce4e9461022fd5a9ce9f2f1b",
-   "date": "2026-11-25",
-   "title": "Shaders: reverse the halves of an i64 Bfrev with shifts and masks on AMD",
-   "summary": ""
-  },
-  {
-   "sha": "be67bfcfe8143e21a62bbfd5d279d292229e27f9",
-   "date": "2026-11-25",
-   "title": "Recompiler: an S# word written with s_brev_b32 is a constant too",
-   "summary": ""
-  },
-  {
    "sha": "728e254892a86cb891e806dc9356a39f71dc4ed1",
    "date": "2026-11-25",
    "title": "GPU: fail closed on unresolved control flow and errored FSSMs in effects",
@@ -239,6 +221,24 @@
    "sha": "44eb541cde023fcf31d18541d93551650014cafe",
    "date": "2026-11-25",
    "title": "Tests: pin the pipeline stream subobject table to the PC headers",
+   "summary": ""
+  },
+  {
+   "sha": "27157141c308c18ddf699a3618b30d6716290547",
+   "date": "2026-11-25",
+   "title": "Tests: compare CreateReservedResource against the host D3D12 driver",
+   "summary": ""
+  },
+  {
+   "sha": "8f87d724da211a6a7e909d479b07fba0014c1051",
+   "date": "2026-11-25",
+   "title": "Tests: verify D3D12.X console queue descriptor translation",
+   "summary": ""
+  },
+  {
+   "sha": "06055a7a0fb43c5f83f55e7a2ce201417de171e9",
+   "date": "2026-11-25",
+   "title": "Tests: verify D3D12.X guard, split, and tracer thunks for game callers",
    "summary": ""
   }
  ]

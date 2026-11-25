@@ -6,6 +6,9 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `06055a7` Tests: verify D3D12.X guard, split, and tracer thunks for game callers
+- **2026-11-25** `8f87d72` Tests: verify D3D12.X console queue descriptor translation
+- **2026-11-25** `2715714` Tests: compare CreateReservedResource against the host D3D12 driver
 - **2026-11-25** `44eb541` Tests: pin the pipeline stream subobject table to the PC headers
 - **2026-11-25** `d48b065` Tests: assert the refused depth-buffer UAV state on Windows only
 - **2026-11-25** `27fa5f3` Tests: honor the selected adapter in the indirect argument test
@@ -45,6 +48,3 @@ Après ce changement, le projet possède un nouveau test qui confirme la conform
 - **2026-11-25** `569f0fc` DXIL: lower unclamped v_dot8_u32_u4 using Dot4AddU8Packed
 - **2026-11-25** `31608c9` GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test
 - **2026-11-25** `728e254` GPU: fail closed on unresolved control flow and errored FSSMs in effects
-- **2026-11-25** `be67bfc` Recompiler: an S# word written with s_brev_b32 is a constant too
-- **2026-11-25** `9ed0c13` Shaders: reverse the halves of an i64 Bfrev with shifts and masks on AMD
-- **2026-11-25** `59cdc71` Direct DXIL: guard dp_mask in s_setreg_b32 when writing MODE[1:0]

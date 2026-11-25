@@ -1,36 +1,6 @@
 {
- "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
+ "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les tests GPU liés à la VRAM sparse et à l’import UMA sont désormais fiables et passent même en exécution parallèle, éliminant le blocage précédent sur les cartes NVIDIA. Le reste du projet reste tel que décrit dans l’état connu : les vérifications SCC et la gestion de VCC améliorent la fiabilité du recompiler, mais le per‑lane form demeure un goulet de performance, et le nettoyage des PR inactives ainsi que l’optimisation du per‑lane form restent les prochaines étapes probables.",
  "entries": [
-  {
-   "sha": "8e87fc7b62a87ea589ccb9ea6182f514016cf7db",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: truncate s instead of returning native on special values in round_exact",
-   "summary": ""
-  },
-  {
-   "sha": "80f4819098e921f2e1ab371144d4832f68ffedd6",
-   "date": "2026-11-25",
-   "title": "D3D12.X: cache direct-DXIL mesh shaders, coalesce shader builds, make MS/GS lazy, and cache two-pass/graphics PSO blobs",
-   "summary": "Le nouveau commit introduit un système de mise en cache et de coalescence pour les shaders DXIL directs, notamment les mesh shaders, ainsi que la mise en cache paresseuse des traductions MS/GS et des blobs PSO graphiques. Cette amélioration poursuit le chantier d’optimisation du pipeline DXIL amorcé par les correctifs précédents (gestion du CSE, réordonnancement des textureLoad, etc.) en ciblant la vitesse de compilation et la réutilisation des PSO. Désormais les compilations identiques sont partagées entre threads et les blobs PSO sont stockés sur disque, ce qui réduit les temps de pré‑chargement ; les limitations de taille de shaders ou de per‑lane form restent inchangées."
-  },
-  {
-   "sha": "2c95f01067834902bec8ff01c79663049a17c63b",
-   "date": "2026-11-25",
-   "title": "D3D12.X: declare triangle topology for translated mesh PSOs",
-   "summary": ""
-  },
-  {
-   "sha": "8c4a46a3c2d50498691cbda79cbbf4fadb45fbe8",
-   "date": "2026-11-25",
-   "title": "D3D12.X: default DepthEnable to false in stream_pipeline when DSVFormat is UNKNOWN",
-   "summary": ""
-  },
-  {
-   "sha": "6567c5ffa38fbc7039b2d6bf520154689cc1f482",
-   "date": "2026-11-25",
-   "title": "Recompiler: take native compute mask branches across the whole wave",
-   "summary": ""
-  },
   {
    "sha": "7994cd1d4c0194f9607032a28746869b65f0c914",
    "date": "2026-11-25",
@@ -239,6 +209,36 @@
    "sha": "092d49aa96a286f00ed3cf0a3e6f27a949eb6592",
    "date": "2026-11-25",
    "title": "D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale",
+   "summary": ""
+  },
+  {
+   "sha": "a1a2978ec33dd5ad2a027c41435a15a662a9eca1",
+   "date": "2026-11-25",
+   "title": "Tests: the sparse VRAM test no longer depends on what ran before it",
+   "summary": "Le nouveau commit rend les tests de VRAM sparse indépendants du contexte d’exécution en corrigeant deux bugs : les charges scalaires S_LOAD_DWORD* n’utilisaient plus d’offset de registre (SOFFSET=125) et les tests utilisent désormais l’instance backend déjà initialisée via `d3d12x::backend()` au lieu d’appeler `real::init()` directement. Cette modification poursuit le chantier de stabilisation des tests GPU, éliminant les dépendances qui provoquaient des lectures hors‑heap et des blocages sur les cartes NVIDIA 32‑lane. Le résultat est que les suites de tests peuvent s’exécuter en parallèle sans plantage, mais les performances du per‑lane form restent inchangées."
+  },
+  {
+   "sha": "5ce558f82a48c51d527f6035234dacbd29db3f05",
+   "date": "2026-11-25",
+   "title": "Tests: skip half_precision_overloads_run without native 16-bit ops",
+   "summary": ""
+  },
+  {
+   "sha": "aaa093657bd96a146c05c0c1a9b61149fe761453",
+   "date": "2026-11-25",
+   "title": "Recompiler: direct DXIL lowers a repeating compute program's blocks once",
+   "summary": ""
+  },
+  {
+   "sha": "56ec08d6b9eab0c3b7bcae83a61adcc05e0e6ba2",
+   "date": "2026-11-25",
+   "title": "Tests: verify D3D12.X resource, heap start, fence, and queue sync parity",
+   "summary": ""
+  },
+  {
+   "sha": "cbc296ab65a2661a61e3e2da109134bcd5319f60",
+   "date": "2026-11-25",
+   "title": "D3D12.X: a huge compute program the driver refuses is logged with its verdict",
    "summary": ""
   }
  ]

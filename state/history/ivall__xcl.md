@@ -2,10 +2,16 @@
 
 ## État du projet
 
-Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.
+Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les tests GPU liés à la VRAM sparse et à l’import UMA sont désormais fiables et passent même en exécution parallèle, éliminant le blocage précédent sur les cartes NVIDIA. Le reste du projet reste tel que décrit dans l’état connu : les vérifications SCC et la gestion de VCC améliorent la fiabilité du recompiler, mais le per‑lane form demeure un goulet de performance, et le nettoyage des PR inactives ainsi que l’optimisation du per‑lane form restent les prochaines étapes probables.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `cbc296a` D3D12.X: a huge compute program the driver refuses is logged with its verdict
+- **2026-11-25** `56ec08d` Tests: verify D3D12.X resource, heap start, fence, and queue sync parity
+- **2026-11-25** `aaa0936` Recompiler: direct DXIL lowers a repeating compute program's blocks once
+- **2026-11-25** `5ce558f` Tests: skip half_precision_overloads_run without native 16-bit ops
+- **2026-11-25** `a1a2978` Tests: the sparse VRAM test no longer depends on what ran before it
+  Le nouveau commit rend les tests de VRAM sparse indépendants du contexte d’exécution en corrigeant deux bugs : les charges scalaires S_LOAD_DWORD* n’utilisaient plus d’offset de registre (SOFFSET=125) et les tests utilisent désormais l’instance backend déjà initialisée via `d3d12x::backend()` au lieu d’appeler `real::init()` directement. Cette modification poursuit le chantier de stabilisation des tests GPU, éliminant les dépendances qui provoquaient des lectures hors‑heap et des blocages sur les cartes NVIDIA 32‑lane. Le résultat est que les suites de tests peuvent s’exécuter en parallèle sans plantage, mais les performances du per‑lane form restent inchangées.
 - **2026-11-25** `092d49a` D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale
 - **2026-11-25** `94193f0` D3D12.X: the null device's struct-returning methods take the buffer first or second
 - **2026-11-25** `982c641` Tests: add disasm integration coverage for --all flag, bounds checks and missing files
@@ -43,9 +49,3 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 - **2026-11-25** `de36462` Shaders: size-based admission for big compute driver compiles
 - **2026-11-25** `2e1c956` dxil: lower 64-bit icmp via 32-bit dwords and guard MIMG heap indices
 - **2026-11-25** `7994cd1` Direct DXIL: TG_SIZE counts a partial last wave
-- **2026-11-25** `6567c5f` Recompiler: take native compute mask branches across the whole wave
-- **2026-11-25** `8c4a46a` D3D12.X: default DepthEnable to false in stream_pipeline when DSVFormat is UNKNOWN
-- **2026-11-25** `2c95f01` D3D12.X: declare triangle topology for translated mesh PSOs
-- **2026-11-25** `80f4819` D3D12.X: cache direct-DXIL mesh shaders, coalesce shader builds, make MS/GS lazy, and cache two-pass/graphics PSO blobs
-  Le nouveau commit introduit un système de mise en cache et de coalescence pour les shaders DXIL directs, notamment les mesh shaders, ainsi que la mise en cache paresseuse des traductions MS/GS et des blobs PSO graphiques. Cette amélioration poursuit le chantier d’optimisation du pipeline DXIL amorcé par les correctifs précédents (gestion du CSE, réordonnancement des textureLoad, etc.) en ciblant la vitesse de compilation et la réutilisation des PSO. Désormais les compilations identiques sont partagées entre threads et les blobs PSO sont stockés sur disque, ce qui réduit les temps de pré‑chargement ; les limitations de taille de shaders ou de per‑lane form restent inchangées.
-- **2026-11-24** `8e87fc7` Direct DXIL: truncate s instead of returning native on special values in round_exact

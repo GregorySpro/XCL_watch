@@ -6,6 +6,10 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `092d49a` D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale
+- **2026-11-25** `94193f0` D3D12.X: the null device's struct-returning methods take the buffer first or second
+- **2026-11-25** `982c641` Tests: add disasm integration coverage for --all flag, bounds checks and missing files
+- **2026-11-25** `8ff5c31` Shaders: -O0 compiles leave out DXC's debug no-ops
 - **2026-11-25** `2aa2d1a` Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts
 - **2026-11-25** `3f81044` Recompiler: translate v_div_fixup_f16 in both backends
 - **2026-11-25** `c2dcef3` Recompiler: round direct-DXIL f16 converts and products to nearest-even
@@ -45,8 +49,3 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 - **2026-11-25** `80f4819` D3D12.X: cache direct-DXIL mesh shaders, coalesce shader builds, make MS/GS lazy, and cache two-pass/graphics PSO blobs
   Le nouveau commit introduit un système de mise en cache et de coalescence pour les shaders DXIL directs, notamment les mesh shaders, ainsi que la mise en cache paresseuse des traductions MS/GS et des blobs PSO graphiques. Cette amélioration poursuit le chantier d’optimisation du pipeline DXIL amorcé par les correctifs précédents (gestion du CSE, réordonnancement des textureLoad, etc.) en ciblant la vitesse de compilation et la réutilisation des PSO. Désormais les compilations identiques sont partagées entre threads et les blobs PSO sont stockés sur disque, ce qui réduit les temps de pré‑chargement ; les limitations de taille de shaders ou de per‑lane form restent inchangées.
 - **2026-11-24** `8e87fc7` Direct DXIL: truncate s instead of returning native on special values in round_exact
-- **2026-11-24** `332122d` Direct DXIL: avoid 2 - off underflow in s_setreg_b32 targeting HW_REG_MODE bit 3
-- **2026-11-24** `fc14fab` Recompiler: allow inline-constant and NULL mask operands in the per-lane form
-- **2026-11-24** `36ac23d` Recompiler: invalidate block-local DXIL CSE wave/quad cache across dx.op.discard
-  Le commit corrige le cache d’élimination de sous‑expression (CSE) locale du recompileur DXIL en le vidant lorsqu’un appel `dx.op.discard` est rencontré. Cette modification poursuit la série d’ajustements du backend DXIL (émission correcte des textureLoad, gestion des pipelines compute) en résolvant un bug où des appels `dx.op.wave*` ou `dx.op.quad*` après un discard réutilisaient des résultats invalides. Désormais les shaders pixel qui utilisent `dx.op.discard` conservent la bonne sémantique : les appels wave/quad après le discard ne sont plus fusionnés, ce qui évite des comportements erronés. Le reste du projet reste inchangé, aucune régression n’est observée.
-- **2026-11-24** `62265d3` Per-lane: track the SCC of mixed mask and number operations

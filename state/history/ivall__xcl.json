@@ -2,30 +2,6 @@
  "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
  "entries": [
   {
-   "sha": "62265d3bbde2255f849fb650cc29872df91a4cf0",
-   "date": "2026-11-24",
-   "title": "Per-lane: track the SCC of mixed mask and number operations",
-   "summary": ""
-  },
-  {
-   "sha": "36ac23d9dc876e4062b1e81546bd319c9cb697d6",
-   "date": "2026-11-24",
-   "title": "Recompiler: invalidate block-local DXIL CSE wave/quad cache across dx.op.discard",
-   "summary": "Le commit corrige le cache d’élimination de sous‑expression (CSE) locale du recompileur DXIL en le vidant lorsqu’un appel `dx.op.discard` est rencontré. Cette modification poursuit la série d’ajustements du backend DXIL (émission correcte des textureLoad, gestion des pipelines compute) en résolvant un bug où des appels `dx.op.wave*` ou `dx.op.quad*` après un discard réutilisaient des résultats invalides. Désormais les shaders pixel qui utilisent `dx.op.discard` conservent la bonne sémantique : les appels wave/quad après le discard ne sont plus fusionnés, ce qui évite des comportements erronés. Le reste du projet reste inchangé, aucune régression n’est observée."
-  },
-  {
-   "sha": "fc14fab56f7f54b649ed81ad00fe18a37e4ea122",
-   "date": "2026-11-24",
-   "title": "Recompiler: allow inline-constant and NULL mask operands in the per-lane form",
-   "summary": ""
-  },
-  {
-   "sha": "332122d217b06cb41e789174fc90ccf4a0d684fa",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: avoid 2 - off underflow in s_setreg_b32 targeting HW_REG_MODE bit 3",
-   "summary": ""
-  },
-  {
    "sha": "8e87fc7b62a87ea589ccb9ea6182f514016cf7db",
    "date": "2026-11-24",
    "title": "Direct DXIL: truncate s instead of returning native on special values in round_exact",
@@ -239,6 +215,30 @@
    "sha": "2aa2d1a54396885bb5bfce8edef4285cf24803c2",
    "date": "2026-11-25",
    "title": "Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts",
+   "summary": ""
+  },
+  {
+   "sha": "8ff5c31e5a4f85beaa70e247b8d814b0984cbf86",
+   "date": "2026-11-25",
+   "title": "Shaders: -O0 compiles leave out DXC's debug no-ops",
+   "summary": ""
+  },
+  {
+   "sha": "982c641bdb90618bf211439229af5f463b281e5b",
+   "date": "2026-11-25",
+   "title": "Tests: add disasm integration coverage for --all flag, bounds checks and missing files",
+   "summary": ""
+  },
+  {
+   "sha": "94193f0c8a4a01bf6d3ca3cd2e3a608f0444eb84",
+   "date": "2026-11-25",
+   "title": "D3D12.X: the null device's struct-returning methods take the buffer first or second",
+   "summary": ""
+  },
+  {
+   "sha": "092d49aa96a286f00ed3cf0a3e6f27a949eb6592",
+   "date": "2026-11-25",
+   "title": "D3D12.X: preserve rect-list GS when a cached graphics PSO blob is stale",
    "summary": ""
   }
  ]

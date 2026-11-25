@@ -1,24 +1,6 @@
 {
- "state": "Après ce changement, le traducteur indique désormais le nombre exact de shaders traduits, en excluant ceux encore en cours d’exécution. Le reste du pipeline reste inchangé : le support du waterfall est actif, 108 shaders passent les boucles, 249 restent bloqués, le rendu du monde est toujours noir et les fonctionnalités HDR et depth‑bounds manquent. La prochaine étape probable reste l’extension du support du waterfall aux requêtes de taille par lane et l’intégration de ces informations dans le backend.",
+ "state": "Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
  "entries": [
-  {
-   "sha": "dd54de2f711c2f816cfd6be9e0a54ba92582ef60",
-   "date": "2026-11-24",
-   "title": "Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros",
-   "summary": ""
-  },
-  {
-   "sha": "fd925582f1d977de0471ab2bf5fbe9e69a9edb1a",
-   "date": "2026-11-24",
-   "title": "Merge pull request #520 from Quat3rnion/victory-xasync-payload",
-   "summary": ""
-  },
-  {
-   "sha": "a4d7b16da01702eda849bcb0974b27c7df84a600",
-   "date": "2026-11-24",
-   "title": "Merge pull request #565 from SAitken91/shader/conservative-depth-position",
-   "summary": ""
-  },
   {
    "sha": "204bdcc1084c39538dc6f53dd45e847a30a8793f",
    "date": "2026-11-24",
@@ -239,6 +221,24 @@
    "sha": "ef65f88b825cb10f12799cccda550e01e3631388",
    "date": "2026-11-25",
    "title": "Handle unsupported display deferrals in the HLE test",
+   "summary": ""
+  },
+  {
+   "sha": "520fefc0aec2990bef62ca0033d12660a7bb9245",
+   "date": "2026-11-25",
+   "title": "Shaders: fold empty loop latches containing only dead phis",
+   "summary": "Le commit corrige la détection des latches vides dans l’émission du bitcode en ignorant les phis morts, évitant ainsi que des boucles divergentes ne créent des blocs vides qui bloquent le driver AMD. Cette modification poursuit le chantier de stabilisation du pipeline shader en résolvant un bug d’émission qui pouvait laisser des latches non pliés. Le correctif ajoute un test unitaire confirmant que les latches contenant uniquement des phis morts sont correctement repliés, ce qui renforce la fiabilité du backend shader. Il ne touche pas directement le rendu du monde, mais élimine un risque de plantage lié aux shaders."
+  },
+  {
+   "sha": "f73e8e18849e73b72c444d3a287fdbe6e97ccb5a",
+   "date": "2026-11-25",
+   "title": "Shaders: precompute MD5 round constants and avoid per-block Vec in md…",
+   "summary": ""
+  },
+  {
+   "sha": "3c47fd4945dd717a09ae42e14d6eae8bd10a4020",
+   "date": "2026-11-25",
+   "title": "GPU: fences answer for ID3D12Fence1 as documented",
    "summary": ""
   }
  ]

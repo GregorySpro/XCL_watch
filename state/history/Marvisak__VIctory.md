@@ -2,10 +2,14 @@
 
 ## État du projet
 
-Après ce changement, le traducteur indique désormais le nombre exact de shaders traduits, en excluant ceux encore en cours d’exécution. Le reste du pipeline reste inchangé : le support du waterfall est actif, 108 shaders passent les boucles, 249 restent bloqués, le rendu du monde est toujours noir et les fonctionnalités HDR et depth‑bounds manquent. La prochaine étape probable reste l’extension du support du waterfall aux requêtes de taille par lane et l’intégration de ces informations dans le backend.
+Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `3c47fd4` GPU: fences answer for ID3D12Fence1 as documented
+- **2026-11-25** `f73e8e1` Shaders: precompute MD5 round constants and avoid per-block Vec in md…
+- **2026-11-25** `520fefc` Shaders: fold empty loop latches containing only dead phis
+  Le commit corrige la détection des latches vides dans l’émission du bitcode en ignorant les phis morts, évitant ainsi que des boucles divergentes ne créent des blocs vides qui bloquent le driver AMD. Cette modification poursuit le chantier de stabilisation du pipeline shader en résolvant un bug d’émission qui pouvait laisser des latches non pliés. Le correctif ajoute un test unitaire confirmant que les latches contenant uniquement des phis morts sont correctement repliés, ce qui renforce la fiabilité du backend shader. Il ne touche pas directement le rendu du monde, mais élimine un risque de plantage lié aux shaders.
 - **2026-11-25** `ef65f88` Handle unsupported display deferrals in the HLE test
 - **2026-11-25** `19469bd` Shaders: hardware test for the integer v_min3/v_max3/v_med3
 - **2026-11-25** `fdce5f5` Shaders: negative-zero ordering test for the f16 min/max forms
@@ -45,6 +49,3 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 - **2026-11-24** `6f0a10a` Merge pull request #634 from SAitken91/shader/image-sample-o
 - **2026-11-24** `9a92ccf` Merge pull request #612 from KoLolX3/fix/phi-liveness-transitive
 - **2026-11-24** `204bdcc` Merge pull request #611 from AdvaitPalve11/fix/config-show-data-dir
-- **2026-11-24** `a4d7b16` Merge pull request #565 from SAitken91/shader/conservative-depth-position
-- **2026-11-24** `fd92558` Merge pull request #520 from Quat3rnion/victory-xasync-payload
-- **2026-11-24** `dd54de2` Merge pull request #448 from Dufftwt/fix/min-max-signed-zeros

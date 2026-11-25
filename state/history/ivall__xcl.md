@@ -6,6 +6,8 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6567c5f` Recompiler: take native compute mask branches across the whole wave
+- **2026-11-25** `8c4a46a` D3D12.X: default DepthEnable to false in stream_pipeline when DSVFormat is UNKNOWN
 - **2026-11-25** `2c95f01` D3D12.X: declare triangle topology for translated mesh PSOs
 - **2026-11-25** `80f4819` D3D12.X: cache direct-DXIL mesh shaders, coalesce shader builds, make MS/GS lazy, and cache two-pass/graphics PSO blobs
   Le nouveau commit introduit un système de mise en cache et de coalescence pour les shaders DXIL directs, notamment les mesh shaders, ainsi que la mise en cache paresseuse des traductions MS/GS et des blobs PSO graphiques. Cette amélioration poursuit le chantier d’optimisation du pipeline DXIL amorcé par les correctifs précédents (gestion du CSE, réordonnancement des textureLoad, etc.) en ciblant la vitesse de compilation et la réutilisation des PSO. Désormais les compilations identiques sont partagées entre threads et les blobs PSO sont stockés sur disque, ce qui réduit les temps de pré‑chargement ; les limitations de taille de shaders ou de per‑lane form restent inchangées.
@@ -56,6 +58,3 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 - **2026-11-24** `7ccf774` kernelx: Sleep does not count the time a bind waits for a pipeline build
 - **2026-11-24** `9039900` Direct DXIL: memory windows through the descriptor heap (XCL_HEAP_WINDOWS)
   Le commit ajoute la prise en charge des fenêtres mémoire provenant du heap de descripteurs (`XCL_HEAP_WINDOWS=1`) dans le traducteur direct DXIL, en introduisant le fichier `lower_window.rs` et en adaptant la création des UAVs. Cette modification supprime la restriction qui renvoyait les programmes vers le chemin HLSL, poursuit la série d’optimisations du backend DXIL et rend le traducteur capable de gérer tous les accès mémoire (loads, stores, atomics, images, SMEM, BVH) via le heap. Désormais les shaders qui utilisent des fenêtres heap sont traduits directement, bien que les limitations générales du projet (géométrie, maillage, textures avancées, validation GPU) restent inchangées.
-- **2026-11-24** `b5d6322` Direct DXIL: memory windows through the descriptor heap (XCL_HEAP_WINDOWS)
-  Le commit active la prise en charge des fenêtres mémoire provenant du heap de descripteurs (`XCL_HEAP_WINDOWS=1`) dans le traducteur direct DXIL, en ajoutant le fichier `lower_window.rs` et en adaptant la création des UAVs. Cette évolution poursuit la série d’optimisations du backend DXIL en éliminant le refus précédent et en alignant la sélection des fenêtres sur le comportement HLSL. Désormais les programmes qui utilisent des fenêtres heap sont traduits directement, bien que les tests de fuzzing aient été retirés précédemment.
-- **2026-11-24** `c160d86` gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL

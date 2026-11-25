@@ -2,18 +2,6 @@
  "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles caches de shaders et de blobs PSO accélèrent le throughput de compilation et diminuent les blocages lors du preload, mais les problèmes de shaders trop gros et d’optimisation du per‑lane form persistent. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
  "entries": [
   {
-   "sha": "c160d86ef2efe3a07e4dfb473e4fa72eafb413c0",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": ""
-  },
-  {
-   "sha": "b5d63226df1fe6044e50054310109f96790b6a3f",
-   "date": "2026-11-24",
-   "title": "Direct DXIL: memory windows through the descriptor heap (XCL_HEAP_WINDOWS)",
-   "summary": "Le commit active la prise en charge des fenêtres mémoire provenant du heap de descripteurs (`XCL_HEAP_WINDOWS=1`) dans le traducteur direct DXIL, en ajoutant le fichier `lower_window.rs` et en adaptant la création des UAVs. Cette évolution poursuit la série d’optimisations du backend DXIL en éliminant le refus précédent et en alignant la sélection des fenêtres sur le comportement HLSL. Désormais les programmes qui utilisent des fenêtres heap sont traduits directement, bien que les tests de fuzzing aient été retirés précédemment."
-  },
-  {
    "sha": "9039900ba3710fda9d791db589d548b1aaeb3cf8",
    "date": "2026-11-24",
    "title": "Direct DXIL: memory windows through the descriptor heap (XCL_HEAP_WINDOWS)",
@@ -239,6 +227,18 @@
    "sha": "2c95f01067834902bec8ff01c79663049a17c63b",
    "date": "2026-11-25",
    "title": "D3D12.X: declare triangle topology for translated mesh PSOs",
+   "summary": ""
+  },
+  {
+   "sha": "8c4a46a3c2d50498691cbda79cbbf4fadb45fbe8",
+   "date": "2026-11-25",
+   "title": "D3D12.X: default DepthEnable to false in stream_pipeline when DSVFormat is UNKNOWN",
+   "summary": ""
+  },
+  {
+   "sha": "6567c5ffa38fbc7039b2d6bf520154689cc1f482",
+   "date": "2026-11-25",
+   "title": "Recompiler: take native compute mask branches across the whole wave",
    "summary": ""
   }
  ]

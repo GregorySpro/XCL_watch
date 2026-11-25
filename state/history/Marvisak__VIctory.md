@@ -2,10 +2,18 @@
 
 ## État du projet
 
-Après l’ajout de la sérialisation WARP, les tests unitaires du crate victory‑shader s’exécutent sans plantage même en mode multithread, et le mécanisme XAsync continue de fonctionner sans blocage. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA restent opérationnels comme indiqué dans l’état connu. Le rendu du monde demeure noir, HDR et depth‑bounds sont toujours absents, et le backend waterfall n’est pas encore intégré. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.
+Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `2e319e5` Formats: add 7 invariant unit tests for xma/tables.rs
+- **2026-11-25** `25b1bf3` Shaders: add SQ_IMG_SAMP LOD-bias and no-mip range tests for emit/sampler.rs
+- **2026-11-25** `a7cb47c` GPU: no blending on integer render targets in host pipelines (fixes #806)
+- **2026-11-25** `e278bc8` Shaders: hardware test for the s_cmpk_* scalar comparisons
+- **2026-11-25** `b9c8a8b` victory-shader: build the per-instruction read/write lists once (ir::build -13%)
+- **2026-11-25** `d1dfbbd` xmem: keep the space below 4 GiB for the title's 32-bit memory
+  Le commit introduit un mécanisme de « low guards » qui réserve l’espace mémoire libre sous 4 GiB avant que le processus ne charge le driver, le cache et l’image, puis libère et réalloue ces gardes lorsqu’une allocation 32‑bits échoue. Cela vient s’ajouter aux précédentes améliorations de sérialisation WARP et de gestion des ressources shader, en débloquant le problème d’allocation qui faisait planter le démarrage du titre. Désormais le jeu peut démarrer même avec un gros cache pipeline ou le layer de débogage D3D12, mais le rendu du monde reste toujours noir et les fonctionnalités HDR/depth‑bounds restent absentes.
+- **2026-11-25** `e9ea9a4` GPU: a full early pipeline list drops the oldest runs' keys
 - **2026-11-25** `61bfc77` GPU: mirror placed unordered texture views
 - **2026-11-25** `0665a0e` Shaders: scope wave64 ds_bpermute_b32 to 32-lane halves
 - **2026-11-25** `bde8e7d` Shaders: share and serialize WARP host operations across threads
@@ -47,10 +55,3 @@ Après l’ajout de la sérialisation WARP, les tests unitaires du crate victo
   Le commit corrige la détection des latches vides dans l’émission du bitcode en ignorant les phis morts, évitant ainsi que des boucles divergentes ne créent des blocs vides qui bloquent le driver AMD. Cette modification poursuit le chantier de stabilisation du pipeline shader en résolvant un bug d’émission qui pouvait laisser des latches non pliés. Le correctif ajoute un test unitaire confirmant que les latches contenant uniquement des phis morts sont correctement repliés, ce qui renforce la fiabilité du backend shader. Il ne touche pas directement le rendu du monde, mais élimine un risque de plantage lié aux shaders.
 - **2026-11-25** `ef65f88` Handle unsupported display deferrals in the HLE test
 - **2026-11-25** `19469bd` Shaders: hardware test for the integer v_min3/v_max3/v_med3
-- **2026-11-25** `fdce5f5` Shaders: negative-zero ordering test for the f16 min/max forms
-- **2026-11-25** `4bf5100` Check the required package archive before title startup
-- **2026-11-25** `26e03c3` XGameSave: a stray or unreadable version folder never costs the save (#870)
-- **2026-11-25** `d4ef9eb` HLE: show title windows through a stand-in that always reads its messages
-- **2026-11-25** `88de5fc` run: stop with a clear message when the title's own DLLs are missing
-- **2026-11-24** `70564ae` README: status of 2026-11-24
-- **2026-11-24** `7000573` Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames

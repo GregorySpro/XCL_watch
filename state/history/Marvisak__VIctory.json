@@ -1,48 +1,6 @@
 {
- "state": "Après l’ajout de la sérialisation WARP, les tests unitaires du crate victory‑shader s’exécutent sans plantage même en mode multithread, et le mécanisme XAsync continue de fonctionner sans blocage. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA restent opérationnels comme indiqué dans l’état connu. Le rendu du monde demeure noir, HDR et depth‑bounds sont toujours absents, et le backend waterfall n’est pas encore intégré. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
+ "state": "Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
-  {
-   "sha": "700057393f69031b9ad418d23797ae4ede1abea6",
-   "date": "2026-11-24",
-   "title": "Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames",
-   "summary": ""
-  },
-  {
-   "sha": "70564ae08c82d43df5fad97b08d34628b07b1d9d",
-   "date": "2026-11-24",
-   "title": "README: status of 2026-11-24",
-   "summary": ""
-  },
-  {
-   "sha": "88de5fcdf170d78732068582613792ef172047f7",
-   "date": "2026-11-25",
-   "title": "run: stop with a clear message when the title's own DLLs are missing",
-   "summary": ""
-  },
-  {
-   "sha": "d4ef9ebc9af543be08a54e9386641353f9f3f38a",
-   "date": "2026-11-25",
-   "title": "HLE: show title windows through a stand-in that always reads its messages",
-   "summary": ""
-  },
-  {
-   "sha": "26e03c3ed097f62d6f8f0b82eb345e83e32d54e2",
-   "date": "2026-11-25",
-   "title": "XGameSave: a stray or unreadable version folder never costs the save (#870)",
-   "summary": ""
-  },
-  {
-   "sha": "4bf51006914933a544ef690aae3eaec91ffc6dda",
-   "date": "2026-11-25",
-   "title": "Check the required package archive before title startup",
-   "summary": ""
-  },
-  {
-   "sha": "fdce5f5880b8116f4f38f5ad65fbd6f51fa450e6",
-   "date": "2026-11-25",
-   "title": "Shaders: negative-zero ordering test for the f16 min/max forms",
-   "summary": ""
-  },
   {
    "sha": "19469bd5f6e839611aaedf94ae48a9c5e4615fcc",
    "date": "2026-11-25",
@@ -239,6 +197,48 @@
    "sha": "61bfc773d3296252918572921237075d8a748649",
    "date": "2026-11-25",
    "title": "GPU: mirror placed unordered texture views",
+   "summary": ""
+  },
+  {
+   "sha": "e9ea9a45c165c7e8442af9efa1d968464ad471a6",
+   "date": "2026-11-25",
+   "title": "GPU: a full early pipeline list drops the oldest runs' keys",
+   "summary": ""
+  },
+  {
+   "sha": "d1dfbbd4dcd0b8091c9ad12cc3b1e7be708537a8",
+   "date": "2026-11-25",
+   "title": "xmem: keep the space below 4 GiB for the title's 32-bit memory",
+   "summary": "Le commit introduit un mécanisme de « low guards » qui réserve l’espace mémoire libre sous 4 GiB avant que le processus ne charge le driver, le cache et l’image, puis libère et réalloue ces gardes lorsqu’une allocation 32‑bits échoue. Cela vient s’ajouter aux précédentes améliorations de sérialisation WARP et de gestion des ressources shader, en débloquant le problème d’allocation qui faisait planter le démarrage du titre. Désormais le jeu peut démarrer même avec un gros cache pipeline ou le layer de débogage D3D12, mais le rendu du monde reste toujours noir et les fonctionnalités HDR/depth‑bounds restent absentes."
+  },
+  {
+   "sha": "b9c8a8b0ffc007b2f48fa1340206de542cad2a01",
+   "date": "2026-11-25",
+   "title": "victory-shader: build the per-instruction read/write lists once (ir::build -13%)",
+   "summary": ""
+  },
+  {
+   "sha": "e278bc8091a0cb61a100caef6dff646d4b3b9e6f",
+   "date": "2026-11-25",
+   "title": "Shaders: hardware test for the s_cmpk_* scalar comparisons",
+   "summary": ""
+  },
+  {
+   "sha": "a7cb47ce64a59db2ea5ff8262b2ac347687636f2",
+   "date": "2026-11-25",
+   "title": "GPU: no blending on integer render targets in host pipelines (fixes #806)",
+   "summary": ""
+  },
+  {
+   "sha": "25b1bf3b5fa5f27998b3b3bcfaad58c79fef7423",
+   "date": "2026-11-25",
+   "title": "Shaders: add SQ_IMG_SAMP LOD-bias and no-mip range tests for emit/sampler.rs",
+   "summary": ""
+  },
+  {
+   "sha": "2e319e5235de85127384e8fd2ae0d5ff24fce654",
+   "date": "2026-11-25",
+   "title": "Formats: add 7 invariant unit tests for xma/tables.rs",
    "summary": ""
   }
  ]

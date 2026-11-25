@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.
+Après ce changement, le lancement de GTA VI continue de réussir systématiquement, le debug layer D3D12 ne bloque plus et le nouveau correctif empêche les crashes dus aux vues shader nulles. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA fonctionnent toujours, tout comme les tests unitaires du crate victory‑shader. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable demeure l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `219878a` GPU: a null shader view has no alias source
+  Le commit ajoute une vérification dans `alias_source` pour renvoyer `None` lorsqu’une vue de shader est nulle, évitant ainsi une violation d’accès au démarrage du jeu. Cette modification poursuit la série de correctifs récents qui renforcent la robustesse du GPU en gérant les cas limites (null CBV, alias de pages, etc.). Elle élimine le plantage lié à la lecture d’une description de ressource inexistante, mais ne touche pas aux problèmes de rendu noir, HDR ou depth‑bounds. Le projet peut maintenant avancer sans ce blocage de démarrage.
 - **2026-11-25** `f3578e3` Shaders: decode f16 inline float constants in whole-wave v_add_f16 simulation
 - **2026-11-25** `e815cef` Shaders: look up the second page of straddling title-memory writes in the page table
 - **2026-11-25** `366a978` Shaders: guarded scalar writes kill stale SGPRs in dead_on_edge
@@ -53,4 +55,3 @@ Après ce changement, le processus de démarrage de GTA VI réussit systémati
 - **2026-11-25** `ccfb029` Tests: a machine with no GPU has no hardware adapter to check shaders on
 - **2026-11-25** `42363ab` Tests: hardware-only shader checks skip on a machine without a GPU
 - **2026-11-25** `4118f33` GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL
-- **2026-11-25** `4436fca` Shaders: honor op_sel, omod and clamp on v_interp_p2_f16

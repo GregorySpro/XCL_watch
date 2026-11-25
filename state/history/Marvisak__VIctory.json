@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le processus de démarrage de GTA VI réussit systématiquement (5 sur 5) même avec un pipeline cache important, et le debug layer D3D12 ne bloque plus le lancement. Le reste du pipeline (DXIL compact, rafraîchissement des textures, cache SSA) continue de fonctionner, ainsi que les tests unitaires du crate victory‑shader. Le rendu du monde est encore noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable reste l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
+ "state": "Après ce changement, le lancement de GTA VI continue de réussir systématiquement, le debug layer D3D12 ne bloque plus et le nouveau correctif empêche les crashes dus aux vues shader nulles. Le pipeline DXIL compact, le rafraîchissement des textures et le cache SSA fonctionnent toujours, tout comme les tests unitaires du crate victory‑shader. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le backend waterfall reste à intégrer. La prochaine étape probable demeure l’ajout du backend waterfall et la prise en charge HDR/depth‑bounds.",
  "entries": [
-  {
-   "sha": "4436fca34dd4200a0c061fab4f479021063bf34c",
-   "date": "2026-11-25",
-   "title": "Shaders: honor op_sel, omod and clamp on v_interp_p2_f16",
-   "summary": ""
-  },
   {
    "sha": "4118f33b3910f6b6b738216d6a66e8b355502b28",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "Shaders: decode f16 inline float constants in whole-wave v_add_f16 simulation",
    "summary": ""
+  },
+  {
+   "sha": "219878a0e7754511d89306331812971bb2153f5f",
+   "date": "2026-11-25",
+   "title": "GPU: a null shader view has no alias source",
+   "summary": "Le commit ajoute une vérification dans `alias_source` pour renvoyer `None` lorsqu’une vue de shader est nulle, évitant ainsi une violation d’accès au démarrage du jeu. Cette modification poursuit la série de correctifs récents qui renforcent la robustesse du GPU en gérant les cas limites (null CBV, alias de pages, etc.). Elle élimine le plantage lié à la lecture d’une description de ressource inexistante, mais ne touche pas aux problèmes de rendu noir, HDR ou depth‑bounds. Le projet peut maintenant avancer sans ce blocage de démarrage."
   }
  ]
 }

@@ -2,10 +2,13 @@
 
 ## État du projet
 
-Après l’intégration, le backend Direct DXIL conserve ses capacités : gathers à LOD explicite et sampling UNORM=1 fonctionnent, les tests GPU existants restent verts et les nouveaux gather4_lod passent. Les tests e2e passent tous (1154 réussis, 0 échecs) et les fuites d’event/COM ainsi que le double signal de fence sont éliminés. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation n’a pas encore été évalué. La prochaine étape probable reste l’analyse des échecs de fuzz et la mesure de l’influence du nesting.
+Après ce changement, tous les tests unitaires et e2e s’exécutent sans échec : 1243 passés, 0 échoués, 46 ignorés. Le backend Direct DXIL continue de supporter les gathers à LOD explicite et le sampling UNORM=1, les fuzz‑tests restent bloquants et l’impact du nesting sur les temps de compilation n’est toujours pas mesuré. La prochaine étape probable reste l’analyse des échecs de fuzz et l’évaluation du nesting, tandis que la suite de tests est maintenant fiable pour les futures contributions.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `426a5a7` Tests: two expectations that no longer match the code
+- **2026-11-25** `0d13b07` Tests: two expectations that no longer match the code
+  Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting).
 - **2026-11-25** `9633138` Tests: add launcher integration tests for target selection and error handling
 - **2026-11-25** `cdb0891` Tests: reduce fuzz seed 540, an RDNA2-only sext i1 -> i64 failure
 - **2026-11-25** `f087b99` Recompiler: an aniso point sampler filter samples points, not linearly
@@ -65,5 +68,3 @@ Après l’intégration, le backend Direct DXIL conserve ses capacités : ga
   Le commit corrige simplement le lien et le texte du badge Discord dans le README, remplaçant l’URL erronée par la bonne. Cette modification s’inscrit dans la phase de ménage du projet, où l’on affine la documentation après avoir stabilisé les tests et les backends. Elle ne change aucune fonctionnalité du code, mais rend désormais le point de contact communautaire fiable pour les contributeurs.
 - **2026-11-25** `cbc296a` D3D12.X: a huge compute program the driver refuses is logged with its verdict
 - **2026-11-25** `56ec08d` Tests: verify D3D12.X resource, heap start, fence, and queue sync parity
-- **2026-11-25** `aaa0936` Recompiler: direct DXIL lowers a repeating compute program's blocks once
-- **2026-11-25** `5ce558f` Tests: skip half_precision_overloads_run without native 16-bit ops

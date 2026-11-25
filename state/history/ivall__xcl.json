@@ -1,18 +1,6 @@
 {
- "state": "Après l’intégration, le backend Direct DXIL conserve ses capacités : gathers à LOD explicite et sampling UNORM=1 fonctionnent, les tests GPU existants restent verts et les nouveaux gather4_lod passent. Les tests e2e passent tous (1154 réussis, 0 échecs) et les fuites d’event/COM ainsi que le double signal de fence sont éliminés. Les fuzz‑tests DXIL et les deux tests d’encodage restent bloquants, et l’impact du nesting sur les temps de compilation n’a pas encore été évalué. La prochaine étape probable reste l’analyse des échecs de fuzz et la mesure de l’influence du nesting.",
+ "state": "Après ce changement, tous les tests unitaires et e2e s’exécutent sans échec : 1243 passés, 0 échoués, 46 ignorés. Le backend Direct DXIL continue de supporter les gathers à LOD explicite et le sampling UNORM=1, les fuzz‑tests restent bloquants et l’impact du nesting sur les temps de compilation n’est toujours pas mesuré. La prochaine étape probable reste l’analyse des échecs de fuzz et l’évaluation du nesting, tandis que la suite de tests est maintenant fiable pour les futures contributions.",
  "entries": [
-  {
-   "sha": "5ce558f82a48c51d527f6035234dacbd29db3f05",
-   "date": "2026-11-25",
-   "title": "Tests: skip half_precision_overloads_run without native 16-bit ops",
-   "summary": ""
-  },
-  {
-   "sha": "aaa093657bd96a146c05c0c1a9b61149fe761453",
-   "date": "2026-11-25",
-   "title": "Recompiler: direct DXIL lowers a repeating compute program's blocks once",
-   "summary": ""
-  },
   {
    "sha": "56ec08d6b9eab0c3b7bcae83a61adcc05e0e6ba2",
    "date": "2026-11-25",
@@ -239,6 +227,18 @@
    "sha": "963313835813f475037b3a9f5fcc3cb591696928",
    "date": "2026-11-25",
    "title": "Tests: add launcher integration tests for target selection and error handling",
+   "summary": ""
+  },
+  {
+   "sha": "0d13b071a55caaf4cc1ab5a73298139006edd7c6",
+   "date": "2026-11-25",
+   "title": "Tests: two expectations that no longer match the code",
+   "summary": "Le commit corrige deux attentes de tests qui ne correspondaient plus à la logique actuelle du code : le test du cache DXIL lit maintenant le marqueur à l’octet 67 et le test de promotion de formats UAV accepte les promotions vers des formats supportés par le driver PC. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la suite de tests et à éliminer les faux négatifs. Désormais la suite passe entièrement (0 échec) alors que ces deux cas bloquaient auparavant les PR, mais cela n’affecte pas les autres problèmes encore ouverts (fuzz‑tests DXIL, compilation avec nesting)."
+  },
+  {
+   "sha": "426a5a745db4d5e4b037449ede0b70cb342f5192",
+   "date": "2026-11-25",
+   "title": "Tests: two expectations that no longer match the code",
    "summary": ""
   }
  ]

@@ -1,30 +1,6 @@
 {
- "state": "Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
+ "state": "Après ce correctif, le système de suivi des pages GPU évite désormais de sauvegarder une page déjà en cours de copie, ce qui améliore la fiabilité du pipeline shader (les 108 shaders traduits et les 249 bloqués restent inchangés). Le rendu du monde reste toujours noir, les fonctionnalités HDR et depth‑bounds sont toujours manquantes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
  "entries": [
-  {
-   "sha": "22700b97717dab0df76bda66de20dddaadc26aef",
-   "date": "2026-11-24",
-   "title": "Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links",
-   "summary": ""
-  },
-  {
-   "sha": "8d23f0762fddbe2d80919ace3e7c78e0ac562170",
-   "date": "2026-11-24",
-   "title": "Merge pull request #680 from EatCodeSleep2/fix/wine-staging-upload-128",
-   "summary": ""
-  },
-  {
-   "sha": "5cd74217152324f473ad1eb78d3d3aa4c5727c64",
-   "date": "2026-11-24",
-   "title": "Merge pull request #681 from fuzeofficlal/fix/vertex-buffer-null-unbind",
-   "summary": ""
-  },
-  {
-   "sha": "02f404efeccbc165c7c7f24c110f31e18c9263f2",
-   "date": "2026-11-24",
-   "title": "Merge pull request #685 from catminou4/devin/constant-color-cfg-windows",
-   "summary": ""
-  },
   {
    "sha": "a51bdfa50024948447e66852810d3204995af224",
    "date": "2026-11-24",
@@ -240,6 +216,30 @@
    "date": "2026-11-25",
    "title": "GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL",
    "summary": ""
+  },
+  {
+   "sha": "42363ab6cd5265f0fb3b500ad265f2b84c6b5dbf",
+   "date": "2026-11-25",
+   "title": "Tests: hardware-only shader checks skip on a machine without a GPU",
+   "summary": ""
+  },
+  {
+   "sha": "ccfb02996eac831853e8324156f123eeff083e9d",
+   "date": "2026-11-25",
+   "title": "Tests: a machine with no GPU has no hardware adapter to check shaders on",
+   "summary": ""
+  },
+  {
+   "sha": "cd94d35388765f85d4dd88f24d444e018c468ccd",
+   "date": "2026-11-25",
+   "title": "GPU: shaders mark the pages they write through views; copy-backs compare only those",
+   "summary": ""
+  },
+  {
+   "sha": "940d32f69b22265690a0b5a15d6ded572ba33baf",
+   "date": "2026-11-25",
+   "title": "GPU: a marked page's copy-back does not save the page for its own copy",
+   "summary": "Le commit ajoute une fonction `unarm` qui retire une page de la liste des pages « armées » lorsqu’une copie‑back est en cours, et l’appelle avant de sauvegarder la page dans `shadow.rs`. Cela corrige le problème où une page marquée était re‑sauvegardée lors de sa propre copie, un bug identifié dans le suivi des pages GPU. Ce changement poursuit le chantier de stabilisation du pipeline de copie‑back, réduisant les risques de redondance et de corruption, mais n’affecte pas directement le rendu du monde qui reste noir."
   }
  ]
 }

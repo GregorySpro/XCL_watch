@@ -2,10 +2,15 @@
 
 ## État du projet
 
-Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.
+Après ce correctif, le système de suivi des pages GPU évite désormais de sauvegarder une page déjà en cours de copie, ce qui améliore la fiabilité du pipeline shader (les 108 shaders traduits et les 249 bloqués restent inchangés). Le rendu du monde reste toujours noir, les fonctionnalités HDR et depth‑bounds sont toujours manquantes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `940d32f` GPU: a marked page's copy-back does not save the page for its own copy
+  Le commit ajoute une fonction `unarm` qui retire une page de la liste des pages « armées » lorsqu’une copie‑back est en cours, et l’appelle avant de sauvegarder la page dans `shadow.rs`. Cela corrige le problème où une page marquée était re‑sauvegardée lors de sa propre copie, un bug identifié dans le suivi des pages GPU. Ce changement poursuit le chantier de stabilisation du pipeline de copie‑back, réduisant les risques de redondance et de corruption, mais n’affecte pas directement le rendu du monde qui reste noir.
+- **2026-11-25** `cd94d35` GPU: shaders mark the pages they write through views; copy-backs compare only those
+- **2026-11-25** `ccfb029` Tests: a machine with no GPU has no hardware adapter to check shaders on
+- **2026-11-25** `42363ab` Tests: hardware-only shader checks skip on a machine without a GPU
 - **2026-11-25** `4118f33` GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL
 - **2026-11-25** `4436fca` Shaders: honor op_sel, omod and clamp on v_interp_p2_f16
 - **2026-11-25** `5fa5de3` Shaders: a helper lane's v_readfirstlane reads its own value (#908)
@@ -45,7 +50,3 @@ Après ce changement, le pipeline shader continue de traduire 108 shaders avec 2
 - **2026-11-24** `2005e35` Merge pull request #88 from AndyLatimer/fix/title-size-overflows
 - **2026-11-24** `58fed37` Merge pull request #706 from Lyrnc/fix/cmp-lg-ordered
 - **2026-11-24** `a51bdfa` Merge pull request #696 from catminou4/devin/formats-doc-micro-link
-- **2026-11-24** `02f404e` Merge pull request #685 from catminou4/devin/constant-color-cfg-windows
-- **2026-11-24** `5cd7421` Merge pull request #681 from fuzeofficlal/fix/vertex-buffer-null-unbind
-- **2026-11-24** `8d23f07` Merge pull request #680 from EatCodeSleep2/fix/wine-staging-upload-128
-- **2026-11-24** `22700b9` Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links

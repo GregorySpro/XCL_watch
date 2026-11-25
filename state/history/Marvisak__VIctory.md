@@ -6,6 +6,10 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `4bf5100` Check the required package archive before title startup
+- **2026-11-25** `26e03c3` XGameSave: a stray or unreadable version folder never costs the save (#870)
+- **2026-11-25** `d4ef9eb` HLE: show title windows through a stand-in that always reads its messages
+- **2026-11-25** `88de5fc` run: stop with a clear message when the title's own DLLs are missing
 - **2026-11-24** `70564ae` README: status of 2026-11-24
 - **2026-11-24** `7000573` Diagnostics: title memory peeks, slot states, small buffers and 1D/3D read-back in listed frames
 - **2026-11-24** `9c58a1c` Pipeline pre-build from the shader pack (translate --cache --pipelines); mesh pipelines load from th
@@ -44,7 +48,3 @@ Après ce changement, le traducteur indique désormais le nombre exact de shader
 - **2026-11-24** `0ddbce8` Merge pull request #433 from r4tedx/tests/serialise-valu-gpu-tests
 - **2026-11-24** `ce42e77` Merge pull request #432 from Proudnoob4/fix/uninitialized-sgprs
 - **2026-11-24** `f0894c2` Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors
-- **2026-11-24** `9f18eb4` Merge pull request #423 from pedrofort/shader-perm-no-int64
-- **2026-11-24** `dd273df` Merge pull request #419 from itsRevela/fix/swallow-keyboard-menu
-- **2026-11-24** `3c86238` Merge pull request #418 from enzoduarte1/gpu/half-subnormal-output
-- **2026-11-24** `2e4e280` Merge pull request #384 from LouisRiverstone/shader-cvt16-saturate

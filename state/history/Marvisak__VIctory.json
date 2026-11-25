@@ -2,30 +2,6 @@
  "state": "Après ce changement, le traducteur indique désormais le nombre exact de shaders traduits, en excluant ceux encore en cours d’exécution. Le reste du pipeline reste inchangé : le support du waterfall est actif, 108 shaders passent les boucles, 249 restent bloqués, le rendu du monde est toujours noir et les fonctionnalités HDR et depth‑bounds manquent. La prochaine étape probable reste l’extension du support du waterfall aux requêtes de taille par lane et l’intégration de ces informations dans le backend.",
  "entries": [
   {
-   "sha": "2e4e280dc03098d8a4e847b57a37947e1b45db35",
-   "date": "2026-11-24",
-   "title": "Merge pull request #384 from LouisRiverstone/shader-cvt16-saturate",
-   "summary": ""
-  },
-  {
-   "sha": "3c8623821798c54ee93ecab62e1d72adba36ebf1",
-   "date": "2026-11-24",
-   "title": "Merge pull request #418 from enzoduarte1/gpu/half-subnormal-output",
-   "summary": ""
-  },
-  {
-   "sha": "dd273df1b8d788944dbd266311233f75a7f6e32a",
-   "date": "2026-11-24",
-   "title": "Merge pull request #419 from itsRevela/fix/swallow-keyboard-menu",
-   "summary": ""
-  },
-  {
-   "sha": "9f18eb45877e321a8569247b08cba3e25f00e923",
-   "date": "2026-11-24",
-   "title": "Merge pull request #423 from pedrofort/shader-perm-no-int64",
-   "summary": ""
-  },
-  {
    "sha": "f0894c2b5c64a1e95d622c9d8723bab965f2d347",
    "date": "2026-11-24",
    "title": "Merge pull request #429 from marquezinii/fix/xgamesave-documented-errors",
@@ -239,6 +215,30 @@
    "sha": "70564ae08c82d43df5fad97b08d34628b07b1d9d",
    "date": "2026-11-24",
    "title": "README: status of 2026-11-24",
+   "summary": ""
+  },
+  {
+   "sha": "88de5fcdf170d78732068582613792ef172047f7",
+   "date": "2026-11-25",
+   "title": "run: stop with a clear message when the title's own DLLs are missing",
+   "summary": ""
+  },
+  {
+   "sha": "d4ef9ebc9af543be08a54e9386641353f9f3f38a",
+   "date": "2026-11-25",
+   "title": "HLE: show title windows through a stand-in that always reads its messages",
+   "summary": ""
+  },
+  {
+   "sha": "26e03c3ed097f62d6f8f0b82eb345e83e32d54e2",
+   "date": "2026-11-25",
+   "title": "XGameSave: a stray or unreadable version folder never costs the save (#870)",
+   "summary": ""
+  },
+  {
+   "sha": "4bf51006914933a544ef690aae3eaec91ffc6dda",
+   "date": "2026-11-25",
+   "title": "Check the required package archive before title startup",
    "summary": ""
   }
  ]

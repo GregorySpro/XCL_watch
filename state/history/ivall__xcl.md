@@ -6,6 +6,7 @@ Après l’intégration, le projet dispose désormais de tests robustes confirma
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `e0d93c8` D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind
 - **2026-11-25** `6d051da` Recompiler: load direct DXIL geometry ES inputs from the heap window
 - **2026-11-25** `fda0b1f` Tests: verify heap-window GPU equivalence and graphics validation
   Le nouveau commit ajoute une batterie de tests de validation de l’équivalence GPU pour le mode `XCL_HEAP_WINDOWS=1`, couvrant les chargements, stockages, atomiques 32 bits et 64 bits ainsi que la validation des shaders graphiques sur plusieurs étapes. Ces tests s’inscrivent dans la continuité des récents travaux de vérification des tables de layout et des comparaisons avec le driver natif, en ciblant spécifiquement la correction du comportement des fenêtres de heap. Ils montrent que, sur le RTX 5090, les chemins HLSL et DXIL produisent des résultats bit‑for‑bit identiques, mais ne résolvent pas les échecs déjà présents dans les fuzz‑tests de création de pipeline et de masques bridgés.
@@ -48,4 +49,3 @@ Après l’intégration, le projet dispose désormais de tests robustes confirma
 - **2026-11-25** `e44af70` Recompiler: the FSSM header's wave32 flag decides a program's wave size
 - **2026-11-25** `bd2ac50` Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)
 - **2026-11-25** `943043e` Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)
-- **2026-11-25** `7ff2b2e` Shaders: cache translator refusals and DXC compile failures by capability

@@ -2,12 +2,6 @@
  "state": "Après l’intégration, le projet dispose désormais de tests robustes confirmant la cohérence du heap‑window entre les implémentations HLSL et DXIL, ce qui renforce la stabilité de la pile de recompilation shader. Les parties déjà fonctionnelles (partage de tiles VRAM, heap GLOBAL_SAMPLER, recompilation des shaders) restent intactes. Les blocages persistants sont les fuzz‑tests sur `XCL_TEXTURE_LEVEL_PAGES` et l’implémentation de `DispatchMesh`, ainsi que les cinq échecs déjà existants liés aux pipelines DXIL et aux masques bridgés. La prochaine étape probable sera de corriger ces échecs de fuzz‑tests et d’étendre les nouvelles vérifications de heap‑window à d’autres GPU (NVIDIA, AMD, Intel).",
  "entries": [
   {
-   "sha": "7ff2b2e0e22efc786b5d0c607b7e9516e36b4e2e",
-   "date": "2026-11-25",
-   "title": "Shaders: cache translator refusals and DXC compile failures by capability",
-   "summary": ""
-  },
-  {
    "sha": "943043e87ce32ec4ec8cc51525ba25ebc4d6649d",
    "date": "2026-11-25",
    "title": "Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)",
@@ -239,6 +233,12 @@
    "sha": "6d051da51ba3fe7ba7d4ef542da71f544646e3ba",
    "date": "2026-11-25",
    "title": "Recompiler: load direct DXIL geometry ES inputs from the heap window",
+   "summary": ""
+  },
+  {
+   "sha": "e0d93c84ad8253f6e17738d14741c1bab7061127",
+   "date": "2026-11-25",
+   "title": "D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind",
    "summary": ""
   }
  ]

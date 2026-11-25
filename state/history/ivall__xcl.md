@@ -2,10 +2,14 @@
 
 ## État du projet
 
-Après ce changement, la documentation est pleinement structurée, avec des badges fonctionnels et une estimation chiffrée du progrès sur le jeu retail. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` continuent de fonctionner, les tests unitaires et GPU restent verts. Le projet reste limité par les performances du per‑lane form et l’incomplétude du pipeline du jeu retail ; la prochaine étape probable demeure l’optimisation des performances et la finalisation du support complet du jeu.
+Après ce petit ajustement, la documentation reste claire et correctement rendue ; les badges, le tableau d’avancement du jeu retail et les exigences de build sont affichés sans artefacts de mise en forme. Le projet continue de fonctionner comme indiqué précédemment : backends DXIL, fallback `pc`, logging SSA, pool DirectStorage SIMD et `TilePool` sont opérationnels, les tests unitaires et GPU restent verts. Les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis à relever.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6020a33` README: the requirements' DXC line is not a list item
+  Le commit corrige le formatage d’une ligne du README où la mention du fichier DXC était précédée d’un « + », ce qui faisait apparaître le texte comme un élément de liste. Cette modification s’inscrit dans la même vague de ménage de la documentation déjà amorcée (corrections de liens Discord, ajout de page d’accueil). Elle n’affecte aucun code et ne change donc pas les fonctionnalités existantes, mais améliore la lisibilité du guide de construction.
+- **2026-11-25** `bb35b45` README: the requirements' DXC line is not a list item
+  Le commit corrige le rendu Markdown du README en retirant le « + » qui faisait de la ligne DXC un élément de liste, évitant ainsi qu’une partie des exigences apparaisse comme un bullet. Cette petite modification s’inscrit dans la série de nettoyages de la documentation déjà engagés (ajout de page d’accueil, correction du badge Discord, mise à jour de l’avancement du jeu). Elle n’affecte aucune fonctionnalité du code ; le README s’affiche désormais correctement, mais le projet reste limité par les performances et le pipeline incomplet du jeu retail.
 - **2026-11-25** `f5c5bdf` README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)
 - **2026-11-25** `bae19e9` README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)
   Le commit ajoute une page d’accueil visuelle au README : bannière, carte d’état du jeu retail (≈ 65 % / 14 fps), diagramme du fonctionnement d’XCL et étapes pour lancer un titre. C’est la suite logique du chantier de documentation amorcé précédemment (ajout d’une page frontale et correction du lien Discord) et ne touche aucun code. Désormais le dépôt présente clairement où en est le projet et comment le faire fonctionner, mais les limitations techniques (goulet de per‑lane form, pipeline incomplet) restent inchangées.
@@ -53,5 +57,3 @@ Après ce changement, la documentation est pleinement structurée, avec des badg
 - **2026-11-25** `b282d6b` Tests: the sparse VRAM test binds the heaps its root signature indexes
 - **2026-11-25** `0be6ce8` DirectStorage: use SIMD for zlib checksums
   Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence.
-- **2026-11-25** `b8428c5` XAudio2: precompute XMA inverse quantizer gains
-- **2026-11-25** `279d3ea` Recompiler: fold split-wave64 reduction tail v_readlane exchanges

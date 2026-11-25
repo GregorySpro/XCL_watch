@@ -1,18 +1,6 @@
 {
- "state": "Après ce changement, la documentation est pleinement structurée, avec des badges fonctionnels et une estimation chiffrée du progrès sur le jeu retail. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` continuent de fonctionner, les tests unitaires et GPU restent verts. Le projet reste limité par les performances du per‑lane form et l’incomplétude du pipeline du jeu retail ; la prochaine étape probable demeure l’optimisation des performances et la finalisation du support complet du jeu.",
+ "state": "Après ce petit ajustement, la documentation reste claire et correctement rendue ; les badges, le tableau d’avancement du jeu retail et les exigences de build sont affichés sans artefacts de mise en forme. Le projet continue de fonctionner comme indiqué précédemment : backends DXIL, fallback `pc`, logging SSA, pool DirectStorage SIMD et `TilePool` sont opérationnels, les tests unitaires et GPU restent verts. Les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis à relever.",
  "entries": [
-  {
-   "sha": "279d3eaefb6ced0e961f8f9e3368a063026320ba",
-   "date": "2026-11-25",
-   "title": "Recompiler: fold split-wave64 reduction tail v_readlane exchanges",
-   "summary": ""
-  },
-  {
-   "sha": "b8428c5efe826a63994d0f8723846f8bb4cd3666",
-   "date": "2026-11-25",
-   "title": "XAudio2: precompute XMA inverse quantizer gains",
-   "summary": ""
-  },
   {
    "sha": "0be6ce8cc20a9de06e6f0f443113af42a6c21248",
    "date": "2026-11-25",
@@ -240,6 +228,18 @@
    "date": "2026-11-25",
    "title": "README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)",
    "summary": ""
+  },
+  {
+   "sha": "bb35b4586218e01f1dce04b87cddd411ac528950",
+   "date": "2026-11-25",
+   "title": "README: the requirements' DXC line is not a list item",
+   "summary": "Le commit corrige le rendu Markdown du README en retirant le « + » qui faisait de la ligne DXC un élément de liste, évitant ainsi qu’une partie des exigences apparaisse comme un bullet. Cette petite modification s’inscrit dans la série de nettoyages de la documentation déjà engagés (ajout de page d’accueil, correction du badge Discord, mise à jour de l’avancement du jeu). Elle n’affecte aucune fonctionnalité du code ; le README s’affiche désormais correctement, mais le projet reste limité par les performances et le pipeline incomplet du jeu retail."
+  },
+  {
+   "sha": "6020a33b16ba2de25b3aef5947552f2dc1831f09",
+   "date": "2026-11-25",
+   "title": "README: the requirements' DXC line is not a list item",
+   "summary": "Le commit corrige le formatage d’une ligne du README où la mention du fichier DXC était précédée d’un « + », ce qui faisait apparaître le texte comme un élément de liste. Cette modification s’inscrit dans la même vague de ménage de la documentation déjà amorcée (corrections de liens Discord, ajout de page d’accueil). Elle n’affecte aucun code et ne change donc pas les fonctionnalités existantes, mais améliore la lisibilité du guide de construction."
   }
  ]
 }

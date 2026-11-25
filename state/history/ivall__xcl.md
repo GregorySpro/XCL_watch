@@ -2,10 +2,16 @@
 
 ## État du projet
 
-Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles caches de shaders et de blobs PSO accélèrent le throughput de compilation et diminuent les blocages lors du preload, mais les problèmes de shaders trop gros et d’optimisation du per‑lane form persistent. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.
+Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles décompressions sont légèrement plus rapides et restent fonctionnellement identiques, aucune régression n’est apparente. Les blocages liés aux shaders volumineux et à l’optimisation du per‑lane form subsistent, de même que le nettoyage des PR inactives. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage du code.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `0be6ce8` DirectStorage: use SIMD for zlib checksums
+  Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence.
+- **2026-11-25** `b8428c5` XAudio2: precompute XMA inverse quantizer gains
+- **2026-11-25** `279d3ea` Recompiler: fold split-wave64 reduction tail v_readlane exchanges
+- **2026-11-25** `152de4e` acphal: a reconnect drops messages queued for the old channel
+- **2026-11-25** `137b542` GameInput: a DualShock 4 or DualSense is the gamepad without XInput
 - **2026-11-25** `5796cc4` Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)
 - **2026-11-25** `400e638` Pixel shaders: masks hold the helper lanes (#105 item 1)
 - **2026-11-25** `de36462` Shaders: size-based admission for big compute driver compiles
@@ -49,11 +55,3 @@ Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc
 - **2026-11-24** `f251762` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
   Le nouveau commit retire le blocage qui refusait les fenêtres mémoire provenant du heap dans le mode per‑lane du recompiler DXIL. Ainsi `compute_with` accepte désormais `XCL_HEAP_WINDOWS`, ce qui prolonge la prise en charge déjà introduite pour le backend direct DXIL. Le changement s’inscrit dans la continuité du chantier d’optimisation du per‑lane form et de l’intégration des fenêtres mémoire, et permet à quelques programmes compute de s’exécuter avec les fenêtres du heap, même si les gains de taille restent négligeables. Les gros shaders restent encore refusés pour d’autres raisons structurelles.
 - **2026-11-24** `29eccc0` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `e9e94ce` Recompiler: oversized structured code falls back to pc blocks (#1307)
-  Le commit introduit une limite `STRUCTURED_BYTES_PER_CODE_BYTE` (128) ; lorsqu’un shader structuré dépasse ce ratio, le traducteur refait la traduction en mode `pc` (bloc dispatcher). Cette modification vient résoudre le problème de shaders gigantesques (ex. 148 Mo) qui explosaient le IR et la compilation, poursuivant la série d’optimisations du recompiler. Désormais les programmes excessivement gros sont automatiquement re‑routés vers la forme `pc`, ce qui réduit fortement leur taille en HLSL et évite les surcoûts de compilation, tout en conservant le comportement précédent pour les shaders plus modestes.
-- **2026-11-24** `ea683a0` Scripts: smoke blocks name the game folder by a hash, not its name
-  Le nouveau commit modifie le script de test `smoke.ps1` afin que la ligne `title:` contienne un hash SHA‑256 de 8 caractères du nom du dossier du jeu, ou une étiquette fournie via `-Title`, masquant ainsi les noms réels des copies de jeux dans les blocs PR. Cette évolution poursuit le chantier d’amélioration des outils de CI en protégeant la confidentialité des utilisateurs, sans toucher au code du moteur ou aux backends. Désormais les blocs `xcl-smoke` sont anonymes, mais cela n’affecte pas les fonctionnalités de compilation ou d’exécution du projet. Aucun impact direct sur les limitations techniques (géométrie, textures, etc.) n’est introduit.
-- **2026-11-24** `4178e88` dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory
-- **2026-11-24** `0b64aa0` dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory
-- **2026-11-24** `b9b6ea6` DirectStorage: decode eligible file requests in parallel
-  Le commit ajoute une option `XCL_DSTORAGE_PARALLEL_DECOMPRESS=1` qui active un pool de travailleurs (quatre par défaut) et un budget de 32 MiB pour décompresser en parallèle les requêtes DirectStorage zlib à destination virtuelle. Cette fonctionnalité s’inscrit dans la série d’améliorations récentes du backend Direct DXIL, mais cible maintenant le sous‑système DirectStorage plutôt que le traducteur shader. Elle permet désormais de gagner jusqu’à 2 × le débit de décompression pour les petits flux compressés, tout en conservant l’ordre de retrait des requêtes; les performances sur de gros flux restent proches de l’ancien comportement.

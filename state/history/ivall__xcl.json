@@ -1,36 +1,6 @@
 {
- "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles caches de shaders et de blobs PSO accélèrent le throughput de compilation et diminuent les blocages lors du preload, mais les problèmes de shaders trop gros et d’optimisation du per‑lane form persistent. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
+ "state": "Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles décompressions sont légèrement plus rapides et restent fonctionnellement identiques, aucune régression n’est apparente. Les blocages liés aux shaders volumineux et à l’optimisation du per‑lane form subsistent, de même que le nettoyage des PR inactives. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage du code.",
  "entries": [
-  {
-   "sha": "b9b6ea62080cc62fc19e212033372d01c6214e5c",
-   "date": "2026-11-24",
-   "title": "DirectStorage: decode eligible file requests in parallel",
-   "summary": "Le commit ajoute une option `XCL_DSTORAGE_PARALLEL_DECOMPRESS=1` qui active un pool de travailleurs (quatre par défaut) et un budget de 32 MiB pour décompresser en parallèle les requêtes DirectStorage zlib à destination virtuelle. Cette fonctionnalité s’inscrit dans la série d’améliorations récentes du backend Direct DXIL, mais cible maintenant le sous‑système DirectStorage plutôt que le traducteur shader. Elle permet désormais de gagner jusqu’à 2 × le débit de décompression pour les petits flux compressés, tout en conservant l’ordre de retrait des requêtes; les performances sur de gros flux restent proches de l’ancien comportement."
-  },
-  {
-   "sha": "0b64aa04c6b3caa8c0bd2a4e5ab38741b2d12195",
-   "date": "2026-11-24",
-   "title": "dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory",
-   "summary": ""
-  },
-  {
-   "sha": "4178e888c0b5be50a2887eda45cdb832763b68a4",
-   "date": "2026-11-24",
-   "title": "dxil: eliminate giant-shader IR and CFG blowup in FormatLoad and multi-window memory",
-   "summary": ""
-  },
-  {
-   "sha": "ea683a007da7f0319bbaf680a37717a582445ac3",
-   "date": "2026-11-24",
-   "title": "Scripts: smoke blocks name the game folder by a hash, not its name",
-   "summary": "Le nouveau commit modifie le script de test `smoke.ps1` afin que la ligne `title:` contienne un hash SHA‑256 de 8 caractères du nom du dossier du jeu, ou une étiquette fournie via `-Title`, masquant ainsi les noms réels des copies de jeux dans les blocs PR. Cette évolution poursuit le chantier d’amélioration des outils de CI en protégeant la confidentialité des utilisateurs, sans toucher au code du moteur ou aux backends. Désormais les blocs `xcl-smoke` sont anonymes, mais cela n’affecte pas les fonctionnalités de compilation ou d’exécution du projet. Aucun impact direct sur les limitations techniques (géométrie, textures, etc.) n’est introduit."
-  },
-  {
-   "sha": "e9e94ce665d16bb0e2d2e4cb6b37e149f0d27721",
-   "date": "2026-11-24",
-   "title": "Recompiler: oversized structured code falls back to pc blocks (#1307)",
-   "summary": "Le commit introduit une limite `STRUCTURED_BYTES_PER_CODE_BYTE` (128) ; lorsqu’un shader structuré dépasse ce ratio, le traducteur refait la traduction en mode `pc` (bloc dispatcher). Cette modification vient résoudre le problème de shaders gigantesques (ex. 148 Mo) qui explosaient le IR et la compilation, poursuivant la série d’optimisations du recompiler. Désormais les programmes excessivement gros sont automatiquement re‑routés vers la forme `pc`, ce qui réduit fortement leur taille en HLSL et évite les surcoûts de compilation, tout en conservant le comportement précédent pour les shaders plus modestes."
-  },
   {
    "sha": "29eccc018f4e04abbd647e1be2e69a2fa0d920ac",
    "date": "2026-11-24",
@@ -240,6 +210,36 @@
    "date": "2026-11-25",
    "title": "Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)",
    "summary": ""
+  },
+  {
+   "sha": "137b542483be2cf4c3520569b439fdb1a9b775e9",
+   "date": "2026-11-25",
+   "title": "GameInput: a DualShock 4 or DualSense is the gamepad without XInput",
+   "summary": ""
+  },
+  {
+   "sha": "152de4e8368880bec96a41776f8a19ee1817e5dd",
+   "date": "2026-11-25",
+   "title": "acphal: a reconnect drops messages queued for the old channel",
+   "summary": ""
+  },
+  {
+   "sha": "279d3eaefb6ced0e961f8f9e3368a063026320ba",
+   "date": "2026-11-25",
+   "title": "Recompiler: fold split-wave64 reduction tail v_readlane exchanges",
+   "summary": ""
+  },
+  {
+   "sha": "b8428c5efe826a63994d0f8723846f8bb4cd3666",
+   "date": "2026-11-25",
+   "title": "XAudio2: precompute XMA inverse quantizer gains",
+   "summary": ""
+  },
+  {
+   "sha": "0be6ce8cc20a9de06e6f0f443113af42a6c21248",
+   "date": "2026-11-25",
+   "title": "DirectStorage: use SIMD for zlib checksums",
+   "summary": "Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence."
   }
  ]
 }

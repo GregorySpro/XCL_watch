@@ -2,10 +2,16 @@
 
 ## État du projet
 
-Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles décompressions sont légèrement plus rapides et restent fonctionnellement identiques, aucune régression n’est apparente. Les blocages liés aux shaders volumineux et à l’optimisation du per‑lane form subsistent, de même que le nettoyage des PR inactives. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage du code.
+Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `2bdf047` D3D12.X: reduce retained texture upload staging
+- **2026-11-25** `99e4743` Recompiler: select vertices for BVH triangle node types 2 and 3
+- **2026-11-25** `6f45624` Recompiler: fix per-lane whole-wave predicate and SRC_SCC checks
+  Le commit corrige la logique de prédicats whole‑wave en mode per‑lane, en introduisant le suivi du type de réduction SCC (Uniform, Any, All) et en arrêtant l’AND de VCC avec EXEC lorsqu’on n’utilise pas de branches wave‑wide. Cela poursuit les efforts récents sur le recompiler (classification wave64, gestion des masques) et comble trois failles de soundness qui bloquaient la précision des shaders volumineux. Désormais les analyses de masques tiennent compte des lanes inactives et les tests unitaires valident ces cas, mais les optimisations de per‑lane form restent encore à améliorer.
+- **2026-11-25** `bf9eebd` Recompiler: keep entered far-jump sequences indirect
+- **2026-11-25** `7b9eabb` Recompiler: v_rcp_f64 and v_rsq_f64 keep NaN, infinities and denormals
 - **2026-11-25** `63547b7` Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)
 - **2026-11-25** `da6174d` Memory: bound sparse UMA first-fit searches by address
 - **2026-11-25** `0e45b97` Tests: label bench_split_wave64 by the form x64_spin really picks
@@ -48,9 +54,3 @@ Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le f
 - **2026-11-24** `4e3515e` D3D12.X: an ExecuteIndirect reads the arguments written before it
 - **2026-11-24** `177cd40` D3D12.X: promote R9G9B9E5_SHAREDEXP render/UAV targets to R11G11B10_FLOAT
 - **2026-11-24** `266b845` Direct DXIL: image_get_lod accepts static samplers
-- **2026-11-24** `3bc7143` D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages
-  Le commit réorganise la gestion des tuiles VRAM en conservant les allocations contiguës au sein d’un même heap, ce qui supprime les blocages liés aux appels multi‑heap `UpdateTileMappings` et aux signaux par texture. Cette amélioration poursuit le chantier d’optimisation du backend D3D12X, en suivant les précédents travaux sur le per‑lane DXIL et la réduction du IR. Désormais les mappings de tuiles sont beaucoup plus rapides (≈22× au soumission, ≈14× au rendu), mais les limitations de shaders volumineux et les optimisations SSA restent inchangées.
-- **2026-11-24** `7f7e768` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `bfb8133` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `9dcf2f6` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)
-- **2026-11-24** `66879ef` Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)

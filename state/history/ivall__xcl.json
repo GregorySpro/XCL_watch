@@ -1,36 +1,6 @@
 {
- "state": "Après l’intégration du SIMD, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles décompressions sont légèrement plus rapides et restent fonctionnellement identiques, aucune régression n’est apparente. Les blocages liés aux shaders volumineux et à l’optimisation du per‑lane form subsistent, de même que le nettoyage des PR inactives. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage du code.",
+ "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
  "entries": [
-  {
-   "sha": "66879efc7d958cd18eaab93cb379492a85583d2b",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "9dcf2f6916436aad162069127c8e68586862cc3b",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "bfb8133d36df38c3de381f9d99203568b32aa765",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "7f7e76858d389aaf8e62cf3376dc864415d99e57",
-   "date": "2026-11-24",
-   "title": "Recompiler: a per-lane form for the direct DXIL backend (XCL_PER_LANE)",
-   "summary": ""
-  },
-  {
-   "sha": "3bc7143a8dbc5a2326345d6e734604c56a9e3266",
-   "date": "2026-11-24",
-   "title": "D3D12.X: eliminate multi-heap UpdateTileMappings and per-texture Signal stalls in vram::Pages",
-   "summary": "Le commit réorganise la gestion des tuiles VRAM en conservant les allocations contiguës au sein d’un même heap, ce qui supprime les blocages liés aux appels multi‑heap `UpdateTileMappings` et aux signaux par texture. Cette amélioration poursuit le chantier d’optimisation du backend D3D12X, en suivant les précédents travaux sur le per‑lane DXIL et la réduction du IR. Désormais les mappings de tuiles sont beaucoup plus rapides (≈22× au soumission, ≈14× au rendu), mais les limitations de shaders volumineux et les optimisations SSA restent inchangées."
-  },
   {
    "sha": "266b845e4b2a193ea7ce1b86698ead08dc4a10c0",
    "date": "2026-11-24",
@@ -239,6 +209,36 @@
    "sha": "63547b7a96d6b347273794047f61722158205b1e",
    "date": "2026-11-25",
    "title": "Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)",
+   "summary": ""
+  },
+  {
+   "sha": "7b9eabb6acac85b4cb38be395214bb5104790446",
+   "date": "2026-11-25",
+   "title": "Recompiler: v_rcp_f64 and v_rsq_f64 keep NaN, infinities and denormals",
+   "summary": ""
+  },
+  {
+   "sha": "bf9eebd53e3ebf9a0311326d3d2a92c0e240ee5c",
+   "date": "2026-11-25",
+   "title": "Recompiler: keep entered far-jump sequences indirect",
+   "summary": ""
+  },
+  {
+   "sha": "6f45624c976be27824a754d036599d349121e523",
+   "date": "2026-11-25",
+   "title": "Recompiler: fix per-lane whole-wave predicate and SRC_SCC checks",
+   "summary": "Le commit corrige la logique de prédicats whole‑wave en mode per‑lane, en introduisant le suivi du type de réduction SCC (Uniform, Any, All) et en arrêtant l’AND de VCC avec EXEC lorsqu’on n’utilise pas de branches wave‑wide. Cela poursuit les efforts récents sur le recompiler (classification wave64, gestion des masques) et comble trois failles de soundness qui bloquaient la précision des shaders volumineux. Désormais les analyses de masques tiennent compte des lanes inactives et les tests unitaires valident ces cas, mais les optimisations de per‑lane form restent encore à améliorer."
+  },
+  {
+   "sha": "99e474352fbaa0d94b318e1932dcf7939824f471",
+   "date": "2026-11-25",
+   "title": "Recompiler: select vertices for BVH triangle node types 2 and 3",
+   "summary": ""
+  },
+  {
+   "sha": "2bdf0477f84377d1b08e29424100c9bace4e530f",
+   "date": "2026-11-25",
+   "title": "D3D12.X: reduce retained texture upload staging",
    "summary": ""
   }
  ]

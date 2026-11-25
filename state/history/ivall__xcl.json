@@ -1,12 +1,6 @@
 {
- "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Le problème de CSE à travers `dx.op.discard` est résolu, les shaders pixel fonctionnent correctement même avec des discards intermédiaires, et les performances de rendu restent stables (les runs smoke montrent le même nombre de frames et aucun crash). Les limitations précédentes (shaders trop gros, lenteur de la CI, optimisation du per‑lane form) sont toujours présentes, et la prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
+ "state": "Après ce changement, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage parallélisé et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles caches de shaders et de blobs PSO accélèrent le throughput de compilation et diminuent les blocages lors du preload, mais les problèmes de shaders trop gros et d’optimisation du per‑lane form persistent. La prochaine étape probable reste l’amélioration des performances du per‑lane form tout en continuant le nettoyage des PR inactives.",
  "entries": [
-  {
-   "sha": "76c527b7dd7874f7786a70628e5640cf7592e9cd",
-   "date": "2026-11-24",
-   "title": "gpu: direct RDNA2 -> DXIL backend (no HLSL / DXC), behind XCL_DIRECT_DXIL",
-   "summary": "Le commit améliore la gestion des régions protégées en ne fusionnant aux jointures que les registres réellement écrits dans le corps du guard. Cette optimisation s’inscrit dans la série d’ajustements du backend DXIL (optimisations SSA, comptage i64, découpage du CFG) et réduit fortement le nombre de traversées de blocs lors de la lecture. Désormais les programmes longs gagnent jusqu’à 3 × en temps de compilation, tout en conservant la même couverture de traduction. Aucun nouveau problème apparent n’est introduit, mais l’impact exact sur les cas restants (géométrie, textures avancées) reste à vérifier."
-  },
   {
    "sha": "81d2ad5a9d06f6d11211f0c2524d5db9c3362bcf",
    "date": "2026-11-24",
@@ -240,6 +234,12 @@
    "date": "2026-11-24",
    "title": "Direct DXIL: truncate s instead of returning native on special values in round_exact",
    "summary": ""
+  },
+  {
+   "sha": "80f4819098e921f2e1ab371144d4832f68ffedd6",
+   "date": "2026-11-25",
+   "title": "D3D12.X: cache direct-DXIL mesh shaders, coalesce shader builds, make MS/GS lazy, and cache two-pass/graphics PSO blobs",
+   "summary": "Le nouveau commit introduit un système de mise en cache et de coalescence pour les shaders DXIL directs, notamment les mesh shaders, ainsi que la mise en cache paresseuse des traductions MS/GS et des blobs PSO graphiques. Cette amélioration poursuit le chantier d’optimisation du pipeline DXIL amorcé par les correctifs précédents (gestion du CSE, réordonnancement des textureLoad, etc.) en ciblant la vitesse de compilation et la réutilisation des PSO. Désormais les compilations identiques sont partagées entre threads et les blobs PSO sont stockés sur disque, ce qui réduit les temps de pré‑chargement ; les limitations de taille de shaders ou de per‑lane form restent inchangées."
   }
  ]
 }

@@ -1,24 +1,6 @@
 {
- "state": "Après ce correctif, la documentation du projet possède un lien Discord correctement formaté, facilitant la navigation des nouveaux contributeurs. Les deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu continuent de fonctionner, avec tous les tests unitaires verts et les tests GPU de VRAM sparse fiables. Les goulets de performance du per‑lane form et le nettoyage des PR inactives restent les prochains objectifs, et aucune régression fonctionnelle n’est apparente. La prochaine étape probable reste l’optimisation des performances et le tri des pull‑requests en attente.",
+ "state": "Après ce changement, la documentation est pleinement structurée, avec des badges fonctionnels et une estimation chiffrée du progrès sur le jeu retail. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` continuent de fonctionner, les tests unitaires et GPU restent verts. Le projet reste limité par les performances du per‑lane form et l’incomplétude du pipeline du jeu retail ; la prochaine étape probable demeure l’optimisation des performances et la finalisation du support complet du jeu.",
  "entries": [
-  {
-   "sha": "5796cc467d80e3dac5d7d231ec34f1b0bebce169",
-   "date": "2026-11-25",
-   "title": "Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)",
-   "summary": ""
-  },
-  {
-   "sha": "137b542483be2cf4c3520569b439fdb1a9b775e9",
-   "date": "2026-11-25",
-   "title": "GameInput: a DualShock 4 or DualSense is the gamepad without XInput",
-   "summary": ""
-  },
-  {
-   "sha": "152de4e8368880bec96a41776f8a19ee1817e5dd",
-   "date": "2026-11-25",
-   "title": "acphal: a reconnect drops messages queued for the old channel",
-   "summary": ""
-  },
   {
    "sha": "279d3eaefb6ced0e961f8f9e3368a063026320ba",
    "date": "2026-11-25",
@@ -240,6 +222,24 @@
    "date": "2026-11-25",
    "title": "Fix Discord link formatting in README.md",
    "summary": "Le commit corrige le format du lien Discord dans le README en retirant un crochet superflu et en affichant correctement le texte cliquable. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans impacter le code ni les fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les contributeurs. Aucun changement fonctionnel n’est introduit, le projet reste dans la même dynamique de stabilisation."
+  },
+  {
+   "sha": "4b9eb9bbf95eaaf1e247035640ed53d03ab97c87",
+   "date": "2026-11-25",
+   "title": "README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)",
+   "summary": "Le nouveau commit enrichit le README d’une page d’accueil détaillée et ajoute une « carte » indiquant l’avancement d’un jeu retail récent, estimé à 65 % avec 14 fps moyens (RTX 5090) grâce à la branche d’intégration NVIDIA. Cette mise à jour poursuit le chantier de documentation amorcé précédemment (correction du lien Discord) et ne touche aucun code. Elle rend visible, pour la première fois, un état de performance réel, mais l’accès complet au jeu reste bloqué (pipeline minimap refusé, arrêt prématuré)."
+  },
+  {
+   "sha": "bae19e9d408326dfee638eb7376b5ee4c6a90b49",
+   "date": "2026-11-25",
+   "title": "README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)",
+   "summary": "Le commit ajoute une page d’accueil visuelle au README : bannière, carte d’état du jeu retail (≈ 65 % / 14 fps), diagramme du fonctionnement d’XCL et étapes pour lancer un titre. C’est la suite logique du chantier de documentation amorcé précédemment (ajout d’une page frontale et correction du lien Discord) et ne touche aucun code. Désormais le dépôt présente clairement où en est le projet et comment le faire fonctionner, mais les limitations techniques (goulet de per‑lane form, pipeline incomplet) restent inchangées."
+  },
+  {
+   "sha": "f5c5bdf0e91035f8f1404f46f4f2f7aedc259e7f",
+   "date": "2026-11-25",
+   "title": "README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)",
+   "summary": ""
   }
  ]
 }

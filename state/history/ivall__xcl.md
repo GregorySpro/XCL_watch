@@ -2,10 +2,15 @@
 
 ## État du projet
 
-Après ce correctif, la documentation du projet possède un lien Discord correctement formaté, facilitant la navigation des nouveaux contributeurs. Les deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu continuent de fonctionner, avec tous les tests unitaires verts et les tests GPU de VRAM sparse fiables. Les goulets de performance du per‑lane form et le nettoyage des PR inactives restent les prochains objectifs, et aucune régression fonctionnelle n’est apparente. La prochaine étape probable reste l’optimisation des performances et le tri des pull‑requests en attente.
+Après ce changement, la documentation est pleinement structurée, avec des badges fonctionnels et une estimation chiffrée du progrès sur le jeu retail. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` continuent de fonctionner, les tests unitaires et GPU restent verts. Le projet reste limité par les performances du per‑lane form et l’incomplétude du pipeline du jeu retail ; la prochaine étape probable demeure l’optimisation des performances et la finalisation du support complet du jeu.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `f5c5bdf` README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)
+- **2026-11-25** `bae19e9` README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)
+  Le commit ajoute une page d’accueil visuelle au README : bannière, carte d’état du jeu retail (≈ 65 % / 14 fps), diagramme du fonctionnement d’XCL et étapes pour lancer un titre. C’est la suite logique du chantier de documentation amorcé précédemment (ajout d’une page frontale et correction du lien Discord) et ne touche aucun code. Désormais le dépôt présente clairement où en est le projet et comment le faire fonctionner, mais les limitations techniques (goulet de per‑lane form, pipeline incomplet) restent inchangées.
+- **2026-11-25** `4b9eb9b` README: a front page, and the newer retail game's state (about 65 %, 14 fps on average)
+  Le nouveau commit enrichit le README d’une page d’accueil détaillée et ajoute une « carte » indiquant l’avancement d’un jeu retail récent, estimé à 65 % avec 14 fps moyens (RTX 5090) grâce à la branche d’intégration NVIDIA. Cette mise à jour poursuit le chantier de documentation amorcé précédemment (correction du lien Discord) et ne touche aucun code. Elle rend visible, pour la première fois, un état de performance réel, mais l’accès complet au jeu reste bloqué (pipeline minimap refusé, arrêt prématuré).
 - **2026-11-25** `6987e49` Fix Discord link formatting in README.md
   Le commit corrige le format du lien Discord dans le README en retirant un crochet superflu et en affichant correctement le texte cliquable. Cette modification poursuit le petit chantier de ménage de la documentation amorcé précédemment, sans impacter le code ni les fonctionnalités. Elle rend l’accès au serveur Discord plus fiable pour les contributeurs. Aucun changement fonctionnel n’est introduit, le projet reste dans la même dynamique de stabilisation.
 - **2026-11-25** `c390263` Fix Discord link formatting in README.md
@@ -50,6 +55,3 @@ Après ce correctif, la documentation du projet possède un lien Discord correct
   Le nouveau commit active l’option SIMD du crate `miniz_oxide` pour le calcul du checksum Adler‑32 utilisé par DirectStorage, en ajoutant la dépendance `simd-adler32`. Cela poursuit la série d’optimisations récentes (ex. gestion des masques, réduction des branches) en ciblant un goulet d’I/O constaté lors du chargement de titres retail. Le changement apporte un gain de ~5 % sur les décompressions de blocs de 64 KiB, tout en conservant la même exactitude. Il ne résout pas les problèmes persistants de shaders trop gros ou de per‑lane form, mais réduit un autre point de latence.
 - **2026-11-25** `b8428c5` XAudio2: precompute XMA inverse quantizer gains
 - **2026-11-25** `279d3ea` Recompiler: fold split-wave64 reduction tail v_readlane exchanges
-- **2026-11-25** `152de4e` acphal: a reconnect drops messages queued for the old channel
-- **2026-11-25** `137b542` GameInput: a DualShock 4 or DualSense is the gamepad without XInput
-- **2026-11-25** `5796cc4` Recompiler: classify wave64 VS / PS by whether a 32-lane cut changes them (#336)

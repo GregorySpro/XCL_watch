@@ -2,30 +2,6 @@
  "state": "Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et le `TilePool` contigu, avec tous les tests unitaires verts. Les nouvelles vérifications SCC et la gestion correcte de VCC améliorent la fiabilité du recompiler, notamment pour les shaders complexes, mais les performances du per‑lane form restent un point bloquant. Le nettoyage des PR inactives et l’optimisation du per‑lane form sont les prochaines étapes probables.",
  "entries": [
   {
-   "sha": "20cf13022f764208384c610c2ae6a3f4eed201a2",
-   "date": "2026-11-24",
-   "title": "dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash",
-   "summary": "Le commit réordonne les appels DXIL en émettant d’abord `dx.op.textureLoad` puis `dx.op.getDimensions` pour les textures MSAA dynamiquement indexées, éliminant le plantage du compilateur AMD (`amdxc64.dll`) lors de la création de pipelines compute. Cette correction suit le précédent correctif #425b869 qui visait déjà les crashes liés aux textures MSAA, et vient clôturer le blocage qui empêchait l’exécution de shaders compute contenant des `Texture2DMS`/`Texture2DMSArray`. Désormais les shaders MSAA passent la compilation et l’exécution sur les GPU AMD, mais les autres problèmes (taille des shaders, lenteur CI, optimisation SSA) restent en suspens."
-  },
-  {
-   "sha": "a713101b521e59c0aae8d80cb1d90821e09ce8b4",
-   "date": "2026-11-24",
-   "title": "Memory: skip VirtualQuery on committed coherent UMA windows in cpu_writes and kernelx",
-   "summary": "Le nouveau commit ajoute un fast‑path qui évite les appels coûteux à VirtualQuery sur les fenêtres UMA cohérentes déjà engagées, en les détectant via `uma.in_committed_window`. Cette optimisation s’inscrit dans la suite des améliorations de la gestion mémoire et du pipeline CPU‑GPU, suivant les récents travaux sur les backends DXIL et la réduction des blocages liés aux mises à jour de tuiles. Désormais les écritures CPU (`write_now`, `write_u64_now`, `writable`) et les requêtes de trace de vertex‑buffer utilisent ce raccourci, ce qui réduit les latences de 75‑80 ms observées auparavant. Le reste des fonctionnalités reste inchangé ; les performances globales du per‑lane form et les limites de shaders volumineux ne sont pas affectées."
-  },
-  {
-   "sha": "f5136a640a69be3ce072e1ea8939e97d005b4cb1",
-   "date": "2026-11-24",
-   "title": "Fast-boot: opt-in Bink intro skip, frame interval override, device type and TTS mute env vars",
-   "summary": ""
-  },
-  {
-   "sha": "95ae58938c27d9c0913789a6425984cd9098cbac",
-   "date": "2026-11-24",
-   "title": "Recompiler: a float v_cmpx through #1426's lowering keeps lanes outside EXEC out",
-   "summary": ""
-  },
-  {
    "sha": "62265d3bbde2255f849fb650cc29872df91a4cf0",
    "date": "2026-11-24",
    "title": "Per-lane: track the SCC of mixed mask and number operations",
@@ -239,6 +215,30 @@
    "sha": "c00f3fcfce59bb4dfd3a1f96bbc84c60e765b538",
    "date": "2026-11-25",
    "title": "Direct DXIL: honour D16 packing in image_get_resinfo",
+   "summary": ""
+  },
+  {
+   "sha": "025c7861c7acabaa2d9f8f005de478ed4470cba4",
+   "date": "2026-11-25",
+   "title": "D3D12.X: the GPU wait watchdog starts after its wake pair is set",
+   "summary": ""
+  },
+  {
+   "sha": "c2dcef3fc8b60d6a9608893fb0a72267220d0b4b",
+   "date": "2026-11-25",
+   "title": "Recompiler: round direct-DXIL f16 converts and products to nearest-even",
+   "summary": ""
+  },
+  {
+   "sha": "3f810440f73c8ae5c506d3a1a0f6c81adc926726",
+   "date": "2026-11-25",
+   "title": "Recompiler: translate v_div_fixup_f16 in both backends",
+   "summary": ""
+  },
+  {
+   "sha": "2aa2d1a54396885bb5bfce8edef4285cf24803c2",
+   "date": "2026-11-25",
+   "title": "Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts",
    "summary": ""
   }
  ]

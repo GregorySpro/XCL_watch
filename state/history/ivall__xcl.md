@@ -6,6 +6,10 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `2aa2d1a` Tests: cover permlane16, WQM, DS stride64, mulhi, i24, and u64 shifts
+- **2026-11-25** `3f81044` Recompiler: translate v_div_fixup_f16 in both backends
+- **2026-11-25** `c2dcef3` Recompiler: round direct-DXIL f16 converts and products to nearest-even
+- **2026-11-25** `025c786` D3D12.X: the GPU wait watchdog starts after its wake pair is set
 - **2026-11-25** `c00f3fc` Direct DXIL: honour D16 packing in image_get_resinfo
 - **2026-11-25** `fb32c87` UMA: support 8/16 heap windows (5/13 coherent) with 3-sparse (12 GiB) cap
 - **2026-11-25** `6c9f947` Recompiler: saturate UINT/SINT and use RTZ in direct DXIL fmt_encode
@@ -46,9 +50,3 @@ Après ce correctif, le projet conserve ses deux backends DXIL, le fallback `pc`
 - **2026-11-24** `36ac23d` Recompiler: invalidate block-local DXIL CSE wave/quad cache across dx.op.discard
   Le commit corrige le cache d’élimination de sous‑expression (CSE) locale du recompileur DXIL en le vidant lorsqu’un appel `dx.op.discard` est rencontré. Cette modification poursuit la série d’ajustements du backend DXIL (émission correcte des textureLoad, gestion des pipelines compute) en résolvant un bug où des appels `dx.op.wave*` ou `dx.op.quad*` après un discard réutilisaient des résultats invalides. Désormais les shaders pixel qui utilisent `dx.op.discard` conservent la bonne sémantique : les appels wave/quad après le discard ne sont plus fusionnés, ce qui évite des comportements erronés. Le reste du projet reste inchangé, aucune régression n’est observée.
 - **2026-11-24** `62265d3` Per-lane: track the SCC of mixed mask and number operations
-- **2026-11-24** `95ae589` Recompiler: a float v_cmpx through #1426's lowering keeps lanes outside EXEC out
-- **2026-11-24** `f5136a6` Fast-boot: opt-in Bink intro skip, frame interval override, device type and TTS mute env vars
-- **2026-11-24** `a713101` Memory: skip VirtualQuery on committed coherent UMA windows in cpu_writes and kernelx
-  Le nouveau commit ajoute un fast‑path qui évite les appels coûteux à VirtualQuery sur les fenêtres UMA cohérentes déjà engagées, en les détectant via `uma.in_committed_window`. Cette optimisation s’inscrit dans la suite des améliorations de la gestion mémoire et du pipeline CPU‑GPU, suivant les récents travaux sur les backends DXIL et la réduction des blocages liés aux mises à jour de tuiles. Désormais les écritures CPU (`write_now`, `write_u64_now`, `writable`) et les requêtes de trace de vertex‑buffer utilisent ce raccourci, ce qui réduit les latences de 75‑80 ms observées auparavant. Le reste des fonctionnalités reste inchangé ; les performances globales du per‑lane form et les limites de shaders volumineux ne sont pas affectées.
-- **2026-11-24** `20cf130` dxil: emit MSAA textureLoad before getDimensions to avoid amdxc64 crash
-  Le commit réordonne les appels DXIL en émettant d’abord `dx.op.textureLoad` puis `dx.op.getDimensions` pour les textures MSAA dynamiquement indexées, éliminant le plantage du compilateur AMD (`amdxc64.dll`) lors de la création de pipelines compute. Cette correction suit le précédent correctif #425b869 qui visait déjà les crashes liés aux textures MSAA, et vient clôturer le blocage qui empêchait l’exécution de shaders compute contenant des `Texture2DMS`/`Texture2DMSArray`. Désormais les shaders MSAA passent la compilation et l’exécution sur les GPU AMD, mais les autres problèmes (taille des shaders, lenteur CI, optimisation SSA) restent en suspens.

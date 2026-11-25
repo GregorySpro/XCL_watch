@@ -2,42 +2,6 @@
  "state": "Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les libérations sont correctement fusionnées, les requêtes de 8 slots ne sont plus bloquées par des fragments, et le tracing XCL montre les bons indices de samplers. Les tests de fuzz et la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` restent inchangés et continuent d’attendre résolution. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests, maintenant que le sous‑système de samplers ne constitue plus un goulet d’étranglement.",
  "entries": [
   {
-   "sha": "764d9ed0fcb42b561a8f6b9fd6d06c17165c5a10",
-   "date": "2026-11-25",
-   "title": "Config: device_type in xcl.toml names the Series S in every spelling",
-   "summary": ""
-  },
-  {
-   "sha": "e9f129d8a73772523e45ab8be45541f726e6a776",
-   "date": "2026-11-25",
-   "title": "XCL_NETWORK=0: GetAddrInfoExW answers local names like getaddrinfo does",
-   "summary": ""
-  },
-  {
-   "sha": "3f4495a2b325ae5a9df314dd86d10327502b5cf5",
-   "date": "2026-11-25",
-   "title": "Recompiler: emit globallycoherent on compute memory windows only when needed",
-   "summary": ""
-  },
-  {
-   "sha": "ce6a880669416eb3a2e74016b737298dea614a8b",
-   "date": "2026-11-25",
-   "title": "DirectStorage: read a physical-page list again when its request runs",
-   "summary": ""
-  },
-  {
-   "sha": "30ba7a2b704ab6a045bb3aafd24323d539cd2fea",
-   "date": "2026-11-25",
-   "title": "D3D12.X: XCL_TEXTURE_LEVEL_PAGES=1 gives a sampled texture's levels their pages with their texels",
-   "summary": "Le commit introduit la variable d’environnement `XCL_TEXTURE_LEVEL_PAGES=1` qui différencie l’allocation des pages vidéo des niveaux d’une texture échantillonnée : les pages ne sont réservées que lorsqu’un niveau reçoit réellement des texels, au lieu d’être allouées toutes d’un coup lors du placement initial. Cette évolution poursuit le chantier d’optimisation de la gestion de la mémoire vidéo amorcé par les correctifs de configuration et de scratch, en ciblant le problème de sur‑allocation des textures streamées. Désormais les titres qui streament leurs textures utilisent beaucoup moins de pages VRAM inutilisées, mais la prise en charge reste désactivée par défaut et les effets sur les performances ou la stabilité restent à confirmer."
-  },
-  {
-   "sha": "9f02f9d15319d1bcc7daf143614a72539abad2ac",
-   "date": "2026-11-25",
-   "title": "kernelx: XMemMapPhysicalPagesScatter with no page array unmaps",
-   "summary": ""
-  },
-  {
    "sha": "65fc114a140d9043f8e3d70ffb863f7987816d8f",
    "date": "2026-11-25",
    "title": "D3D12.X: composite multi-plane PresentX overlays",
@@ -239,6 +203,42 @@
    "sha": "c7e1799762abf522d043f2d028beca81e85cc683",
    "date": "2026-11-25",
    "title": "Recompiler: lower V_MIN_U32, V_MAX_U32, V_MIN_I32, and V_MAX_I32 in p…",
+   "summary": ""
+  },
+  {
+   "sha": "7292dca0c25edfc5e8c8b3e581d0e3f8ef196762",
+   "date": "2026-11-25",
+   "title": "Recompiler: specialize constant-mask v_cmp_class_f32 in direct DXIL",
+   "summary": ""
+  },
+  {
+   "sha": "3f2777019544c0ada2cd294aa792d3c378ff0df8",
+   "date": "2026-11-25",
+   "title": "Recompiler: coalesce GS header and vertex attribute stores in direct DXIL",
+   "summary": ""
+  },
+  {
+   "sha": "c56e7448e58bf9cce17f15b95cd8c5276af22af5",
+   "date": "2026-11-25",
+   "title": "Tests: check divergent block barriers in a_bridged_mask_write",
+   "summary": ""
+  },
+  {
+   "sha": "e3f042c5184ebe5708041c0f2a29b8069e25c4aa",
+   "date": "2026-11-25",
+   "title": "Shaders: prebuild split compute dispatch-chain pieces under --pipelines",
+   "summary": ""
+  },
+  {
+   "sha": "f9f6d494b312f46aa0f2e9de321d7ca49b218e87",
+   "date": "2026-11-25",
+   "title": "Recompiler: key rerouted DXIL by compact nesting policy",
+   "summary": ""
+  },
+  {
+   "sha": "2898511af1c038a2ef809719e9b6f89e5675c422",
+   "date": "2026-11-25",
+   "title": "Recompiler: eliminate local array and branches in pixel-shader PRELUDE::rla()",
    "summary": ""
   }
  ]

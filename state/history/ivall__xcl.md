@@ -6,6 +6,12 @@ Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les lib
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `2898511` Recompiler: eliminate local array and branches in pixel-shader PRELUDE::rla()
+- **2026-11-25** `f9f6d49` Recompiler: key rerouted DXIL by compact nesting policy
+- **2026-11-25** `e3f042c` Shaders: prebuild split compute dispatch-chain pieces under --pipelines
+- **2026-11-25** `c56e744` Tests: check divergent block barriers in a_bridged_mask_write
+- **2026-11-25** `3f27770` Recompiler: coalesce GS header and vertex attribute stores in direct DXIL
+- **2026-11-25** `7292dca` Recompiler: specialize constant-mask v_cmp_class_f32 in direct DXIL
 - **2026-11-25** `c7e1799` Recompiler: lower V_MIN_U32, V_MAX_U32, V_MIN_I32, and V_MAX_I32 in p…
 - **2026-11-25** `2e40b78` Recompiler: fold shift-masks, nested masks, double-xor, and all-ones or in direct DXIL opt
 - **2026-11-25** `ae6f284` Recompiler: translate v_qsad_pk_u16_u8 and v_mqsad_{pk_u16,u32}_u8 in both backends (takes over #909)
@@ -44,10 +50,3 @@ Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les lib
 - **2026-11-25** `af066dd` Recompiler: direct compact form stores a branch's target in the entry
 - **2026-11-25** `55d64c2` D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors
 - **2026-11-25** `65fc114` D3D12.X: composite multi-plane PresentX overlays
-- **2026-11-25** `9f02f9d` kernelx: XMemMapPhysicalPagesScatter with no page array unmaps
-- **2026-11-25** `30ba7a2` D3D12.X: XCL_TEXTURE_LEVEL_PAGES=1 gives a sampled texture's levels their pages with their texels
-  Le commit introduit la variable d’environnement `XCL_TEXTURE_LEVEL_PAGES=1` qui différencie l’allocation des pages vidéo des niveaux d’une texture échantillonnée : les pages ne sont réservées que lorsqu’un niveau reçoit réellement des texels, au lieu d’être allouées toutes d’un coup lors du placement initial. Cette évolution poursuit le chantier d’optimisation de la gestion de la mémoire vidéo amorcé par les correctifs de configuration et de scratch, en ciblant le problème de sur‑allocation des textures streamées. Désormais les titres qui streament leurs textures utilisent beaucoup moins de pages VRAM inutilisées, mais la prise en charge reste désactivée par défaut et les effets sur les performances ou la stabilité restent à confirmer.
-- **2026-11-25** `ce6a880` DirectStorage: read a physical-page list again when its request runs
-- **2026-11-25** `3f4495a` Recompiler: emit globallycoherent on compute memory windows only when needed
-- **2026-11-25** `e9f129d` XCL_NETWORK=0: GetAddrInfoExW answers local names like getaddrinfo does
-- **2026-11-25** `764d9ed` Config: device_type in xcl.toml names the Series S in every spelling

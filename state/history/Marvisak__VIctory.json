@@ -2,12 +2,6 @@
  "state": "Après ce changement, le pipeline shader continue de produire un DXIL compact et le rafraîchissement des textures fonctionne avec les gains antérieurs. Les UAVs sont maintenant correctement initialisés à zéro, éliminant les faux positifs dans les tests de compute. Le rendu du monde reste noir, HDR et depth‑bounds ne sont toujours pas implémentés, et le support waterfall doit encore être ajouté dans le backend. La prochaine étape probable reste l’intégration des informations waterfall et la poursuite du support HDR/depth‑bounds.",
  "entries": [
   {
-   "sha": "13bbd6fec406f18ac56ea13bb34bae7fa1a5c606",
-   "date": "2026-11-24",
-   "title": "GPU: one host texture per texture memory, and writable twins for depth textures",
-   "summary": ""
-  },
-  {
    "sha": "224e7869f031c9b2cd88f399859646e77f36ea4f",
    "date": "2026-11-24",
    "title": "GPU tests: the frame pacing test tolerates a busy host",
@@ -240,6 +234,12 @@
    "date": "2026-11-25",
    "title": "Shader tests: the compute harness zeroes its UAVs",
    "summary": "Le commit ajoute une fonction qui initialise à zéro tous les UAV utilisés comme cibles de copie avant le dispatch du compute shader, en copiant depuis un tampon d'upload rempli de zéros. Cette correction vient après les optimisations précédentes sur la réduction du nombre de handles et la gestion des pages, et résout un bug où la mémoire réutilisée par WARP conservait des bits résiduels, ce qui faisait échouer certains tests de shader. Désormais les buffers, textures et UAVs sont garantis à zéro, ce qui rend les tests de compute plus fiables, mais le rendu du monde reste toujours noir et les fonctionnalités HDR, depth‑bounds et waterfall sont toujours manquantes."
+  },
+  {
+   "sha": "13f91caee25f2fdf2c062be5f7a27f058e51cbca",
+   "date": "2026-11-25",
+   "title": "README: status of 2026-11-25, the prologue is reached at about 1 fps",
+   "summary": ""
   }
  ]
 }

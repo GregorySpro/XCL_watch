@@ -6,6 +6,7 @@ Après ce changement, le pipeline shader continue de produire un DXIL compact et
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `13f91ca` README: status of 2026-11-25, the prologue is reached at about 1 fps
 - **2026-11-25** `67e8ae1` Shader tests: the compute harness zeroes its UAVs
   Le commit ajoute une fonction qui initialise à zéro tous les UAV utilisés comme cibles de copie avant le dispatch du compute shader, en copiant depuis un tampon d'upload rempli de zéros. Cette correction vient après les optimisations précédentes sur la réduction du nombre de handles et la gestion des pages, et résout un bug où la mémoire réutilisée par WARP conservait des bits résiduels, ce qui faisait échouer certains tests de shader. Désormais les buffers, textures et UAVs sont garantis à zéro, ce qui rend les tests de compute plus fiables, mais le rendu du monde reste toujours noir et les fonctionnalités HDR, depth‑bounds et waterfall sont toujours manquantes.
 - **2026-11-25** `da82e44` Shader: normalized buffer codes convert to the float nearest their quotient
@@ -50,4 +51,3 @@ Après ce changement, le pipeline shader continue de produire un DXIL compact et
 - **2026-11-24** `6d021fe` GPU: world frame cost
 - **2026-11-24** `86a5ed6` GPU: views off their buffer's elements get their own copy; heap records copied as bytes are mirrored
 - **2026-11-24** `224e786` GPU tests: the frame pacing test tolerates a busy host
-- **2026-11-24** `13bbd6f` GPU: one host texture per texture memory, and writable twins for depth textures

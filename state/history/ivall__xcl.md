@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, la couche XCL continue de charger correctement les DLL avec des motifs contenant plusieurs `*`, les boucles de pixel `v_readfirstlane` fonctionnent sur les GPU RDNA2, et les diagnostics DRED sont actifs. La nouvelle logique de `place_pages` alloue les pages de texture niveau par niveau uniquement lorsqu’elles contiennent des données, ce qui réduit l’usage VRAM dans les scénarios de streaming, sans impacter les chemins existants (textures non‑tilées, ressources multi‑samples, etc.). Les slots `DispatchMesh` restent non implémentés et les fuzz‑tests échouent toujours ; la prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en évaluant l’impact réel de `XCL_TEXTURE_LEVEL_PAGES` sur la consommation mémoire et les performances.
+Après ce changement, la couche XCL charge toujours les DLL avec des motifs multi‑`*`, les boucles de pixel `v_readfirstlane` fonctionnent sur RDNA2 et DRED est actif. Le nouveau garde empêche l’adoption incorrecte des ressources créées par le runtime, ce qui élimine le crash lors de l’utilisation du debug layer avec DRED. Les autres parties du projet restent inchangées : les allocations de pages de texture niveau par niveau fonctionnent, les slots `DispatchMesh` sont toujours manquants et les fuzz‑tests continuent d’échouer. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz, tout en surveillant l’impact de `XCL_TEXTURE_LEVEL_PAGES` sur la mémoire.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `68a284a` D3D12.X: a runtime-made resource inside a device creation call is not adopted
+  Le commit ajoute un garde thread‑local `IN_CREATOR` qui détecte quand l’appel `creator!` provient d’une création de ressource interne du runtime (le tampon d’auto‑breadcrumb DRED généré par D3D12Core lors de `CreateCommandList`). Dans ce cas la création est déléguée directement au runtime, évitant l’adoption erronée du resource et le crash nul‑pointer. Cette correction poursuit le chantier de stabilité de la couche avec le debug layer DRED, résolvant le blocage #2298. Désormais les tests sous le debug layer avec `XCL_DRED=1` passent, mais les slots `DispatchMesh` et les fuzz‑tests restent non résolus.
 - **2026-11-25** `50a9fde` Recompiler: a bridged mask write in the split form meets no barrier
 - **2026-11-25** `af066dd` Recompiler: direct compact form stores a branch's target in the entry
 - **2026-11-25** `55d64c2` D3D12.X: console UAV clears (#53 / #54) get the slots' PC descriptors
@@ -58,4 +60,3 @@ Après ce changement, la couche XCL continue de charger correctement les DLL ave
 - **2026-11-25** `5478c4a` e2e: close leaked event/COM handles and fix duplicate fence signal in testtitle
   Le commit corrige plusieurs fuites de ressources Windows dans les tests e2e : il introduit des gardes RAII pour les handles d’événement, les objets COM et les pages physiques, ferme les handles correctement et élimine un signal de fence dupliqué. Il réordonne aussi l’appel à MFStartup pour éviter un déséquilibre en cas d’échec du device. Cette mise à jour poursuit le chantier de fiabilité du framework de test, en nettoyant les chemins d’erreur qui pouvaient laisser des ressources ouvertes. Désormais les tests e2e s’exécutent sans fuites ni erreurs de synchronisation, mais cela n’impacte pas les parties backend DXIL qui restent bloquées par les fuzz‑tests.
 - **2026-11-25** `1c17aa5` Scripts: add -OutDir artifact capture to smoke.ps1 (#1855)
-- **2026-11-25** `74f96b3` kernelx: skip coherent UMA fallback for physical pages on sparse layouts

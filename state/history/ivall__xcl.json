@@ -2,48 +2,6 @@
  "state": "Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les libérations sont correctement fusionnées, les requêtes de 8 slots ne sont plus bloquées par des fragments, et le tracing XCL montre les bons indices de samplers. Les tests de fuzz et la consommation mémoire liée à `XCL_TEXTURE_LEVEL_PAGES` restent inchangés et continuent d’attendre résolution. La prochaine étape probable reste l’implémentation de `DispatchMesh` et l’analyse des échecs de fuzz‑tests, maintenant que le sous‑système de samplers ne constitue plus un goulet d’étranglement.",
  "entries": [
   {
-   "sha": "8e9af35c331f7cdc07b64eadc16a34e5c9c7b48f",
-   "date": "2026-11-25",
-   "title": "D3D12.X: the newer layout's DispatchMesh is the older #127",
-   "summary": "Le commit corrige le mapping des slots de la nouvelle disposition de la liste de commandes D3D12.X pour la fonction DispatchMesh. Au lieu d’associer le slot plus récent #129 à l’ancien #126, il le relie correctement au slot plus ancien #127, alignant ainsi la table NEWER_LIST_SLOTS avec le comportement observé dans les titres retail. Cette mise à jour poursuit la série de correctifs sur la correspondance des méthodes de la nouvelle layout, résolvant un décalage qui bloquait la prise en charge de DispatchMesh. Désormais le moteur peut identifier correctement le slot DispatchMesh, mais les implémentations effectives de ces slots restent à venir."
-  },
-  {
-   "sha": "379725aefffe3023696f2f8c784315f7a6fbc318",
-   "date": "2026-11-25",
-   "title": "D3D12.X: XCL_DRED=1 names the pipeline bound where the GPU faulted",
-   "summary": "Le nouveau commit ajoute la prise en charge du DRED (Device Removed Extended Diagnostics) avec l’option `XCL_DRED=1`. Il enregistre les pipelines traduits (hashes des shaders console) associés à chaque liste de commandes et les marque via des hooks `SetPipelineState` et `SetMarker`, permettant d’identifier quel pipeline a causé un plantage GPU. Cette amélioration s’inscrit dans la suite de correctifs autour du suivi des listes et du mapping des slots DispatchMesh, en comblant un manque d’information sur les fautes de page shader. Désormais les logs DRED indiquent le pipeline fautif, mais le traitement réel des slots DispatchMesh reste inchangé et les fuzz‑tests restent bloquants."
-  },
-  {
-   "sha": "5b22c92a93338f303b14af1af6dc7a1b7499a796",
-   "date": "2026-11-25",
-   "title": "Recompiler: split large direct compute pipelines at CFG edges",
-   "summary": "Le nouveau commit introduit la capacité de découper les gros programmes de compute direct en plusieurs morceaux au niveau des bords du graphe de contrôle, créant une chaîne de dispatches avec des UAV temporaires pour partager les valeurs entre les pièces. Cela poursuit le chantier d’optimisation du temps de compilation des pipelines (suite du problème de lenteur du driver NVIDIA) et débloque la construction parallèle des PSO, réduisant drastiquement le temps de build des shaders volumineux. Désormais les dispatchs directs peuvent être exécutés en plusieurs étapes, tandis que les dispatchs indirects continuent d’utiliser le pipeline complet. Le reste du projet (DRED, mapping DispatchMesh, fuzz‑tests) reste inchangé."
-  },
-  {
-   "sha": "eafdf36fb79954e94f6adc23ad9573cfe65478e6",
-   "date": "2026-11-25",
-   "title": "Recompiler: give a compute loop above the split target its own dispatch piece",
-   "summary": "Le nouveau commit améliore le découpage des pipelines de compute direct en donnant aux boucles qui dépassent la taille cible leur propre morceau, avec une limite souple jusqu’à quatre fois la cible. Cette évolution poursuit le chantier de split des gros shaders entamé précédemment, en résolvant le goulet de construction lente pour les programmes contenant de grosses boucles. Désormais les programmes comme le ray‑tracing resolve de 120 k instructions se compilent en ~4 s au lieu de 31 s, tout en conservant la même sortie GPU. Le reste du pipeline (fuzz‑tests, DispatchMesh) reste inchangé et toujours bloquant."
-  },
-  {
-   "sha": "afc5ee86ae3a9521c9f15d96505cd73fe72f2191",
-   "date": "2026-11-25",
-   "title": "Recompiler: give each split handoff value one scratch slot and load it where it's used",
-   "summary": "Le commit ajoute un mécanisme de «scratch slot» dédié à chaque valeur qui doit traverser les découpes de pipelines de compute direct, en écrivant la valeur à la sortie du morceau qui la définit et en la charge au point d’entrée du morceau qui l’utilise. Cette amélioration poursuit le chantier de découpage lancé avec #2080, en réduisant le nombre de valeurs vivantes à travers les blocs et ainsi le temps de compilation et d’exécution, surtout sur les drivers NVIDIA. Elle ne touche pas les autres parties du projet (requêtes d’image, DRED, DispatchMesh) et ne résout pas encore les blocages liés aux fuzz‑tests ou au mapping DispatchMesh."
-  },
-  {
-   "sha": "06c9f5505f63f10c5ec49ef932d75b2c28177324",
-   "date": "2026-11-25",
-   "title": "D3D12.X: newer list layout #139 Reset goes through title_list::reset",
-   "summary": ""
-  },
-  {
-   "sha": "0306d1050017e6a4f30381721b3de16582b78e01",
-   "date": "2026-11-25",
-   "title": "Recompiler: pixel shader loops end on primitive edges (helper lanes)",
-   "summary": "Le commit corrige la lecture de v_readfirstlane dans les pixel shaders en faisant en sorte qu’elle prenne la première lane active d’EXEC lorsqu’il existe une lane helper, au lieu de toujours lire la première lane du masque complet. Cette modification s’inscrit dans la suite d’améliorations du recompiler qui visent à gérer correctement les boucles de pixel shaders et les masques de lanes, après les précédents travaux de découpage de pipelines compute et de correction du mapping DispatchMesh. Désormais les boucles qui s’appuient sur des lanes helpers ne s’exécutent plus jusqu’au budget maximal, ce qui évite les blocages GPU observés sur les cartes RDNA2 ; les autres parties du projet restent inchangées."
-  },
-  {
    "sha": "8fcc11131f9fe3daec6cfb207bacf87f73f75463",
    "date": "2026-11-25",
    "title": "Recompiler: pixel shader loops end on primitive edges (helper lanes)",
@@ -239,6 +197,48 @@
    "sha": "31608c9159c63f77063b92170f592eb1106dc6ec",
    "date": "2026-11-25",
    "title": "GPU: use CreateDXGIFactory2 and clean fallback/skip in large texture upload test",
+   "summary": ""
+  },
+  {
+   "sha": "569f0fc556e268767abbfe6fb51efff78602c7b0",
+   "date": "2026-11-25",
+   "title": "DXIL: lower unclamped v_dot8_u32_u4 using Dot4AddU8Packed",
+   "summary": ""
+  },
+  {
+   "sha": "0437ecd9286df0e1dca8ec2be1b1e634c7d156ef",
+   "date": "2026-11-25",
+   "title": "CLI: reject unknown options and invalid values in xcl rpf and xcl shaders (#2266)",
+   "summary": ""
+  },
+  {
+   "sha": "c9ee916a39f316ff1cd8e8d4bf0c4bf96e5deb31",
+   "date": "2026-11-25",
+   "title": "README: the switches for how a title runs",
+   "summary": ""
+  },
+  {
+   "sha": "7ff2b2e0e22efc786b5d0c607b7e9516e36b4e2e",
+   "date": "2026-11-25",
+   "title": "Shaders: cache translator refusals and DXC compile failures by capability",
+   "summary": ""
+  },
+  {
+   "sha": "943043e87ce32ec4ec8cc51525ba25ebc4d6649d",
+   "date": "2026-11-25",
+   "title": "Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)",
+   "summary": ""
+  },
+  {
+   "sha": "bd2ac50703a3ec1232744624f99e903e8fff62b9",
+   "date": "2026-11-25",
+   "title": "Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)",
+   "summary": ""
+  },
+  {
+   "sha": "e44af7062dc610a9f889de2dcf11450e3e4884b3",
+   "date": "2026-11-25",
+   "title": "Recompiler: the FSSM header's wave32 flag decides a program's wave size",
    "summary": ""
   }
  ]

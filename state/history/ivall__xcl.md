@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, la documentation continue d’être correctement rendue, avec les badges et le tableau d’avancement du jeu retail affichés sans artefacts. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` restent opérationnels, et les tests unitaires ainsi que les tests GPU sont verts. Le seul point modifié est le lien Discord, désormais à jour, tandis que les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis à relever. La prochaine étape probable reste l’optimisation du pipeline retail.
+La documentation reste correctement rendue, avec les badges et le tableau d’avancement du jeu retail affichés sans artefacts. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` continuent de fonctionner, et les tests unitaires ainsi que les tests GPU restent verts. Le seul changement effectif est le lien Discord mis à jour, améliorant l’accès à la communauté. Les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis, et l’optimisation du pipeline retail demeure la prochaine étape probable.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `6ea813a` Update README.md
+  Le commit remplace l’URL du serveur Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà engagé, où les liens Discord ont été corrigés et formatés. Elle ne touche aucun code ni aucune fonctionnalité du projet. Désormais, le lien vers le Discord pointe vers l’adresse officielle, ce qui facilite l’accès pour les contributeurs, sans changer l’état fonctionnel du projet.
 - **2026-11-25** `6e1e2be` Update Discord link in README.md
   Le commit remplace l’URL du badge Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà amorcé, où l’on corrige les liens et le formatage du README. Elle ne touche aucun code ni aucune fonctionnalité du moteur XCL. Ainsi, l’accès au serveur Discord devient plus fiable, mais les performances et le pipeline retail restent inchangés.
 - **2026-11-25** `6020a33` README: the requirements' DXC line is not a list item
@@ -56,4 +58,3 @@ Après ce changement, la documentation continue d’être correctement rendue, a
 - **2026-11-25** `63547b7` Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)
 - **2026-11-25** `da6174d` Memory: bound sparse UMA first-fit searches by address
 - **2026-11-25** `0e45b97` Tests: label bench_split_wave64 by the form x64_spin really picks
-- **2026-11-25** `b282d6b` Tests: the sparse VRAM test binds the heaps its root signature indexes

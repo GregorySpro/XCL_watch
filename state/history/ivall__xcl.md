@@ -2,10 +2,14 @@
 
 ## État du projet
 
-La documentation reste correctement rendue, avec les badges et le tableau d’avancement du jeu retail affichés sans artefacts. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` continuent de fonctionner, et les tests unitaires ainsi que les tests GPU restent verts. Le seul changement effectif est le lien Discord mis à jour, améliorant l’accès à la communauté. Les goulots de performance du per‑lane form et la complétion du pipeline retail restent les prochains défis, et l’optimisation du pipeline retail demeure la prochaine étape probable.
+Après ce changement, la documentation reflète correctement 60 % d’avancement et ~5 fps dans le monde 3D, tandis que les menus restent à 30 fps et le temps d’accès à ~4 s. Les backends DXIL, le fallback `pc`, le logging SSA, le pool DirectStorage SIMD et `TilePool` fonctionnent toujours, les tests unitaires et GPU restent verts, et le lien Discord est correct. Le goulet de performance du pipeline retail persiste : la 3D reste très lente et incomplète, la prochaine étape probable reste l’optimisation du pipeline retail et la résolution des blocages du per‑lane form.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `568e7db` README: the newer retail game at about 60 %, ~5 fps in its world
+  Le commit met à jour le README et l’illustration pour corriger l’estimation du jeu retail : le progrès passe de ~65 % à ~60 % et la performance dans le monde 3D est précisée à ~5 fps (au lieu de 14 fps moyen). Cette modification poursuit le chantier de documentation en affinant les chiffres affichés, sans toucher au code. Elle rend la situation actuelle plus réaliste, mais ne débloque aucune limitation technique ; la partie 3D reste lente et incomplète.
+- **2026-11-25** `f0e1b2f` README: the newer retail game at about 60 %, ~5 fps in its world
+  Le commit met à jour le README et l’illustration associée pour refléter une progression plus réaliste du jeu retail : l’estimation passe de ~65 % à ~60 % et la performance dans le monde 3D est corrigée de 14 fps moyen à ~5 fps. Cette modification poursuit le chantier de documentation en affinant les chiffres présentés, sans toucher au code. Elle ne débloque aucune fonctionnalité supplémentaire, mais donne une image plus précise de l’état actuel du jeu, confirmant que la partie 3D reste très lente.
 - **2026-11-25** `6ea813a` Update README.md
   Le commit remplace l’URL du serveur Discord dans le README, passant de `discord.gg/D7fAUQDRyd` à `discord.gg/xcl`. Cette modification poursuit le petit chantier de ménage de la documentation déjà engagé, où les liens Discord ont été corrigés et formatés. Elle ne touche aucun code ni aucune fonctionnalité du projet. Désormais, le lien vers le Discord pointe vers l’adresse officielle, ce qui facilite l’accès pour les contributeurs, sans changer l’état fonctionnel du projet.
 - **2026-11-25** `6e1e2be` Update Discord link in README.md
@@ -56,5 +60,3 @@ La documentation reste correctement rendue, avec les badges et le tableau d’av
 - **2026-11-25** `bf9eebd` Recompiler: keep entered far-jump sequences indirect
 - **2026-11-25** `7b9eabb` Recompiler: v_rcp_f64 and v_rsq_f64 keep NaN, infinities and denormals
 - **2026-11-25** `63547b7` Shaders: xcl disasm prints SMEM offsets, glc and dlc as LLVM does (#664)
-- **2026-11-25** `da6174d` Memory: bound sparse UMA first-fit searches by address
-- **2026-11-25** `0e45b97` Tests: label bench_split_wave64 by the form x64_spin really picks

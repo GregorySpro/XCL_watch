@@ -2,30 +2,6 @@
  "state": "Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
  "entries": [
   {
-   "sha": "204bdcc1084c39538dc6f53dd45e847a30a8793f",
-   "date": "2026-11-24",
-   "title": "Merge pull request #611 from AdvaitPalve11/fix/config-show-data-dir",
-   "summary": ""
-  },
-  {
-   "sha": "9a92ccf4a618b4152b0f4f19cab7c5980466b671",
-   "date": "2026-11-24",
-   "title": "Merge pull request #612 from KoLolX3/fix/phi-liveness-transitive",
-   "summary": ""
-  },
-  {
-   "sha": "6f0a10a758b8b63be1e6cc3566b0eb18baa15cf0",
-   "date": "2026-11-24",
-   "title": "Merge pull request #634 from SAitken91/shader/image-sample-o",
-   "summary": ""
-  },
-  {
-   "sha": "cf0bb43868783b6a0fc3af803be09bf3a8259954",
-   "date": "2026-11-24",
-   "title": "Merge pull request #637 from AlanQiang0418/codex/gfx10-packed-inline-constants",
-   "summary": ""
-  },
-  {
    "sha": "b4b41103718052e73c4ccd42e4584d0debecdda1",
    "date": "2026-11-24",
    "title": "Merge pull request #654 from SantannaCarlos/fix/uav-describe",
@@ -239,6 +215,30 @@
    "sha": "3c47fd4945dd717a09ae42e14d6eae8bd10a4020",
    "date": "2026-11-25",
    "title": "GPU: fences answer for ID3D12Fence1 as documented",
+   "summary": ""
+  },
+  {
+   "sha": "13d1237b181e3f6f755010ddcc61136dd0b3b0e3",
+   "date": "2026-11-25",
+   "title": "GPU: throttle failed swap-chain creation and resize",
+   "summary": ""
+  },
+  {
+   "sha": "3688adc5abfded974311a04cf35302c8b1476e5d",
+   "date": "2026-11-25",
+   "title": "Shaders: GFX10 FLAT offsets ignore bit 11",
+   "summary": ""
+  },
+  {
+   "sha": "1bde03c5befb3afd0843ced35448d5ed25c9ac0f",
+   "date": "2026-11-25",
+   "title": "Shader tests: require a device readback in every waterfall test",
+   "summary": ""
+  },
+  {
+   "sha": "fcdefcfc89af9466555e84439cd5477764427a7f",
+   "date": "2026-11-25",
+   "title": "GPU: copy title writes under ranges a submission's shaders write",
    "summary": ""
   }
  ]

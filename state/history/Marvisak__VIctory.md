@@ -6,6 +6,10 @@ Après ce changement, le pipeline shader continue de traduire 108 shaders avec 2
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `fcdefcf` GPU: copy title writes under ranges a submission's shaders write
+- **2026-11-25** `1bde03c` Shader tests: require a device readback in every waterfall test
+- **2026-11-25** `3688adc` Shaders: GFX10 FLAT offsets ignore bit 11
+- **2026-11-25** `13d1237` GPU: throttle failed swap-chain creation and resize
 - **2026-11-25** `3c47fd4` GPU: fences answer for ID3D12Fence1 as documented
 - **2026-11-25** `f73e8e1` Shaders: precompute MD5 round constants and avoid per-block Vec in md…
 - **2026-11-25** `520fefc` Shaders: fold empty loop latches containing only dead phis
@@ -45,7 +49,3 @@ Après ce changement, le pipeline shader continue de traduire 108 shaders avec 2
 - **2026-11-24** `6db02ea` Merge pull request #671 from fuzeofficlal/fix/copyresource-cpu-texture-source
 - **2026-11-24** `16bd577` Merge pull request #666 from lameloball2813-ui/fix/load-probe-target-dir
 - **2026-11-24** `b4b4110` Merge pull request #654 from SantannaCarlos/fix/uav-describe
-- **2026-11-24** `cf0bb43` Merge pull request #637 from AlanQiang0418/codex/gfx10-packed-inline-constants
-- **2026-11-24** `6f0a10a` Merge pull request #634 from SAitken91/shader/image-sample-o
-- **2026-11-24** `9a92ccf` Merge pull request #612 from KoLolX3/fix/phi-liveness-transitive
-- **2026-11-24** `204bdcc` Merge pull request #611 from AdvaitPalve11/fix/config-show-data-dir

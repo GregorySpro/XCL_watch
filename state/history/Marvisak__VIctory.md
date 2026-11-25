@@ -6,6 +6,9 @@ Après ce changement, le pipeline shader continue de traduire 108 shaders avec 2
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `4118f33` GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL
+- **2026-11-25** `4436fca` Shaders: honor op_sel, omod and clamp on v_interp_p2_f16
+- **2026-11-25** `5fa5de3` Shaders: a helper lane's v_readfirstlane reads its own value (#908)
 - **2026-11-25** `fcdefcf` GPU: copy title writes under ranges a submission's shaders write
 - **2026-11-25** `1bde03c` Shader tests: require a device readback in every waterfall test
 - **2026-11-25** `3688adc` Shaders: GFX10 FLAT offsets ignore bit 11
@@ -46,6 +49,3 @@ Après ce changement, le pipeline shader continue de traduire 108 shaders avec 2
 - **2026-11-24** `5cd7421` Merge pull request #681 from fuzeofficlal/fix/vertex-buffer-null-unbind
 - **2026-11-24** `8d23f07` Merge pull request #680 from EatCodeSleep2/fix/wine-staging-upload-128
 - **2026-11-24** `22700b9` Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links
-- **2026-11-24** `6db02ea` Merge pull request #671 from fuzeofficlal/fix/copyresource-cpu-texture-source
-- **2026-11-24** `16bd577` Merge pull request #666 from lameloball2813-ui/fix/load-probe-target-dir
-- **2026-11-24** `b4b4110` Merge pull request #654 from SantannaCarlos/fix/uav-describe

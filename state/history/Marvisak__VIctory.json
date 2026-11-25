@@ -2,24 +2,6 @@
  "state": "Après ce changement, le pipeline shader continue de traduire 108 shaders avec 249 bloqués, le traducteur indique toujours le nombre exact de shaders traduits, et le rendu du monde reste noir. Le correctif élimine un potentiel plantage AMD lié aux latches vides, améliorant la stabilité du processus de génération de bitcode. Les fonctionnalités HDR et depth‑bounds restent absentes, et le support du waterfall doit encore être étendu aux requêtes de taille par lane. La prochaine étape probable reste l’intégration de ces informations dans le backend et la poursuite de l’extension du waterfall.",
  "entries": [
   {
-   "sha": "b4b41103718052e73c4ccd42e4584d0debecdda1",
-   "date": "2026-11-24",
-   "title": "Merge pull request #654 from SantannaCarlos/fix/uav-describe",
-   "summary": ""
-  },
-  {
-   "sha": "16bd5771a03c607cc2e7319ad84593d7518093a1",
-   "date": "2026-11-24",
-   "title": "Merge pull request #666 from lameloball2813-ui/fix/load-probe-target-dir",
-   "summary": ""
-  },
-  {
-   "sha": "6db02ea34e50c5c1479ca38c9fc4b518dc19dab1",
-   "date": "2026-11-24",
-   "title": "Merge pull request #671 from fuzeofficlal/fix/copyresource-cpu-texture-source",
-   "summary": ""
-  },
-  {
    "sha": "22700b97717dab0df76bda66de20dddaadc26aef",
    "date": "2026-11-24",
    "title": "Merge pull request #675 from lameloball2813-ui/docs/rustdoc-private-links",
@@ -239,6 +221,24 @@
    "sha": "fcdefcfc89af9466555e84439cd5477764427a7f",
    "date": "2026-11-25",
    "title": "GPU: copy title writes under ranges a submission's shaders write",
+   "summary": ""
+  },
+  {
+   "sha": "5fa5de35eec21664ec448dfcf742128986ed944f",
+   "date": "2026-11-25",
+   "title": "Shaders: a helper lane's v_readfirstlane reads its own value (#908)",
+   "summary": ""
+  },
+  {
+   "sha": "4436fca34dd4200a0c061fab4f479021063bf34c",
+   "date": "2026-11-25",
+   "title": "Shaders: honor op_sel, omod and clamp on v_interp_p2_f16",
+   "summary": ""
+  },
+  {
+   "sha": "4118f33b3910f6b6b738216d6a66e8b355502b28",
+   "date": "2026-11-25",
+   "title": "GPU: GetDeviceRemovedReason reports the host device's state instead of E_NOTIMPL",
    "summary": ""
   }
  ]

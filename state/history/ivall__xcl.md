@@ -6,6 +6,13 @@ Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les lib
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `c7e1799` Recompiler: lower V_MIN_U32, V_MAX_U32, V_MIN_I32, and V_MAX_I32 in p…
+- **2026-11-25** `2e40b78` Recompiler: fold shift-masks, nested masks, double-xor, and all-ones or in direct DXIL opt
+- **2026-11-25** `ae6f284` Recompiler: translate v_qsad_pk_u16_u8 and v_mqsad_{pk_u16,u32}_u8 in both backends (takes over #909)
+- **2026-11-25** `f4242ed` Shaders: read the per-stage root layout of console shader containers
+- **2026-11-25** `3ceb550` D3D12.X: ExecuteIndirect skips failed shared compute stand-ins
+- **2026-11-25** `38ac3d9` D3D12.X: quarantine unmapped parked sparse tiles behind GPU fences
+- **2026-11-25** `22b6222` Direct DXIL: include pixel shader helper lanes in ballots and VOPC masks
 - **2026-11-25** `e44af70` Recompiler: the FSSM header's wave32 flag decides a program's wave size
 - **2026-11-25** `bd2ac50` Recompiler: v_frexp_mant_f32 / _f16 keep the input's sign (#580)
 - **2026-11-25** `943043e` Recompiler: direct DXIL applies NEG_HI as ABS on v_dot2_f32_f16's accumulator (stacked on #1286)
@@ -44,13 +51,3 @@ Après ce changement, la gestion du heap `GLOBAL_SAMPLER` est fiable : les lib
 - **2026-11-25** `3f4495a` Recompiler: emit globallycoherent on compute memory windows only when needed
 - **2026-11-25** `e9f129d` XCL_NETWORK=0: GetAddrInfoExW answers local names like getaddrinfo does
 - **2026-11-25** `764d9ed` Config: device_type in xcl.toml names the Series S in every spelling
-- **2026-11-25** `4114da8` Config: an alias pattern with several '*' matches its DLLs
-  Le nouveau commit corrige la fonction `glob_match` pour qu’elle gère correctement plusieurs jokers `*` dans les motifs d’alias du fichier `xcl.toml`. Cette amélioration poursuit le chantier de fiabilité de la configuration, en débloquant la résolution des DLL d’API‑set comme `api‑ms‑win-*-l1-1-*.dll` qui était auparavant ignorée. Désormais les alias multi‑étoiles sont reconnus, ce qui élargit la compatibilité des jeux dépendant de ces bibliothèques. Le reste du projet (shaders, DRED, splits) reste inchangé.
-- **2026-11-25** `0829441` D3D12.X: the scratch of split dispatches is bounded over all recordings
-- **2026-11-25** `e9ddf17` D3D12.X: a split dispatch runs in slabs that share a bounded scratch
-- **2026-11-25** `625a0f3` D3D12.X: stand-ins of pipelines not built yet share the driver's pipelines
-- **2026-11-25** `12f25f1` Recompiler: whole-wave reductions of wave32 VS / PS count every live lane
-- **2026-11-25** `7906df7` Recompiler: pixel shader loops end on primitive edges (helper lanes)
-  Le nouveau commit modifie le recompileur pour que `v_readfirstlane` lise la première lane réellement active (live) dans les pixel shaders, et que les tests de masque de lanes ne comptent que les lanes vivantes. Cela poursuit le chantier amorcé par les précédents correctifs sur les boucles de pixel shaders et les lanes helpers, résolvant le plantage GPU sur les cartes AMD RDNA2 lors du passage volumétrique. Désormais les boucles qui dépendaient de masques d’exécution se terminent correctement, mais le traitement complet de `DispatchMesh` reste toujours absent.
-- **2026-11-25** `8fcc111` Recompiler: pixel shader loops end on primitive edges (helper lanes)
-  Le nouveau commit modifie le recompileur pour que les tests de masque de lanes dans les pixel shaders ne comptent que les lanes actives. En pratique, les boucles qui s’appuient sur un masque issu de EXEC se terminent correctement, même sur les drivers AMD RDNA2 qui bloquaient les lanes helpers. Cette amélioration poursuit la série de correctifs sur les boucles de pixel shader (v_readfirstlane et masques) et débloque enfin le cas de la passe de lumière volumétrique qui faisait planter le GPU. Il reste toutefois les slots DispatchMesh non implémentés et les fuzz‑tests qui continuent d’échouer.

@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après l’ajout, le projet conserve son état fonctionnel : les shaders compute restent rapides et économes en mémoire, les tests GPU heap‑window continuent de passer, et les optimisations compute sont toujours en cours. Aucun nouveau code n’a été modifié, donc aucun nouveau bug n’est introduit, mais la documentation comble un manque important, facilitant le diagnostic des futures régressions. Les blocages précédents (fuzz‑tests, DispatchMesh, échecs DXIL) restent non résolus, et la prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests.
+Après ce changement, le projet conserve son fonctionnement global : les shaders compute restent performants, les tests d’équivalence GPU continuent de réussir et les optimisations compute sont toujours en cours. Le temps de compilation DXC des programmes compute avec de nombreux accès mémoire est désormais réduit grâce au lien des accesseurs, à condition d’activer `XCL_LINK_MEM=0` ou d’utiliser DXC 1.8+. Les blocages précédents (fuzz‑tests, DispatchMesh, échecs DXIL) restent non résolus. La prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests, tout en surveillant la compatibilité du nouveau mécanisme de lien avec les drivers qui refusent le mode heap.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-25** `08db802` DXC: compute programs are linked with their memory accessors (window switches no longer dominate DXC time)
+  Le nouveau PR #174 fait lier les programmes compute avec leurs accesseurs de mémoire, ce qui élimine les commutateurs de fenêtres comme facteur dominant du temps de compilation DXC, gagnant environ 14 % de rapidité. Cette amélioration poursuit le chantier d’optimisation des accès mémoire amorcé par les précédents commits de flattening et de tests d’équivalence GPU, tout en restant conditionnée à l’option `XCL_HEAP_WINDOWS=1`. Désormais les programmes en forme « heap » sont compilés sans accesseurs de commutation, tandis que le mode « switch » reste disponible lorsque le driver refuse le mode heap. Le reste du projet (shaders compute rapides, tests GPU heap‑window qui passent) demeure inchangé, mais les builds DXC restent dépendants d’une version ≥ 1.8 pour le lien.
 - **2026-11-25** `e1d84b7` README: the switches for a bug report's diagnostics
   Le nouveau commit ajoute une section « Diagnostics for a bug report » au README, listant sept variables d’environnement que l’on peut activer pour obtenir des traces détaillées (durée d’exécution, activité périodique, dump de threads, traces de fautes d’accès, traces de mémoire, traces d’imports et trace D3D12). Cette documentation vient compléter le chantier de visibilité des réglages utilisateur, sans toucher au code. Désormais les développeurs et testeurs peuvent activer ces diagnostics pour mieux comprendre les blocages, mais cela ne résout pas les problèmes techniques encore ouverts (fuzz‑tests, DispatchMesh, échecs DXIL).
 - **2026-11-25** `6d12f58` Recompiler: flatten direct DXIL root-UAV loads for compute
@@ -50,4 +52,3 @@ Après l’ajout, le projet conserve son état fonctionnel : les shaders compu
 - **2026-11-25** `3ceb550` D3D12.X: ExecuteIndirect skips failed shared compute stand-ins
 - **2026-11-25** `38ac3d9` D3D12.X: quarantine unmapped parked sparse tiles behind GPU fences
 - **2026-11-25** `22b6222` Direct DXIL: include pixel shader helper lanes in ballots and VOPC masks
-- **2026-11-25** `e44af70` Recompiler: the FSSM header's wave32 flag decides a program's wave size

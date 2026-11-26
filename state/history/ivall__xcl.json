@@ -1,54 +1,6 @@
 {
- "state": "Après l’intégration, le projet conserve ses performances compute et ses tests d’équivalence GPU qui continuent de réussir. Le cache de blobs entiers est maintenant exploité pour les shaders compute split‑eligible, ce qui fait chuter le temps de création de pipeline à environ 0,5 s et garantit la continuité en cas de blob manquant ou rejeté. La compaction automatique des shaders contenant des atomics est activée via la nouvelle logique `automatic_plan`, tout en restant contrôlable par `XCL_DIRECT_COMPACT`. Les problèmes ouverts restent les fuzz‑tests, DispatchMesh et la compatibilité du mode de compaction avec les drivers qui refusent le mode heap; la prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests.",
+ "state": "Le projet conserve toutes les optimisations précédentes (compute, cache two‑pass, persistance des PSO mesh/geometry) et intègre maintenant la tolérance aux descripteurs inactifs ainsi que l’historique de 0,5 s des entrées GameInput. Tous les tests unitaires (1 438) continuent de réussir, confirmant que la nouvelle logique d’historique n’introduit pas de régressions. Les blocages restants (fuzz‑tests, DispatchMesh, compatibilité driver) demeurent, et la prochaine étape probable reste l’optimisation des stores/atomics compute ainsi que la poursuite des fuzz‑tests, maintenant que la stabilité du cache two‑pass et la fiabilité des entrées sont assurées.",
  "entries": [
-  {
-   "sha": "ae6f28494c790a2fededf932f7f3ae9f3c3a8548",
-   "date": "2026-11-25",
-   "title": "Recompiler: translate v_qsad_pk_u16_u8 and v_mqsad_{pk_u16,u32}_u8 in both backends (takes over #909)",
-   "summary": ""
-  },
-  {
-   "sha": "2e40b7879330e41bac1918d400d4efe2a757132c",
-   "date": "2026-11-25",
-   "title": "Recompiler: fold shift-masks, nested masks, double-xor, and all-ones or in direct DXIL opt",
-   "summary": ""
-  },
-  {
-   "sha": "c7e1799762abf522d043f2d028beca81e85cc683",
-   "date": "2026-11-25",
-   "title": "Recompiler: lower V_MIN_U32, V_MAX_U32, V_MIN_I32, and V_MAX_I32 in p…",
-   "summary": ""
-  },
-  {
-   "sha": "7292dca0c25edfc5e8c8b3e581d0e3f8ef196762",
-   "date": "2026-11-25",
-   "title": "Recompiler: specialize constant-mask v_cmp_class_f32 in direct DXIL",
-   "summary": ""
-  },
-  {
-   "sha": "3f2777019544c0ada2cd294aa792d3c378ff0df8",
-   "date": "2026-11-25",
-   "title": "Recompiler: coalesce GS header and vertex attribute stores in direct DXIL",
-   "summary": ""
-  },
-  {
-   "sha": "c56e7448e58bf9cce17f15b95cd8c5276af22af5",
-   "date": "2026-11-25",
-   "title": "Tests: check divergent block barriers in a_bridged_mask_write",
-   "summary": ""
-  },
-  {
-   "sha": "e3f042c5184ebe5708041c0f2a29b8069e25c4aa",
-   "date": "2026-11-25",
-   "title": "Shaders: prebuild split compute dispatch-chain pieces under --pipelines",
-   "summary": ""
-  },
-  {
-   "sha": "f9f6d494b312f46aa0f2e9de321d7ca49b218e87",
-   "date": "2026-11-25",
-   "title": "Recompiler: key rerouted DXIL by compact nesting policy",
-   "summary": ""
-  },
   {
    "sha": "2898511af1c038a2ef809719e9b6f89e5675c422",
    "date": "2026-11-25",
@@ -240,6 +192,54 @@
    "date": "2026-11-26",
    "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
    "summary": "Le nouveau PR réactive la réutilisation des blobs complets de pipelines compute en cache et ajoute la compaction DXIL pour les blocs atomiques répétés, avec un mode de sélection automatique. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088, en complétant les précédentes améliorations de cache et de compaction. Elle permet désormais de charger un blob entier au runtime et, en cas d’échec, de retomber sur le découpage traditionnel, tout en réduisant fortement le temps de création de pipeline. Le reste des blocages (fuzz‑tests, DispatchMesh, drivers refusant le mode heap) demeure inchangé."
+  },
+  {
+   "sha": "d61ffdc435d5b7c71f4635e4fb06b28eed1328a3",
+   "date": "2026-11-25",
+   "title": "D3D12.X: canonicalize inactive two-pass stream descriptors",
+   "summary": "Le commit canonise les descripteurs de flux inactifs du pipeline two‑pass en les ignorant lors du calcul de la clé de cache. Cette modification s’inscrit dans la continuité du chantier d’optimisation du cache des pipelines compute, en éliminant les variations dues à des pointeurs nuls ou du padding qui ne participaient à aucun état actif. Désormais les flux vides ou les shaders optionnels vides n’altèrent plus la clé, ce qui améliore la stabilité du cache ; les états actifs non supportés continuent de provoquer un rejet comme avant."
+  },
+  {
+   "sha": "f9e6ac5f71372ef8420850cf63bad5715c3b5736",
+   "date": "2026-11-24",
+   "title": "GameInput: retain recent gamepad readings between polls",
+   "summary": "Le commit ajoute une mémoire tampon d’environ 0,5 s des lectures de manette dans le module GameInput, permettant aux jeux qui interrogent le contrôleur entre deux frames de récupérer les tapotements courts. Cette amélioration s’inscrit après les travaux de stabilité et de diagnostics, en complétant le support d’entrée en conservant les lectures pour les callbacks hors du thread sampler. Elle rend désormais possible la détection fiable de pressions rapides, mais n’affecte pas les problèmes restants de fuzz‑tests, DispatchMesh ou la compatibilité de la compaction de shaders."
+  },
+  {
+   "sha": "bdef448039788d275d2a8da374d9095486de1752",
+   "date": "2026-11-24",
+   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
+   "summary": "Le commit ajoute la persistance des PSO graphiques de mesh et de géométrie traduits, en plus des blobs compute déjà stockés. Cette évolution poursuit le chantier d’optimisation du cache two‑pass en garantissant que les pipelines mesh passent par la même clé canonique que les compute, et en introduisant un mécanisme de retry pour les blobs rejetés. Désormais les deux chemins de rendu (mesh passthrough et compute) sont cachés, ce qui permet de valider la récupération de blobs corrompus et d’éviter les recompilations à froid, mais la prise en charge des drivers qui refusent l’export reste partielle et les tests de fuzz restent bloquants."
+  },
+  {
+   "sha": "7ca016442286780915653fc871acb86fb2a85754",
+   "date": "2026-11-26",
+   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
+   "summary": ""
+  },
+  {
+   "sha": "f9c9df37703babb4f6bb9b51841e18c813751c2c",
+   "date": "2026-11-26",
+   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
+   "summary": "Le nouveau commit rend le système résilient aux pilotes qui ne peuvent pas exporter les blobs two‑pass ou qui renvoient un blob vide, en conservant le PSO créé et en le traitant comme un cache miss. Cette tolérance s’insère dans la suite d’améliorations du cache two‑pass et de la persistance des PSO mesh/geometry, en comblant le dernier point de blocage lié aux exportations de blobs. Désormais les scénarios où le driver refuse l’export ne provoquent plus d’échec de rendu, mais simplement l’absence de mise en cache du blob. Le reste du pipeline reste inchangé : les performances compute, le cache complet et la compaction automatique continuent de fonctionner."
+  },
+  {
+   "sha": "76631abbbb1ebeb06e7100018b3f0901808e03ea",
+   "date": "2026-11-26",
+   "title": "D3D12.X: canonicalize inactive two-pass stream descriptors",
+   "summary": "Le commit #2448 rend la génération de l’identifiant du cache two‑pass insensible aux descripteurs de flux inactifs ou vides (stream‑output, input‑layout, view‑instancing et shaders sans bytecode). Cette modification poursuit le chantier de canonisation du cache lancé par le commit d61ffdc, en éliminant les variations dues aux pointeurs nuls ou au padding. Le résultat est que des pipelines contenant des descripteurs vides ne provoquent plus de collisions de clé ni d’échecs de création de PSO, tout en conservant les vérifications pour les états actifs non supportés. Ainsi, le cache two‑pass devient plus robuste, mais les exigences restent pour les shaders obligatoires (ex. mesh shader non vide)."
+  },
+  {
+   "sha": "8d5fde3c4ab67d3f78aedbdc63c324799c750324",
+   "date": "2026-11-26",
+   "title": "GameInput: retain recent gamepad readings between polls",
+   "summary": "Le commit #565 ajoute une mémoire tampon de 0,5 s aux lectures de manette dans le module GameInput, permettant aux jeux qui interrogent le contrôleur entre deux images de récupérer les tapotements courts. Cette fonctionnalité s’inscrit après les améliorations de stabilité et de diagnostics, en complétant le support des entrées et en conservant les fallback DualShock 4/DualSense. Elle ne modifie pas le cache two‑pass ni les optimisations compute, mais rend l’interface d’entrée plus robuste. Les titres peuvent désormais lire des impulsions de bouton même s’ils ne sont pas synchronisés avec le rendu, sans que cela n’affecte les blocages existants (fuzz‑tests, DispatchMesh, drivers)."
+  },
+  {
+   "sha": "e120925e3abc9956a8b9bae631969d32e8ccd43c",
+   "date": "2026-11-26",
+   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
+   "summary": ""
   }
  ]
 }

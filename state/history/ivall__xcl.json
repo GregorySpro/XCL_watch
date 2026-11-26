@@ -1,18 +1,6 @@
 {
- "state": "Le projet conserve toutes les optimisations précédentes (compute, cache two‑pass, persistance des PSO mesh/geometry) et intègre maintenant la tolérance aux descripteurs inactifs ainsi que l’historique de 0,5 s des entrées GameInput. Tous les tests unitaires (1 438) continuent de réussir, confirmant que la nouvelle logique d’historique n’introduit pas de régressions. Les blocages restants (fuzz‑tests, DispatchMesh, compatibilité driver) demeurent, et la prochaine étape probable reste l’optimisation des stores/atomics compute ainsi que la poursuite des fuzz‑tests, maintenant que la stabilité du cache two‑pass et la fiabilité des entrées sont assurées.",
+ "state": "Après ce changement, le projet conserve toutes les optimisations précédentes (cache two‑pass, persistance des PSO mesh/geometry, tolérance aux descripteurs inactifs, historique GameInput) et ajoute la préparation de shaders au démarrage, visible dans la fenêtre de jeu ou exécutée sans affichage. Les tests unitaires continuent de réussir (1 427 passés) et le lancement des titres montre la nouvelle barre de progression. Les blocages restants (fuzz‑tests, DispatchMesh, compatibilité driver) persistent, et la prochaine étape probable reste l’optimisation des stores/atomics compute ainsi que la poursuite des fuzz‑tests.",
  "entries": [
-  {
-   "sha": "2898511af1c038a2ef809719e9b6f89e5675c422",
-   "date": "2026-11-25",
-   "title": "Recompiler: eliminate local array and branches in pixel-shader PRELUDE::rla()",
-   "summary": ""
-  },
-  {
-   "sha": "3111b5f57f3c36eadfd221c7715a8e26b9320cc2",
-   "date": "2026-11-25",
-   "title": "Tests: check cubemap tile reuse independently of idle page reclamation",
-   "summary": "Le nouveau commit ajoute un helper de test qui capture l’état des tiles VRAM d’une ressource et renforce les assertions du test cubemap pour vérifier que le second cube réutilise exactement les mêmes tiles que le premier, même en présence de libération d’autres textures. Cette modification s’inscrit dans la série de correctifs récents visant à stabiliser la gestion du heap et du paging (quarantine des tiles, ExecuteIndirect, lecture des layouts de shaders, optimisations du recompiler). Elle montre que le sous‑système de réutilisation de tiles fonctionne désormais de façon déterministe, mais ne touche pas les problèmes restants de fuzz‑tests ou de consommation liée à XCL_TEXTURE_LEVEL_PAGES."
-  },
   {
    "sha": "7958d6be44117f596ebd5cdaf17305d1917abd98",
    "date": "2026-11-25",
@@ -240,6 +228,18 @@
    "date": "2026-11-26",
    "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
    "summary": ""
+  },
+  {
+   "sha": "813302f38326c854862ee6b0ade6a612688ac549",
+   "date": "2026-11-26",
+   "title": "xcl run: prepare shaders in the game window before title execution",
+   "summary": "Le nouveau commit introduit une phase de préparation des shaders avant le lancement du titre, affichant une vue de progression dans la fenêtre de présentation et utilisant le cache existant pour pré‑compiler les pipelines graphiques et compute. Cette étape s’inscrit dans la continuité du chantier d’optimisation du cache two‑pass et de la persistance des PSO, en ajoutant une préparation proactive plutôt que réactive. Elle permet désormais aux titres disposant d’un pack de shaders détectable de ne plus bloquer leurs premiers dessins en attendant la compilation, tout en conservant le comportement actuel pour les titres sans shaders ou en mode headless. Le reste du pipeline (compactage, canonisation des descripteurs, historique GameInput) reste inchangé."
+  },
+  {
+   "sha": "8b957bec6f82495aec940944c6bf47faa02db590",
+   "date": "2026-11-26",
+   "title": "xcl run: prepare shaders in the game window before title execution",
+   "summary": "Le nouveau commit ajoute une phase de préparation des shaders affichée dans la fenêtre de présentation avant le lancement du titre, avec une barre de progression et un chronomètre. Cette fonctionnalité s’inscrit dans la continuité du chantier d’optimisation du cache et de la persistance des PSO, en anticipant la compilation des pipelines graphiques et compute afin de réduire les temps d’attente au démarrage. Elle fonctionne également en mode headless et permet d’annuler le lancement en fermant la fenêtre ou en cas d’échec du compilateur. Désormais les jeux disposant d’un pack `shaders.rpf` ou de fichiers `.dxbc` voient leurs shaders pré‑compilés avant l’exécution, ce qui n’était pas le cas auparavant."
   }
  ]
 }

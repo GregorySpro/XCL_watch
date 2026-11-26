@@ -1,30 +1,6 @@
 {
- "state": "Après ce changement, le projet conserve son fonctionnement global : les shaders compute restent performants, les tests d’équivalence GPU continuent de réussir et les optimisations compute sont toujours en cours. Le temps de compilation DXC des programmes compute avec de nombreux accès mémoire est désormais réduit grâce au lien des accesseurs, à condition d’activer `XCL_LINK_MEM=0` ou d’utiliser DXC 1.8+. Les blocages précédents (fuzz‑tests, DispatchMesh, échecs DXIL) restent non résolus. La prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests, tout en surveillant la compatibilité du nouveau mécanisme de lien avec les drivers qui refusent le mode heap.",
+ "state": "Après l’intégration, le projet conserve ses performances compute et ses tests d’équivalence GPU qui continuent de réussir. Le cache de blobs entiers est maintenant exploité pour les shaders compute split‑eligible, ce qui fait chuter le temps de création de pipeline à environ 0,5 s et garantit la continuité en cas de blob manquant ou rejeté. La compaction automatique des shaders contenant des atomics est activée via la nouvelle logique `automatic_plan`, tout en restant contrôlable par `XCL_DIRECT_COMPACT`. Les problèmes ouverts restent les fuzz‑tests, DispatchMesh et la compatibilité du mode de compaction avec les drivers qui refusent le mode heap; la prochaine étape probable reste l’optimisation des stores/atomics compute et la poursuite des fuzz‑tests.",
  "entries": [
-  {
-   "sha": "22b6222845976e492e0d4850ad099e3a60c4d729",
-   "date": "2026-11-25",
-   "title": "Direct DXIL: include pixel shader helper lanes in ballots and VOPC masks",
-   "summary": ""
-  },
-  {
-   "sha": "38ac3d943d6aebee40d7c06c8c694b9b51ba52cc",
-   "date": "2026-11-25",
-   "title": "D3D12.X: quarantine unmapped parked sparse tiles behind GPU fences",
-   "summary": ""
-  },
-  {
-   "sha": "3ceb5507a05355719ff1d7b5c29bc52aff142000",
-   "date": "2026-11-25",
-   "title": "D3D12.X: ExecuteIndirect skips failed shared compute stand-ins",
-   "summary": ""
-  },
-  {
-   "sha": "f4242ed1ca17514bab4e01bcdef73513b7d2da14",
-   "date": "2026-11-25",
-   "title": "Shaders: read the per-stage root layout of console shader containers",
-   "summary": ""
-  },
   {
    "sha": "ae6f28494c790a2fededf932f7f3ae9f3c3a8548",
    "date": "2026-11-25",
@@ -240,6 +216,30 @@
    "date": "2026-11-25",
    "title": "DXC: compute programs are linked with their memory accessors (window switches no longer dominate DXC time)",
    "summary": "Le nouveau PR #174 fait lier les programmes compute avec leurs accesseurs de mémoire, ce qui élimine les commutateurs de fenêtres comme facteur dominant du temps de compilation DXC, gagnant environ 14 % de rapidité. Cette amélioration poursuit le chantier d’optimisation des accès mémoire amorcé par les précédents commits de flattening et de tests d’équivalence GPU, tout en restant conditionnée à l’option `XCL_HEAP_WINDOWS=1`. Désormais les programmes en forme « heap » sont compilés sans accesseurs de commutation, tandis que le mode « switch » reste disponible lorsque le driver refuse le mode heap. Le reste du projet (shaders compute rapides, tests GPU heap‑window qui passent) demeure inchangé, mais les builds DXC restent dépendants d’une version ≥ 1.8 pour le lien."
+  },
+  {
+   "sha": "ec80c0716d81c57eb1d6d192e380fee9635a3a7e",
+   "date": "2026-11-25",
+   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
+   "summary": "Le nouveau commit introduit la réutilisation des pipelines compute complets en cache avant de les découper en morceaux, ainsi qu’une version compacte du DXIL pour les blocs atomiques répétés. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088 et vient compléter le mécanisme de lien des accesseurs mémoire. Désormais les shaders compute qui peuvent être découpés profitent d’un cache de blobs entiers, réduisant fortement le temps de création de pipeline, tandis que les cas où le blob est absent ou rejeté continuent à être découpés comme avant."
+  },
+  {
+   "sha": "c836ecd9ff0a645e108722cc48890211ca8bb9f5",
+   "date": "2026-11-25",
+   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
+   "summary": "Le nouveau commit ajoute la prise en charge de la compaction automatique des blocs compute « split‑wave » contenant des atomics de type BUFFER_ATOMIC_ADD. Il introduit une fonction `atomic_candidate` et un plan `automatic_plan` qui sélectionnent la forme compacte lorsqu’un shader est suffisamment grand ou comporte des atomics retournants, remplaçant la logique précédente basée uniquement sur la taille. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088 et les précédents PR #174 et #2371, en élargissant le critère de compaction aux shaders atomiques. Désormais les shaders compute avec atomics peuvent être exécutés via le cache de pipeline complet, réduisant le temps de création de pipeline, tandis que les cas sans atomics restent inchangés."
+  },
+  {
+   "sha": "f8f9de654f82aba63dc80451b895ac4e49e691d6",
+   "date": "2026-11-25",
+   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
+   "summary": ""
+  },
+  {
+   "sha": "b49be1836844fe0b0cdb3211dce3cb7fb4e21ac7",
+   "date": "2026-11-26",
+   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
+   "summary": "Le nouveau PR réactive la réutilisation des blobs complets de pipelines compute en cache et ajoute la compaction DXIL pour les blocs atomiques répétés, avec un mode de sélection automatique. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088, en complétant les précédentes améliorations de cache et de compaction. Elle permet désormais de charger un blob entier au runtime et, en cas d’échec, de retomber sur le découpage traditionnel, tout en réduisant fortement le temps de création de pipeline. Le reste des blocages (fuzz‑tests, DispatchMesh, drivers refusant le mode heap) demeure inchangé."
   }
  ]
 }

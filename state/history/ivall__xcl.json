@@ -1,18 +1,6 @@
 {
- "state": "Après l’intégration, le projet conserve son état connu : le moteur XCL utilise un heap driver CUSTOM pour les fenêtres UMA sur NVIDIA, les lectures de textures sont sécurisées, le backend graphique est pré‑initialisé et les caches two‑pass ainsi que la persistance des PSO mesh/geometry fonctionnent. Le nouveau test assure une couverture complète des archives TTPF, confirmant que le décodage des textures est bit‑exact pour toutes les entrées testées. Les blocages restants (fuzz‑tests, support complet des pilotes alternatifs, optimisations compute) demeurent inchangés, et la prochaine étape probable reste la mise en place de ces tests dans la CI et l’extension aux données de jeu réelles.",
+ "state": "Après ce changement, le moteur XCL conserve son fonctionnement actuel : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les lectures de textures restent sécurisées et les caches two‑pass ainsi que la persistance des PSO mesh/geometry sont intactes. La nouvelle option XCL_PREPARE=0 est reconnue et saute la préparation, comme le montre le test ajouté. Les trois échecs de test déjà présents restent non résolus, et les blocages majeurs (fuzz‑tests, support de pilotes alternatifs, optimisations compute) sont toujours en suspens. La prochaine étape probable reste l’intégration des tests dans la CI et l’évaluation des performances réelles avec XCL_PREPARE=0.",
  "entries": [
-  {
-   "sha": "661373ace03797c4bf7838841e2cbd2de5819232",
-   "date": "2026-11-25",
-   "title": "Tests: compare CheckFeatureSupport hook against host D3D12 driver",
-   "summary": "Le nouveau commit introduit un test d’intégration autonome qui compare le hook `CheckFeatureSupport` d’XCL avec l’implémentation native du driver D3D12 de la machine hôte. Il s’inscrit dans la série de tests récents visant à valider le comportement des API graphiques sans dépendre de jeux ou de fichiers console, poursuivant ainsi le chantier de fiabilisation des abstractions D3D12. Désormais on peut vérifier que les requêtes de support de fonctionnalités retournent exactement les mêmes résultats que le driver hôte, y compris la gestion des structures surdimensionnées et des formats spécifiques console, ce qui était auparavant non testé. Le reste du projet reste inchangé : les améliorations du heap GLOBAL_SAMPLER et les autres tests continuent de fonctionner, mais les fuzz‑tests et la prise en charge de DispatchMesh restent non résolus."
-  },
-  {
-   "sha": "8b38c1d46f5fe99cc71c0bd1e890aa2c9a8f9109",
-   "date": "2026-11-25",
-   "title": "Tests: verify CreateHeap console fallback and IID retry against host driver",
-   "summary": ""
-  },
   {
    "sha": "266402110339d793d7e0f4a73e91bccdf9fb712b",
    "date": "2026-11-25",
@@ -240,6 +228,18 @@
    "date": "2026-11-27",
    "title": "Tests: detile every TTPF archive entry and check mip chains",
    "summary": "Le nouveau commit renforce les tests de décodage de textures TTPF en dé‑tilant chaque entrée d’une archive et en vérifiant les chaînes de mip‑maps, y compris les cubemaps dupliqués. Cette amélioration poursuit le chantier de validation des textures entamé par les précédents travaux de tiling et de mip‑chain, en comblant une lacune où certaines entrées étaient ignorées. Le test couvre désormais 912 / 912 entrées au lieu de 909 / 912, sans modifier le code de traitement des textures à l’exécution. Ainsi, la fiabilité des vérifications de conformité texture est accrue, mais cela n’affecte pas encore les performances ou la prise en charge des jeux réels."
+  },
+  {
+   "sha": "8617577b67c3b2c67542ff3d47d6e631967c16c6",
+   "date": "2026-11-27",
+   "title": "xcl run: XCL_PREPARE=0 starts the title without the shader preparation",
+   "summary": "Le nouveau commit introduit la variable d’environnement XCL_PREPARE. Lorsque XCL_PREPARE=0, la phase de préparation des shaders affichée dans la fenêtre de lancement est sautée et le titre compile les shaders à la volée, comme avant le chantier #2555. Cette option vient compléter les précédentes améliorations du cache et de la persistance des PSO en offrant un moyen de contourner le long temps d’attente sur un cache froid. Ainsi, les développeurs peuvent à nouveau lancer rapidement un titre pour tester de petites modifications, mais la compilation dynamique reste sujette aux pauses de construction pendant le jeu."
+  },
+  {
+   "sha": "83b008188efbf954b846667f48d75e3fa9310a01",
+   "date": "2026-11-27",
+   "title": "xcl run: XCL_PREPARE=0 starts the title without the shader preparation",
+   "summary": "Le commit ajoute la variable d’environnement XCL_PREPARE qui, lorsqu’elle vaut 0, désactive la phase de préparation des shaders affichée avant le lancement du titre. Cette option vient clore le chantier commencé avec #2555, qui imposait la préparation systématique, en offrant une issue de secours pour les titres à froid cache très longs. Le reste du projet reste inchangé : le heap driver CUSTOM, le cache two‑pass et la persistance des PSO continuent de fonctionner comme avant. Ainsi, on peut désormais lancer un jeu immédiatement au prix de pauses de compilation shader pendant le jeu, ou garder la préparation pour éviter ces pauses."
   }
  ]
 }

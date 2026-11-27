@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après l’ajout de `pso-precompile`, le projet compile toujours, les 865 tests passent et la nouvelle commande répond correctement aux options d’aide et aux exigences d’opérande. Les caches PSO fonctionnent comme avant, mais les pipelines compute sont désormais pré‑compilés, ce qui devrait réduire drastiquement les temps de chargement. Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) restent ouverts, et la prochaine étape probable sera d’intégrer ce pré‑compilage dans le CI et de mesurer son impact sur les titres réels.
+Après ce changement, le projet continue de compiler, les 130 + tests passent et les pipelines compute restent pré‑compilés grâce à `pso-precompile`. Les statistiques de shaders sont maintenant alignées avec la logique du pipeline, éliminant la mauvaise classification des programmes wave32 comme wave64. Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) restent ouverts, et la prochaine étape probable sera d’intégrer ces statistiques corrigées dans le CI et d’évaluer leur impact sur les mesures de performance.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-27** `6089122` Shaders: xcl shaders statistics and the dump take the wave size from the header
+  Le commit ajuste la façon dont les outils `xcl shaders --recomp` et le dump de shaders déterminent la taille d'onde d’un programme, en utilisant désormais le drapeau `fssm_wave64` présent dans l’en‑tête FSSM au lieu de l’inférence basée sur le code (`detect_wave64`). Cette modification corrige une incohérence introduite par le chantier #573, où les pipelines prenaient déjà la taille d’onde du header mais les statistiques restaient basées sur le code. Désormais les statistiques et les dumps reflètent fidèlement le comportement réel du runtime, ce qui améliore la fiabilité des rapports sans introduire de nouvelle fonctionnalité majeure.
 - **2026-11-27** `f9a0cb8` PSO: xcl pso-precompile builds a title's compute pipelines before its run
   Le nouveau commit ajoute la sous‑commande `xcl pso-precompile` qui traduit les programmes compute d’un titre et fait compiler leurs pipelines par le driver avant l’exécution, en remplissant le cache utilisé au runtime. Cette fonctionnalité poursuit le chantier d’optimisation du cache PSO déjà amorcé, en ciblant spécifiquement les pipelines compute lourds qui bloquaient les temps de chargement. Elle introduit aussi des options de filtrage (`--records`, `--used`) et de parallélisation (`--threads`) pour rendre le pré‑compilage résumable et plus efficace. Ainsi, les titres peuvent désormais charger leurs pipelines compute sans attendre la compilation à chaud, même si les tests de fuzz‑tests et les pilotes alternatifs restent non résolus.
 - **2026-11-24** `062158e` PSO: xcl pso-precompile builds a title's compute pipelines before its run
@@ -71,4 +73,3 @@ Après l’ajout de `pso-precompile`, le projet compile toujours, les 865 tests 
 - **2026-11-25** `2715714` Tests: compare CreateReservedResource against the host D3D12 driver
 - **2026-11-25** `44eb541` Tests: pin the pipeline stream subobject table to the PC headers
 - **2026-11-25** `d48b065` Tests: assert the refused depth-buffer UAV state on Windows only
-- **2026-11-25** `27fa5f3` Tests: honor the selected adapter in the indirect argument test

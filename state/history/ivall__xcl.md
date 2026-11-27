@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le moteur XCL continue de fonctionner comme avant : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO restent intactes, et l’option XCL_PREPARE=0 est reconnue. Le nouveau grooming garantit que les fenêtres de 512 MiB sont réservées dans leur propre trou, éliminant le problème d’importation lente signalé sur RTX 3060 Ti. Les trois tests échoués restent non résolus, les gros blocages (fuzz‑tests, pilotes alternatifs, optimisations compute) persistent, et la prochaine étape probable reste l’intégration CI et l’évaluation des performances avec XCL_PREPARE=0.
+Après ce changement, le projet continue de fonctionner comme décrit dans l’état connu : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO sont intactes, et XCL_PREPARE=0 reste disponible. La licence GPL‑3.0‑or‑later autorise désormais l’ajout de dépendances Apache‑2.0, LGPL‑3.0 et même GPL‑2.0‑or‑later, ce qui élargit les possibilités d’évolution. Les trois tests échoués, les gros blocages (fuzz‑tests, pilotes alternatifs, optimisations compute) et la prochaine étape (intégration CI, évaluation avec XCL_PREPARE=0) restent inchangés. La seule différence concrète est la clarification juridique qui pourra accélérer l’ajout de nouvelles bibliothèques compatibles.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-27** `06f90c1` Docs: relicense XCL to GPL-3.0-or-later (#3002)
+  Le commit change la licence du projet XCL de GPL‑2.0‑only à GPL‑3.0‑or‑later, en mettant à jour les fichiers de métadonnées (LICENSE, README, CONTRIBUTING, THIRD_PARTY, SECURITY) et les mentions de licence dans le code. Cette modification poursuit le chantier de compatibilité des dépendances amorcé précédemment, en élargissant les bibliothèques tierces autorisées et en clarifiant les règles de provenance. Aucun code fonctionnel n’est touché, donc le comportement du moteur reste identique, mais la base légale pour intégrer ou partager du code avec d’autres projets GPL‑3.0 (comme VIctory) est désormais ouverte. Les restrictions précédentes (interdiction d’Apache‑2.0 ou de GPL‑3.0) sont levées, ce qui pourrait faciliter de futures intégrations.
 - **2026-11-27** `623d02e` D3D12.X: the driver heap's grooming reserves stretches a smaller window fits in
   Le commit ajuste la logique de « groom » du driver‑heap pour réserver uniquement les intervalles libres où la fenêtre UMA de taille < 1 GiB (512 MiB) peut tenir, en limitant la marge à la moitié de la fenêtre ou 256 MiB. Cette modification poursuit le chantier d’optimisation du heap NVIDIA entamé par #2844, corrigeant le cas où la fenêtre était importée faute de réservation adéquate. Désormais les petites fenêtres sont correctement placées dans leur « trou », évitant le fallback lent, mais les autres blocages (fuzz‑tests, support d’autres pilotes) restent inchangés.
 - **2026-11-27** `83b0081` xcl run: XCL_PREPARE=0 starts the title without the shader preparation
@@ -67,4 +69,3 @@ Après ce changement, le moteur XCL continue de fonctionner comme avant : les 
 - **2026-11-25** `38c3862` Tests: wait for the late release before freeing the coherent buffer test's heap (#1487)
 - **2026-11-25** `23865ea` Tests: a failed copy scratch check no longer aborts the lib test binary
 - **2026-11-25** `8a3f912` Tests: pin the generated D3D12 layout table invariants
-- **2026-11-25** `72b59b5` Tests: console descriptor heap slot/copy/unregister contract

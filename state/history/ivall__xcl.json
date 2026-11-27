@@ -1,18 +1,6 @@
 {
- "state": "Après ce changement, le projet continue de compiler, les 130 + tests passent et les pipelines compute restent pré‑compilés grâce à `pso-precompile`. Les statistiques de shaders sont maintenant alignées avec la logique du pipeline, éliminant la mauvaise classification des programmes wave32 comme wave64. Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) restent ouverts, et la prochaine étape probable sera d’intégrer ces statistiques corrigées dans le CI et d’évaluer leur impact sur les mesures de performance.",
+ "state": "Après ce changement, le projet compile toujours, les 130 + tests continuent de réussir et les pipelines compute restent pré‑compilés grâce à `xcl pso-precompile`. La gestion de la mémoire lors de la pré‑compilation est encore plus efficace : les jobs libèrent leurs ressources dès qu’ils sont terminés, ce qui diminue davantage le pic de commit mémoire. Les blocages ouverts (fuzz‑tests, support de pilotes alternatifs, optimisation compute) restent inchangés, et la prochaine étape probable sera d’intégrer les nouvelles métriques de libération dans le CI pour mesurer l’impact sur les performances globales.",
  "entries": [
-  {
-   "sha": "d48b065ea6cd6b6b5629fe1ffe34c946857878a0",
-   "date": "2026-11-25",
-   "title": "Tests: assert the refused depth-buffer UAV state on Windows only",
-   "summary": ""
-  },
-  {
-   "sha": "44eb541cde023fcf31d18541d93551650014cafe",
-   "date": "2026-11-25",
-   "title": "Tests: pin the pipeline stream subobject table to the PC headers",
-   "summary": ""
-  },
   {
    "sha": "27157141c308c18ddf699a3618b30d6716290547",
    "date": "2026-11-25",
@@ -240,6 +228,18 @@
    "date": "2026-11-27",
    "title": "Shaders: xcl shaders statistics and the dump take the wave size from the header",
    "summary": "Le commit ajuste la façon dont les outils `xcl shaders --recomp` et le dump de shaders déterminent la taille d'onde d’un programme, en utilisant désormais le drapeau `fssm_wave64` présent dans l’en‑tête FSSM au lieu de l’inférence basée sur le code (`detect_wave64`). Cette modification corrige une incohérence introduite par le chantier #573, où les pipelines prenaient déjà la taille d’onde du header mais les statistiques restaient basées sur le code. Désormais les statistiques et les dumps reflètent fidèlement le comportement réel du runtime, ce qui améliore la fiabilité des rapports sans introduire de nouvelle fonctionnalité majeure."
+  },
+  {
+   "sha": "d8dae08ddb1fd30a688cb1e56c5e3daa87e889e0",
+   "date": "2026-11-27",
+   "title": "Shaders: release offline DXIL after each pipeline build",
+   "summary": "Le nouveau commit modifie le processus de pré‑compilation offline des pipelines compute afin de libérer le DXIL et les buffers associés dès qu’un job se termine, au lieu d’attendre la fin de toute la passe. Cette amélioration poursuit le chantier d’optimisation du cache PSO et de la consommation mémoire amorcé par les précédents ajouts de `xcl pso-precompile` et de la correction de la taille d’onde des shaders. Elle permet maintenant de réduire le pic de consommation mémoire pendant la compilation et d’éviter que des entrées restent inutilisées, tout en conservant l’ordre de priorité des jobs. Le reste des blocages (fuzz‑tests, pilotes alternatifs, optimisation compute) demeure inchangé."
+  },
+  {
+   "sha": "2c717a043c8488938179fca81da4bb9e7913a358",
+   "date": "2026-11-27",
+   "title": "Shaders: release offline DXIL after each pipeline build",
+   "summary": "Le commit libère le DXIL et les buffers associés dès qu’un job de compilation de pipeline compute se termine, au lieu d’attendre la fin de toute la passe. Cette modification poursuit le chantier d’optimisation de la consommation mémoire amorcé par le commit d8dae08 et vient clôturer le problème de « completed jobs still hold their inputs » détecté dans les tests. Désormais chaque job libère ses ressources immédiatement, ce qui réduit le pic de mémoire observé lors du pré‑compilage, même si les autres optimisations (fuzz‑tests, support de pilotes alternatifs) restent en suspens."
   }
  ]
 }

@@ -2,10 +2,14 @@
 
 ## État du projet
 
-Après ce changement, le projet continue de compiler, les 130 + tests passent et les pipelines compute restent pré‑compilés grâce à `pso-precompile`. Les statistiques de shaders sont maintenant alignées avec la logique du pipeline, éliminant la mauvaise classification des programmes wave32 comme wave64. Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) restent ouverts, et la prochaine étape probable sera d’intégrer ces statistiques corrigées dans le CI et d’évaluer leur impact sur les mesures de performance.
+Après ce changement, le projet compile toujours, les 130 + tests continuent de réussir et les pipelines compute restent pré‑compilés grâce à `xcl pso-precompile`. La gestion de la mémoire lors de la pré‑compilation est encore plus efficace : les jobs libèrent leurs ressources dès qu’ils sont terminés, ce qui diminue davantage le pic de commit mémoire. Les blocages ouverts (fuzz‑tests, support de pilotes alternatifs, optimisation compute) restent inchangés, et la prochaine étape probable sera d’intégrer les nouvelles métriques de libération dans le CI pour mesurer l’impact sur les performances globales.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-27** `2c717a0` Shaders: release offline DXIL after each pipeline build
+  Le commit libère le DXIL et les buffers associés dès qu’un job de compilation de pipeline compute se termine, au lieu d’attendre la fin de toute la passe. Cette modification poursuit le chantier d’optimisation de la consommation mémoire amorcé par le commit d8dae08 et vient clôturer le problème de « completed jobs still hold their inputs » détecté dans les tests. Désormais chaque job libère ses ressources immédiatement, ce qui réduit le pic de mémoire observé lors du pré‑compilage, même si les autres optimisations (fuzz‑tests, support de pilotes alternatifs) restent en suspens.
+- **2026-11-27** `d8dae08` Shaders: release offline DXIL after each pipeline build
+  Le nouveau commit modifie le processus de pré‑compilation offline des pipelines compute afin de libérer le DXIL et les buffers associés dès qu’un job se termine, au lieu d’attendre la fin de toute la passe. Cette amélioration poursuit le chantier d’optimisation du cache PSO et de la consommation mémoire amorcé par les précédents ajouts de `xcl pso-precompile` et de la correction de la taille d’onde des shaders. Elle permet maintenant de réduire le pic de consommation mémoire pendant la compilation et d’éviter que des entrées restent inutilisées, tout en conservant l’ordre de priorité des jobs. Le reste des blocages (fuzz‑tests, pilotes alternatifs, optimisation compute) demeure inchangé.
 - **2026-11-27** `6089122` Shaders: xcl shaders statistics and the dump take the wave size from the header
   Le commit ajuste la façon dont les outils `xcl shaders --recomp` et le dump de shaders déterminent la taille d'onde d’un programme, en utilisant désormais le drapeau `fssm_wave64` présent dans l’en‑tête FSSM au lieu de l’inférence basée sur le code (`detect_wave64`). Cette modification corrige une incohérence introduite par le chantier #573, où les pipelines prenaient déjà la taille d’onde du header mais les statistiques restaient basées sur le code. Désormais les statistiques et les dumps reflètent fidèlement le comportement réel du runtime, ce qui améliore la fiabilité des rapports sans introduire de nouvelle fonctionnalité majeure.
 - **2026-11-27** `f9a0cb8` PSO: xcl pso-precompile builds a title's compute pipelines before its run
@@ -71,5 +75,3 @@ Après ce changement, le projet continue de compiler, les 130 + tests passen
 - **2026-11-25** `06055a7` Tests: verify D3D12.X guard, split, and tracer thunks for game callers
 - **2026-11-25** `8f87d72` Tests: verify D3D12.X console queue descriptor translation
 - **2026-11-25** `2715714` Tests: compare CreateReservedResource against the host D3D12 driver
-- **2026-11-25** `44eb541` Tests: pin the pipeline stream subobject table to the PC headers
-- **2026-11-25** `d48b065` Tests: assert the refused depth-buffer UAV state on Windows only

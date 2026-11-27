@@ -1,12 +1,6 @@
 {
- "state": "Après ce changement, le moteur XCL utilise désormais officiellement un heap driver CUSTOM pour les fenêtres UMA sur NVIDIA, éliminant les ralentissements majeurs et stabilisant les exécutions longues. Les lectures de textures sécurisées et la pré-initialisation du backend graphique garantissent l'absence de crashs au démarrage et de fautes de page. Les caches two‑pass, la persistance des PSO mesh/geometry et la préparation des shaders restent pleinement opérationnels. Les chantiers restants concernent toujours les fuzz-tests, le support complet des pilotes alternatifs et les optimisations compute additionnelles.",
+ "state": "Après l’intégration, le projet conserve son état connu : le moteur XCL utilise un heap driver CUSTOM pour les fenêtres UMA sur NVIDIA, les lectures de textures sont sécurisées, le backend graphique est pré‑initialisé et les caches two‑pass ainsi que la persistance des PSO mesh/geometry fonctionnent. Le nouveau test assure une couverture complète des archives TTPF, confirmant que le décodage des textures est bit‑exact pour toutes les entrées testées. Les blocages restants (fuzz‑tests, support complet des pilotes alternatifs, optimisations compute) demeurent inchangés, et la prochaine étape probable reste la mise en place de ces tests dans la CI et l’extension aux données de jeu réelles.",
  "entries": [
-  {
-   "sha": "6521351780bc922648a3d17f66a3e3e1a031b10d",
-   "date": "2026-11-25",
-   "title": "Tests: cover Wait64 recording and satisfied batch submission",
-   "summary": ""
-  },
   {
    "sha": "661373ace03797c4bf7838841e2cbd2de5819232",
    "date": "2026-11-25",
@@ -240,6 +234,12 @@
    "date": "2026-11-27",
    "title": "D3D12.X: UMA windows in a driver heap on NVIDIA, 4.9x FPS (0.62 -> 3.03)",
    "summary": "Ce merge intègre définitivement la PR #2844, qui remplace les fenêtres cohérentes UMA importées par des heaps pilotes CUSTOM L0 sur NVIDIA et initialise le backend graphique avant le code invité. Ce changement conclut le chantier entamé dans les commits précédents pour supprimer le goulot d'étranglement d'OpenExistingHeapFromAddress, tout en ajoutant un test de non-régression de l'ordre d'initialisation. Les accès mémoire et atomiques compute sur ces zones ne subissent plus de pénalité massive, ce qui multiplie par près de cinq le framerate dans le monde sans crash ni retrait de périphérique."
+  },
+  {
+   "sha": "c2ee10e4e905eb736e56953c52b749e18bcc7ede",
+   "date": "2026-11-27",
+   "title": "Tests: detile every TTPF archive entry and check mip chains",
+   "summary": "Le nouveau commit renforce les tests de décodage de textures TTPF en dé‑tilant chaque entrée d’une archive et en vérifiant les chaînes de mip‑maps, y compris les cubemaps dupliqués. Cette amélioration poursuit le chantier de validation des textures entamé par les précédents travaux de tiling et de mip‑chain, en comblant une lacune où certaines entrées étaient ignorées. Le test couvre désormais 912 / 912 entrées au lieu de 909 / 912, sans modifier le code de traitement des textures à l’exécution. Ainsi, la fiabilité des vérifications de conformité texture est accrue, mais cela n’affecte pas encore les performances ou la prise en charge des jeux réels."
   }
  ]
 }

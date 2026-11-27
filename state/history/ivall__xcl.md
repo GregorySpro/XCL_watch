@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le moteur XCL conserve son fonctionnement actuel : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les lectures de textures restent sécurisées et les caches two‑pass ainsi que la persistance des PSO mesh/geometry sont intactes. La nouvelle option XCL_PREPARE=0 est reconnue et saute la préparation, comme le montre le test ajouté. Les trois échecs de test déjà présents restent non résolus, et les blocages majeurs (fuzz‑tests, support de pilotes alternatifs, optimisations compute) sont toujours en suspens. La prochaine étape probable reste l’intégration des tests dans la CI et l’évaluation des performances réelles avec XCL_PREPARE=0.
+Après ce changement, le moteur XCL continue de fonctionner comme avant : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO restent intactes, et l’option XCL_PREPARE=0 est reconnue. Le nouveau grooming garantit que les fenêtres de 512 MiB sont réservées dans leur propre trou, éliminant le problème d’importation lente signalé sur RTX 3060 Ti. Les trois tests échoués restent non résolus, les gros blocages (fuzz‑tests, pilotes alternatifs, optimisations compute) persistent, et la prochaine étape probable reste l’intégration CI et l’évaluation des performances avec XCL_PREPARE=0.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-27** `623d02e` D3D12.X: the driver heap's grooming reserves stretches a smaller window fits in
+  Le commit ajuste la logique de « groom » du driver‑heap pour réserver uniquement les intervalles libres où la fenêtre UMA de taille < 1 GiB (512 MiB) peut tenir, en limitant la marge à la moitié de la fenêtre ou 256 MiB. Cette modification poursuit le chantier d’optimisation du heap NVIDIA entamé par #2844, corrigeant le cas où la fenêtre était importée faute de réservation adéquate. Désormais les petites fenêtres sont correctement placées dans leur « trou », évitant le fallback lent, mais les autres blocages (fuzz‑tests, support d’autres pilotes) restent inchangés.
 - **2026-11-27** `83b0081` xcl run: XCL_PREPARE=0 starts the title without the shader preparation
   Le commit ajoute la variable d’environnement XCL_PREPARE qui, lorsqu’elle vaut 0, désactive la phase de préparation des shaders affichée avant le lancement du titre. Cette option vient clore le chantier commencé avec #2555, qui imposait la préparation systématique, en offrant une issue de secours pour les titres à froid cache très longs. Le reste du projet reste inchangé : le heap driver CUSTOM, le cache two‑pass et la persistance des PSO continuent de fonctionner comme avant. Ainsi, on peut désormais lancer un jeu immédiatement au prix de pauses de compilation shader pendant le jeu, ou garder la préparation pour éviter ces pauses.
 - **2026-11-27** `8617577` xcl run: XCL_PREPARE=0 starts the title without the shader preparation
@@ -66,4 +68,3 @@ Après ce changement, le moteur XCL conserve son fonctionnement actuel : les f
 - **2026-11-25** `23865ea` Tests: a failed copy scratch check no longer aborts the lib test binary
 - **2026-11-25** `8a3f912` Tests: pin the generated D3D12 layout table invariants
 - **2026-11-25** `72b59b5` Tests: console descriptor heap slot/copy/unregister contract
-- **2026-11-25** `2664021` Tests: compare GetResourceAllocationInfo and GetCustomHeapProperties against host D3D12 driver

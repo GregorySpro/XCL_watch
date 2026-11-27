@@ -2,10 +2,12 @@
 
 ## État du projet
 
-Après ce changement, le projet continue de fonctionner comme décrit dans l’état connu : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO sont intactes, et XCL_PREPARE=0 reste disponible. La licence GPL‑3.0‑or‑later autorise désormais l’ajout de dépendances Apache‑2.0, LGPL‑3.0 et même GPL‑2.0‑or‑later, ce qui élargit les possibilités d’évolution. Les trois tests échoués, les gros blocages (fuzz‑tests, pilotes alternatifs, optimisations compute) et la prochaine étape (intégration CI, évaluation avec XCL_PREPARE=0) restent inchangés. La seule différence concrète est la clarification juridique qui pourra accélérer l’ajout de nouvelles bibliothèques compatibles.
+Après l’intégration du système de profils d’entrée, le projet conserve son fonctionnement actuel : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO fonctionnent, et la variable XCL_PREPARE=0 reste disponible. Les nouveaux champs de configuration sont chargés correctement et les tests continuent de passer (865 réussis, 0 échecs). Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) et la prochaine étape (CI, évaluation avec XCL_PREPARE=0) demeurent, mais la possibilité de personnaliser clavier/souris par titre ouvre la voie à de futurs tests d’accessibilité et à l’ajout de titres nécessitant des mappings spécifiques.
 
 ## Journal (du plus récent au plus ancien)
 
+- **2026-11-27** `81693f0` Input: load keyboard and mouse bindings per title
+  Le nouveau commit introduit la prise en charge de profils d’entrée clavier/souris configurables par titre via le fichier `xcl.toml`. Il ajoute une structure `InputProfile` au config, charge les surcharges et les applique dans `gameinput.rs`, tout en conservant le mapping intégré par défaut. Cette évolution s’inscrit après les récents travaux d’amélioration de la stabilité et de la configuration (ex. GameInput tampon, XCL_PREPARE), en offrant aux utilisateurs un moyen de personnaliser les contrôles sans toucher au code. Désormais, chaque titre peut redéfinir ou désactiver des touches et boutons, mais les autres parties du projet (heap driver, caches PSO, tests bloqués) restent inchangées.
 - **2026-11-27** `06f90c1` Docs: relicense XCL to GPL-3.0-or-later (#3002)
   Le commit change la licence du projet XCL de GPL‑2.0‑only à GPL‑3.0‑or‑later, en mettant à jour les fichiers de métadonnées (LICENSE, README, CONTRIBUTING, THIRD_PARTY, SECURITY) et les mentions de licence dans le code. Cette modification poursuit le chantier de compatibilité des dépendances amorcé précédemment, en élargissant les bibliothèques tierces autorisées et en clarifiant les règles de provenance. Aucun code fonctionnel n’est touché, donc le comportement du moteur reste identique, mais la base légale pour intégrer ou partager du code avec d’autres projets GPL‑3.0 (comme VIctory) est désormais ouverte. Les restrictions précédentes (interdiction d’Apache‑2.0 ou de GPL‑3.0) sont levées, ce qui pourrait faciliter de futures intégrations.
 - **2026-11-27** `623d02e` D3D12.X: the driver heap's grooming reserves stretches a smaller window fits in
@@ -68,4 +70,3 @@ Après ce changement, le projet continue de fonctionner comme décrit dans l’�
 - **2026-11-25** `27fa5f3` Tests: honor the selected adapter in the indirect argument test
 - **2026-11-25** `38c3862` Tests: wait for the late release before freeing the coherent buffer test's heap (#1487)
 - **2026-11-25** `23865ea` Tests: a failed copy scratch check no longer aborts the lib test binary
-- **2026-11-25** `8a3f912` Tests: pin the generated D3D12 layout table invariants

@@ -1,18 +1,6 @@
 {
- "state": "Après l’intégration du système de profils d’entrée, le projet conserve son fonctionnement actuel : les fenêtres UMA sur NVIDIA utilisent toujours le heap driver CUSTOM, les caches two‑pass et la persistance des PSO fonctionnent, et la variable XCL_PREPARE=0 reste disponible. Les nouveaux champs de configuration sont chargés correctement et les tests continuent de passer (865 réussis, 0 échecs). Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) et la prochaine étape (CI, évaluation avec XCL_PREPARE=0) demeurent, mais la possibilité de personnaliser clavier/souris par titre ouvre la voie à de futurs tests d’accessibilité et à l’ajout de titres nécessitant des mappings spécifiques.",
+ "state": "Après l’ajout de `pso-precompile`, le projet compile toujours, les 865 tests passent et la nouvelle commande répond correctement aux options d’aide et aux exigences d’opérande. Les caches PSO fonctionnent comme avant, mais les pipelines compute sont désormais pré‑compilés, ce qui devrait réduire drastiquement les temps de chargement. Les blocages précédents (fuzz‑tests, pilotes alternatifs, optimisation compute) restent ouverts, et la prochaine étape probable sera d’intégrer ce pré‑compilage dans le CI et de mesurer son impact sur les titres réels.",
  "entries": [
-  {
-   "sha": "23865ea5ee6985400434b58e176b0d607ef5af8d",
-   "date": "2026-11-25",
-   "title": "Tests: a failed copy scratch check no longer aborts the lib test binary",
-   "summary": ""
-  },
-  {
-   "sha": "38c38621ac27351be0cf619cda0992beb6f5b55a",
-   "date": "2026-11-25",
-   "title": "Tests: wait for the late release before freeing the coherent buffer test's heap (#1487)",
-   "summary": ""
-  },
   {
    "sha": "27fa5f3da8dbc1c6b77179775963d89e28841ad2",
    "date": "2026-11-25",
@@ -240,6 +228,18 @@
    "date": "2026-11-27",
    "title": "Input: load keyboard and mouse bindings per title",
    "summary": "Le nouveau commit introduit la prise en charge de profils d’entrée clavier/souris configurables par titre via le fichier `xcl.toml`. Il ajoute une structure `InputProfile` au config, charge les surcharges et les applique dans `gameinput.rs`, tout en conservant le mapping intégré par défaut. Cette évolution s’inscrit après les récents travaux d’amélioration de la stabilité et de la configuration (ex. GameInput tampon, XCL_PREPARE), en offrant aux utilisateurs un moyen de personnaliser les contrôles sans toucher au code. Désormais, chaque titre peut redéfinir ou désactiver des touches et boutons, mais les autres parties du projet (heap driver, caches PSO, tests bloqués) restent inchangées."
+  },
+  {
+   "sha": "062158eab18069c87a336b37c8d1f4c31e990dcc",
+   "date": "2026-11-24",
+   "title": "PSO: xcl pso-precompile builds a title's compute pipelines before its run",
+   "summary": "Le nouveau sous‑commande `xcl pso-precompile` traduit les programmes compute d’un titre et fait compiler leurs pipelines par le driver avant l’exécution, remplissant le cache de blobs que le runtime utilisera. Cette fonctionnalité poursuit le chantier d’optimisation du cache PSO entamé avec la préparation des shaders et la persistance des pipelines, en ciblant spécifiquement les longs temps de compilation compute. Elle rend possible de « pré‑chauffer » le driver pour éviter les pauses de plusieurs minutes lors du chargement du jeu, tout en restant optionnelle via les filtres `--records` et `--used`. Le reste du projet reste inchangé : les fenêtres UMA, le heap driver CUSTOM et la variable XCL_PREPARE=0 sont toujours valides."
+  },
+  {
+   "sha": "f9a0cb80f9decb41d6f6315f6cf4e06270ba2bda",
+   "date": "2026-11-27",
+   "title": "PSO: xcl pso-precompile builds a title's compute pipelines before its run",
+   "summary": "Le nouveau commit ajoute la sous‑commande `xcl pso-precompile` qui traduit les programmes compute d’un titre et fait compiler leurs pipelines par le driver avant l’exécution, en remplissant le cache utilisé au runtime. Cette fonctionnalité poursuit le chantier d’optimisation du cache PSO déjà amorcé, en ciblant spécifiquement les pipelines compute lourds qui bloquaient les temps de chargement. Elle introduit aussi des options de filtrage (`--records`, `--used`) et de parallélisation (`--threads`) pour rendre le pré‑compilage résumable et plus efficace. Ainsi, les titres peuvent désormais charger leurs pipelines compute sans attendre la compilation à chaud, même si les tests de fuzz‑tests et les pilotes alternatifs restent non résolus."
   }
  ]
 }

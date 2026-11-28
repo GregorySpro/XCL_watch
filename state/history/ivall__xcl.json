@@ -1,66 +1,6 @@
 {
- "state": "Après ce changement, le projet compile et les 130 + tests continuent de réussir, avec en plus ce nouveau test qui passe et fournit des métriques de scalabilité. Le mécanisme de bibliothèque de pipelines natives reste fonctionnel : création, sérialisation, réouverture et chargement paresseux des PSO distincts sont validés. Les blocages précédents (fuzz‑tests, support de pilotes alternatifs, optimisation compute) sont toujours ouverts, et il reste à vérifier le même comportement avec des titres réels et à intégrer les identités de corpus dans le CI. La prochaine étape probable sera d’ajouter un smoke test réel pour confirmer que ces performances se traduisent dans un scénario de jeu complet.",
+ "state": "Après ce commit, le projet compile toujours, les 130 + tests restent verts et le test de scalabilité reste valide. Le code de sparse planning conserve la logique de revalidation bornée, mais elle n’est plus sélectionnable, ce qui simplifie le chemin d’exécution sans introduire de régression connue. Les blocages précédents (fuzz‑tests, support de pilotes alternatifs, optimisation compute, validation sur titres réels) demeurent, et la prochaine étape probable reste l’exécution de smoke‑tests retail sur Windows ainsi que l’évaluation des performances du fast‑path sparse.",
  "entries": [
-  {
-   "sha": "fda0b1fcf82ec47cbf99ed5bdf7270ace1d6f6a6",
-   "date": "2026-11-25",
-   "title": "Tests: verify heap-window GPU equivalence and graphics validation",
-   "summary": "Le nouveau commit ajoute une batterie de tests de validation de l’équivalence GPU pour le mode `XCL_HEAP_WINDOWS=1`, couvrant les chargements, stockages, atomiques 32 bits et 64 bits ainsi que la validation des shaders graphiques sur plusieurs étapes. Ces tests s’inscrivent dans la continuité des récents travaux de vérification des tables de layout et des comparaisons avec le driver natif, en ciblant spécifiquement la correction du comportement des fenêtres de heap. Ils montrent que, sur le RTX 5090, les chemins HLSL et DXIL produisent des résultats bit‑for‑bit identiques, mais ne résolvent pas les échecs déjà présents dans les fuzz‑tests de création de pipeline et de masques bridgés."
-  },
-  {
-   "sha": "6d051da51ba3fe7ba7d4ef542da71f544646e3ba",
-   "date": "2026-11-25",
-   "title": "Recompiler: load direct DXIL geometry ES inputs from the heap window",
-   "summary": ""
-  },
-  {
-   "sha": "e0d93c84ad8253f6e17738d14741c1bab7061127",
-   "date": "2026-11-25",
-   "title": "D3D12.X: a dispatch waits for its pipeline at the submit, not in the bind",
-   "summary": ""
-  },
-  {
-   "sha": "6d12f58a229bc73889878a448c64dc3af25eeba0",
-   "date": "2026-11-25",
-   "title": "Recompiler: flatten direct DXIL root-UAV loads for compute",
-   "summary": "Le commit a remplacé les multiples branches `switch` utilisées pour chaque chargement direct DXIL root‑UAV par une séquence linéaire utilisant `rawBufferLoad` et `select` sur les shaders compute. Cette optimisation poursuit le chantier amorcé par le PR #2088 : réduire le nombre de blocs basiques générés en mode direct DXIL, ce qui diminue drastiquement les temps de compilation à froid et la consommation mémoire du driver NVIDIA. Le reste du pipeline (stores, atomics, chemins HLSL et graphics) reste inchangé, et les performances des shaders pixel restent identiques."
-  },
-  {
-   "sha": "e1d84b7d9153f86a97d2ec5d209d196046fc0bea",
-   "date": "2026-11-25",
-   "title": "README: the switches for a bug report's diagnostics",
-   "summary": "Le nouveau commit ajoute une section « Diagnostics for a bug report » au README, listant sept variables d’environnement que l’on peut activer pour obtenir des traces détaillées (durée d’exécution, activité périodique, dump de threads, traces de fautes d’accès, traces de mémoire, traces d’imports et trace D3D12). Cette documentation vient compléter le chantier de visibilité des réglages utilisateur, sans toucher au code. Désormais les développeurs et testeurs peuvent activer ces diagnostics pour mieux comprendre les blocages, mais cela ne résout pas les problèmes techniques encore ouverts (fuzz‑tests, DispatchMesh, échecs DXIL)."
-  },
-  {
-   "sha": "08db8020d323bf478964fcc586152cce54959cfc",
-   "date": "2026-11-25",
-   "title": "DXC: compute programs are linked with their memory accessors (window switches no longer dominate DXC time)",
-   "summary": "Le nouveau PR #174 fait lier les programmes compute avec leurs accesseurs de mémoire, ce qui élimine les commutateurs de fenêtres comme facteur dominant du temps de compilation DXC, gagnant environ 14 % de rapidité. Cette amélioration poursuit le chantier d’optimisation des accès mémoire amorcé par les précédents commits de flattening et de tests d’équivalence GPU, tout en restant conditionnée à l’option `XCL_HEAP_WINDOWS=1`. Désormais les programmes en forme « heap » sont compilés sans accesseurs de commutation, tandis que le mode « switch » reste disponible lorsque le driver refuse le mode heap. Le reste du projet (shaders compute rapides, tests GPU heap‑window qui passent) demeure inchangé, mais les builds DXC restent dépendants d’une version ≥ 1.8 pour le lien."
-  },
-  {
-   "sha": "ec80c0716d81c57eb1d6d192e380fee9635a3a7e",
-   "date": "2026-11-25",
-   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
-   "summary": "Le nouveau commit introduit la réutilisation des pipelines compute complets en cache avant de les découper en morceaux, ainsi qu’une version compacte du DXIL pour les blocs atomiques répétés. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088 et vient compléter le mécanisme de lien des accesseurs mémoire. Désormais les shaders compute qui peuvent être découpés profitent d’un cache de blobs entiers, réduisant fortement le temps de création de pipeline, tandis que les cas où le blob est absent ou rejeté continuent à être découpés comme avant."
-  },
-  {
-   "sha": "c836ecd9ff0a645e108722cc48890211ca8bb9f5",
-   "date": "2026-11-25",
-   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
-   "summary": "Le nouveau commit ajoute la prise en charge de la compaction automatique des blocs compute « split‑wave » contenant des atomics de type BUFFER_ATOMIC_ADD. Il introduit une fonction `atomic_candidate` et un plan `automatic_plan` qui sélectionnent la forme compacte lorsqu’un shader est suffisamment grand ou comporte des atomics retournants, remplaçant la logique précédente basée uniquement sur la taille. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088 et les précédents PR #174 et #2371, en élargissant le critère de compaction aux shaders atomiques. Désormais les shaders compute avec atomics peuvent être exécutés via le cache de pipeline complet, réduisant le temps de création de pipeline, tandis que les cas sans atomics restent inchangés."
-  },
-  {
-   "sha": "f8f9de654f82aba63dc80451b895ac4e49e691d6",
-   "date": "2026-11-25",
-   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
-   "summary": ""
-  },
-  {
-   "sha": "b49be1836844fe0b0cdb3211dce3cb7fb4e21ac7",
-   "date": "2026-11-26",
-   "title": "Shaders: reuse offline compute PSOs and compact repeated atomic shaders",
-   "summary": "Le nouveau PR réactive la réutilisation des blobs complets de pipelines compute en cache et ajoute la compaction DXIL pour les blocs atomiques répétés, avec un mode de sélection automatique. Cette évolution poursuit le chantier d’optimisation des pipelines compute amorcé par #2088, en complétant les précédentes améliorations de cache et de compaction. Elle permet désormais de charger un blob entier au runtime et, en cas d’échec, de retomber sur le découpage traditionnel, tout en réduisant fortement le temps de création de pipeline. Le reste des blocages (fuzz‑tests, DispatchMesh, drivers refusant le mode heap) demeure inchangé."
-  },
   {
    "sha": "d61ffdc435d5b7c71f4635e4fb06b28eed1328a3",
    "date": "2026-11-25",
@@ -240,6 +180,66 @@
    "date": "2026-11-28",
    "title": "Shaders: skip recipe walks for warm libraries",
    "summary": ""
+  },
+  {
+   "sha": "23c06c9f1a286cfdd03baf6016fdc50efaa771c3",
+   "date": "2026-11-27",
+   "title": "Tests: compare benchmark regression thresholds",
+   "summary": "Le nouveau commit ajoute un outil en ligne de commande `xcl-bench-compare` qui lit deux fichiers NDJSON de benchmarks, valide leur compatibilité et compare les médianes observées aux seuils de régression fournis. Cette fonctionnalité s’inscrit dans la suite d’améliorations du pipeline de tests et de métriques, venant après les ajouts de mesures de scalabilité et de publication d’identités de corpus. Elle permet désormais de détecter automatiquement les régressions de performance, mais ne touche pas encore aux workloads réels ni aux tests sur GPU."
+  },
+  {
+   "sha": "40d3a31231a33466d06de3789356ab34a07cb151",
+   "date": "2026-11-27",
+   "title": "D3D12.X: read wait cells without faulting",
+   "summary": "Le commit ajoute une lecture sécurisée des « wait cells » D3D12 X en évitant les fautes de page lorsqu’un titre libère la mémoire. Il introduit un chemin rapide basé sur des chargements atomiques acquire pour les zones UMA engagées, et un fallback via ReadProcessMemory pour les pages potentiellement désengagées. Cette amélioration poursuit le chantier de fiabilité du runtime — elle corrige un blocage identifié dans #2508 où les probes de lisibilité pouvaient provoquer des plantages. Désormais les attentes CPU peuvent être observées sans risque de fault, même si le titre décommitte la page, bien que les performances en situation réelle restent à mesurer."
+  },
+  {
+   "sha": "51cda2f48932cdee512d61d4cd7948f829656722",
+   "date": "2026-11-27",
+   "title": "D3D12.X: own sparse planning observations",
+   "summary": "Le commit introduit des « snapshots » d’observations de planification sparse, capturant génération d’état, époque de mapping, pages réclamées et identités de contenu, afin que la construction du plan d’upload s’effectue sans accès à l’état sparse vivant. Cette évolution poursuit le chantier amorcé par la lecture sécurisée des wait cells et les optimisations de libération de DXIL, en rendant la phase de planification indépendante du verrou sur STATE. Elle permet maintenant de préparer un plan hors‑verrou, mais n’active pas encore la planification déverrouillée ni les performances réelles sur titres."
+  },
+  {
+   "sha": "687d553c70da7d2b7d450288b8b56832d12a0411",
+   "date": "2026-11-27",
+   "title": "D3D12.X: keep unlocked sparse planning inert",
+   "summary": "Le commit désactive l’activation du mode « sparse planning unlocked » en le laissant inactif dans le code, retirant ainsi le switch `XCL_SPARSE_UNLOCKED_PLAN` du README. Cette modification poursuit le chantier amorcé par le snapshot sparse : elle élimine le chemin d’activation qui introduisait des lectures et hachages sous `STATE`, réduisant les verrous et la charge en temps réel. Le résultat est que la préparation du plan d’upload reste disponible mais n’est plus sélectionnée automatiquement, ce qui garde le système plus simple mais ne débloque pas encore les gains attendus sur les titres réels. Aucun nouveau test n’a été ajouté et les tests existants continuent de passer."
+  },
+  {
+   "sha": "651867a496efaa7dae595aabc64b4d2d34451946",
+   "date": "2026-11-26",
+   "title": "xcl run: preparation workers count the commit left in MiB, not bytes",
+   "summary": "Le commit corrige le calcul du nombre de workers de préparation en convertissant le commit système (en octets) en mébioctets avant de l’appliquer à la fonction workers_for. Cette modification clôt le bug introduit par les changements précédents où le plafond de commit était ignoré, permettant ainsi de réduire le nombre de workers lorsque la mémoire disponible est limitée. Le correctif s’inscrit dans la suite d’optimisations de la consommation mémoire et de la gestion des ressources déjà amorcées. Il rend désormais possible de respecter le bound de commit lors du lancement, même si sous Wine le swap gonfle encore le calcul."
+  },
+  {
+   "sha": "4577f09c8b81152906f1babf9ce785943617cb72",
+   "date": "2026-11-28",
+   "title": "xcl run: preparation workers count the commit left in MiB, not bytes",
+   "summary": "Le nouveau commit corrige le calcul du nombre de workers de préparation en convertissant le commit système, fourni en octets, en mébioctets avant de l’appliquer à la fonction workers_for. Cette modification clôt le bug introduit précédemment où la limite de commit était ignorée, poursuivant le chantier de stabilisation du parallélisme de préparation. Désormais le nombre de workers respecte réellement la mémoire disponible, ce qui réduit le nombre de workers (ex. de 28 à 25 sur la machine test) mais reste limité par le swap sous Wine. Aucun nouveau problème majeur n’est apparu, la correction reste à valider sur Windows."
+  },
+  {
+   "sha": "b0b041fdfe75181981dec92325a2480234ee7463",
+   "date": "2026-11-28",
+   "title": "Tests: compare benchmark regression thresholds",
+   "summary": ""
+  },
+  {
+   "sha": "d85f2c6c34a7a349def5893d9af22bb79614e774",
+   "date": "2026-11-28",
+   "title": "D3D12.X: read wait cells without faulting",
+   "summary": "Le commit ajoute une lecture sécurisée des cellules d’attente D3D12 X en évitant les fautes de page. Il introduit un chemin rapide basé sur des chargements atomiques acquire pour les zones UMA engagées et, en dehors, utilise `ReadProcessMemory` pour capturer un instantané sans provoquer de fault. Cette amélioration poursuit le chantier de fiabilité du traitement des wait‑cells amorcé par les précédents correctifs de lecture et de planification sparse, et elle rend désormais possible de lire des wait‑cells même si la mémoire a été dé‑committée, sans bloquer le thread de soumission. Aucun test réel sur titres ou GPU AMD/NVIDIA n’a été effectué, donc le comportement en production reste incertain."
+  },
+  {
+   "sha": "f2c0d36ff01a7b5c7d2a58e682249a5e8bfc4647",
+   "date": "2026-11-28",
+   "title": "D3D12.X: own sparse planning observations",
+   "summary": "Le nouveau commit introduit des « snapshots » d’observations de planification sparse, permettant de capturer l’état du sparse mapping (génération, époque, pages réclamées et observations) avant de libérer le verrou d’état. Cette évolution poursuit le chantier amorcé par les snapshots sparse précédents, en rendant la construction du plan d’upload indépendante de l’état live, sans toutefois activer le mode de planification déverrouillé. Désormais les tests unitaires montrent que le plan peut être construit uniquement à partir de ces snapshots, mais l’impact sur les titres retail et les GPU AMD/NVIDIA reste à vérifier."
+  },
+  {
+   "sha": "b801633e98709ae9450c00033921bdbefd155475",
+   "date": "2026-11-28",
+   "title": "D3D12.X: keep unlocked sparse planning inert",
+   "summary": "Le commit désactive définitivement l’activation du mode « unlocked sparse planning », le laissant inactif dans le code et retirant le switch `XCL_SPARSE_UNLOCKED_PLAN` du README. Cette modification poursuit le chantier amorcé par les snapshots sparse, en éliminant un chemin d’exécution plus lent qui faisait des observations et du hachage sous l’état live. Le projet continue de compiler et les tests restent verts, mais aucun test retail ou sur GPU AMD/NVIDIA n’a été effectué pour ce changement. Ainsi, le fast‑path sparse reste inchangé et les blocages de performances persistent."
   }
  ]
 }

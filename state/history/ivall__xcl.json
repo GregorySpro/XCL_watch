@@ -1,30 +1,6 @@
 {
- "state": "Après ce commit, le projet compile toujours, les 130 + tests restent verts et le test de scalabilité reste valide. Le code de sparse planning conserve la logique de revalidation bornée, mais elle n’est plus sélectionnable, ce qui simplifie le chemin d’exécution sans introduire de régression connue. Les blocages précédents (fuzz‑tests, support de pilotes alternatifs, optimisation compute, validation sur titres réels) demeurent, et la prochaine étape probable reste l’exécution de smoke‑tests retail sur Windows ainsi que l’évaluation des performances du fast‑path sparse.",
+ "state": "Après ce changement, le projet compile toujours, les tests unitaires restent verts et les benchmarks continuent de produire des NDJSON valides. Les temps de recompilation des shaders pixel sont réduits de 10 % à 20 % selon les mesures présentées, et la taille du DXIL généré diminue légèrement. Les nouvelles métriques GPU restent disponibles dans `report.json`. Il reste à valider l’effet de cette optimisation sur le comportement GPU réel (SM 6.6) et à vérifier qu’aucune régression n’apparaît dans les smoke‑tests retail et les scénarios de perte de dispositif. La prochaine étape probable sera d’exécuter ces tests retail et d’évaluer le fast‑path sparse avec les indicateurs de complétion déjà intégrés.",
  "entries": [
-  {
-   "sha": "d61ffdc435d5b7c71f4635e4fb06b28eed1328a3",
-   "date": "2026-11-25",
-   "title": "D3D12.X: canonicalize inactive two-pass stream descriptors",
-   "summary": "Le commit canonise les descripteurs de flux inactifs du pipeline two‑pass en les ignorant lors du calcul de la clé de cache. Cette modification s’inscrit dans la continuité du chantier d’optimisation du cache des pipelines compute, en éliminant les variations dues à des pointeurs nuls ou du padding qui ne participaient à aucun état actif. Désormais les flux vides ou les shaders optionnels vides n’altèrent plus la clé, ce qui améliore la stabilité du cache ; les états actifs non supportés continuent de provoquer un rejet comme avant."
-  },
-  {
-   "sha": "f9e6ac5f71372ef8420850cf63bad5715c3b5736",
-   "date": "2026-11-24",
-   "title": "GameInput: retain recent gamepad readings between polls",
-   "summary": "Le commit ajoute une mémoire tampon d’environ 0,5 s des lectures de manette dans le module GameInput, permettant aux jeux qui interrogent le contrôleur entre deux frames de récupérer les tapotements courts. Cette amélioration s’inscrit après les travaux de stabilité et de diagnostics, en complétant le support d’entrée en conservant les lectures pour les callbacks hors du thread sampler. Elle rend désormais possible la détection fiable de pressions rapides, mais n’affecte pas les problèmes restants de fuzz‑tests, DispatchMesh ou la compatibilité de la compaction de shaders."
-  },
-  {
-   "sha": "bdef448039788d275d2a8da374d9095486de1752",
-   "date": "2026-11-24",
-   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
-   "summary": "Le commit ajoute la persistance des PSO graphiques de mesh et de géométrie traduits, en plus des blobs compute déjà stockés. Cette évolution poursuit le chantier d’optimisation du cache two‑pass en garantissant que les pipelines mesh passent par la même clé canonique que les compute, et en introduisant un mécanisme de retry pour les blobs rejetés. Désormais les deux chemins de rendu (mesh passthrough et compute) sont cachés, ce qui permet de valider la récupération de blobs corrompus et d’éviter les recompilations à froid, mais la prise en charge des drivers qui refusent l’export reste partielle et les tests de fuzz restent bloquants."
-  },
-  {
-   "sha": "7ca016442286780915653fc871acb86fb2a85754",
-   "date": "2026-11-26",
-   "title": "D3D12.X: persist both PSOs for translated mesh and geometry",
-   "summary": ""
-  },
   {
    "sha": "f9c9df37703babb4f6bb9b51841e18c813751c2c",
    "date": "2026-11-26",
@@ -240,6 +216,30 @@
    "date": "2026-11-28",
    "title": "D3D12.X: keep unlocked sparse planning inert",
    "summary": "Le commit désactive définitivement l’activation du mode « unlocked sparse planning », le laissant inactif dans le code et retirant le switch `XCL_SPARSE_UNLOCKED_PLAN` du README. Cette modification poursuit le chantier amorcé par les snapshots sparse, en éliminant un chemin d’exécution plus lent qui faisait des observations et du hachage sous l’état live. Le projet continue de compiler et les tests restent verts, mais aucun test retail ou sur GPU AMD/NVIDIA n’a été effectué pour ce changement. Ainsi, le fast‑path sparse reste inchangé et les blocages de performances persistent."
+  },
+  {
+   "sha": "f1171e4e47363ddcb49a47a29686455dbe8b7b62",
+   "date": "2026-11-28",
+   "title": "Tests: identify benchmark result environments",
+   "summary": "Le nouveau commit enrichit les enregistrements de benchmark avec des métadonnées d’environnement et de matériel (profil de build, niveau d’optimisation, version du compilateur, OS, architecture, identité CPU). Il s’inscrit dans la continuité du chantier de fiabilité des benchmarks lancé récemment (outil de comparaison, snapshots sparse) en ajoutant une couche d’identification qui permettra à `xcl-bench-compare` de rejeter les comparaisons entre jeux de données incompatibles. Le code de base continue de compiler et les tests restent verts, mais la capacité à filtrer les résultats de benchmark selon le contexte de compilation est désormais disponible, tandis que les performances d’exécution ne sont pas affectées."
+  },
+  {
+   "sha": "86e83e76d1b9ff3adb2b322211f1772f9fac6d11",
+   "date": "2026-11-28",
+   "title": "Shaders: fail closed on wave64 rendezvous timeout",
+   "summary": "Le nouveau commit renforce la gestion des time‑outs lors du rendez‑vous split‑wave64 en introduisant un protocole « fail‑closed » qui marque un bit d’erreur dans le compteur partagé et bloque les deux moitiés du calcul avant qu’elles n’utilisent des données invalides. Cette modification s’inscrit dans la continuité du chantier sur les chemins rapides et la robustesse du sparse planning, en éliminant un comportement indéfini précédemment toléré. Désormais les shaders split‑wave64 s’arrêtent de façon déterministe en cas de retard, tandis que le mode natif wave64 reste inchangé. Aucun test de performance réel n’a encore été exécuté, donc l’impact sur les titres retail reste à vérifier."
+  },
+  {
+   "sha": "336fdddafbcb3c3db753629f5f79a9f44b6c4b9d",
+   "date": "2026-11-28",
+   "title": "D3D12.X: correlate submissions with GPU completion",
+   "summary": "Le nouveau commit ajoute la corrélation entre les soumissions D3D12 et leur achèvement GPU en conservant des reçus de fence exacts et en les sondant de façon non bloquante. Cette évolution poursuit le chantier de diagnostics introduit précédemment (timestamps CPU, benchmarks) en offrant une visibilité sur la fin réelle du travail GPU, sans toutefois mesurer le temps GPU. Elle rend possible de distinguer les soumissions terminées, en attente ou perdues suite à une perte de dispositif, mais les performances réelles et le comportement sur du matériel AMD/NVIDIA restent encore non testés."
+  },
+  {
+   "sha": "5d2ea8f846a2de290fec1a51ede750e09563cfe2",
+   "date": "2026-11-28",
+   "title": "Recompiler: the pixel prelude's quad ballot has no loop for DXC to unroll",
+   "summary": "Le commit remplace la boucle `[unroll]` de `ballot_px_quad` par quatre blocs de code explicites, évitant ainsi que DXC doive dérouler la boucle à chaque appel. Cette optimisation poursuit le chantier d’amélioration des temps de recompilation lancé précédemment (notamment les benchmarks de compilation), en supprimant un goulet d’étranglement identifié dans les shaders pixel. Elle rend désormais la compilation de milliers de shaders pixel nettement plus rapide, tout en conservant le même résultat fonctionnel. Aucun nouveau problème n’est apparent, mais l’impact sur les performances GPU reste à mesurer."
   }
  ]
 }
